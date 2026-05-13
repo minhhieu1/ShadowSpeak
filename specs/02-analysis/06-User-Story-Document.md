@@ -15,11 +15,12 @@ This document captures the core MVP user stories for ShadowSpeak, an audio-first
 
 **Title:** First-Time Onboarding and Access
 
-**User Story:** As a new learner, I want to create an account, confirm my eligibility, and set up my practice preferences so that I can start using ShadowSpeak with a personalized daily routine.
+**User Story:** As a new learner, I want to confirm my age eligibility, create an account, and set up my practice preferences so that I can start using ShadowSpeak with a personalized daily routine.
 
 **Acceptance Criteria:**
 
 - Given I am a new learner, when I open the app for the first time, then I am shown an onboarding flow that explains the app and the shadowing practice concept.
+- Given I am a new learner, when I open the app for the first time, then I am shown an age gate before sign-in or account creation.
 - Given I am eligible to use the app, when I complete the required consent and sign-in steps, then my account is created or authenticated successfully.
 - Given I choose a practice level and reminder preference, when I finish onboarding, then those settings are saved to my profile.
 - Given I deny microphone permission, when I later try to start a practice session, then the app explains why microphone access is needed and blocks recording until permission is granted.
@@ -27,13 +28,14 @@ This document captures the core MVP user stories for ShadowSpeak, an audio-first
 
 **Priority:** High
 
-**Related Functional Requirement(s):** FR-1, FR-8
+**Related Functional Requirement(s):** FR-1, FR-8, FR-9
 
 **Assumptions / Constraints:**
 
 - The MVP uses email/password or social sign-in only.
 - No real-time AI coaching or pronunciation scoring is included in onboarding.
 - Consent, privacy, and age-gate requirements must be completed before access to practice content.
+- If a store-provided age signal is available, it may be used as a shortcut for the age gate, but the in-app age check remains the fallback and final decision.
 
 ## User Story 2: Browse and Start a Lesson
 
@@ -104,4 +106,3 @@ This document captures the core MVP user stories for ShadowSpeak, an audio-first
 - Progress syncing depends on the user being authenticated and having network connectivity.
 - Reminder behavior is limited to local notifications in the MVP.
 - Ad-supported access remains the only monetization model for the MVP; there are no subscriptions.
-

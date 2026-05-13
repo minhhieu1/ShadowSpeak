@@ -88,7 +88,7 @@ The document complements the Functional Requirements Specification and Non-Funct
 
 | Use Case ID | Objectives | KPIs | Functional Requirements | Non-Functional Requirements | Priority | Owner |
 |-------------|------------|------|-------------------------|-----------------------------|----------|-------|
-| UC-01 | OBJ-1, OBJ-2 | Onboarding completion, DAU | FR-1, FR-8 | NFR-13, NFR-15, NFR-19 | High | Product / Auth |
+| UC-01 | OBJ-1, OBJ-2 | Onboarding completion, DAU | FR-1, FR-8, FR-9 | NFR-13, NFR-15, NFR-19 | High | Product / Auth |
 | UC-02 | OBJ-1, OBJ-4 | Practice starts, lesson discovery rate | FR-2, FR-7 | NFR-3, NFR-12, NFR-18 | High | Product / Content |
 | UC-03 | OBJ-1, OBJ-3 | Practice minutes, retention | FR-3, FR-4, FR-5 | NFR-2, NFR-6, NFR-20 | High | Mobile Engineering |
 | UC-04 | OBJ-1 | Retention, repeat practice | FR-4 | NFR-14, NFR-20 | Medium | Mobile Engineering |
@@ -98,7 +98,7 @@ The document complements the Functional Requirements Specification and Non-Funct
 | UC-08 | OBJ-1, OBJ-2 | Practice minutes, streak length, sync success rate | FR-5, FR-8 | NFR-12, NFR-20 | High | Backend Engineering |
 | UC-09 | OBJ-2 | Gross ad revenue per 1k MAU | FR-6 | NFR-13, NFR-15 | High | Monetization |
 | UC-10 | OBJ-1, OBJ-2 | Retention, support deflection, deletion completion | FR-8 | NFR-13, NFR-14 | High | Product / Mobile |
-| UC-11 | OBJ-2, OBJ-5 | Consent completion, ad eligibility compliance | FR-1, FR-6, FR-8 | NFR-13, NFR-15 | High | Product / Legal |
+| UC-11 | OBJ-2, OBJ-5 | Consent completion, ad eligibility compliance | FR-1, FR-6, FR-8, FR-9 | NFR-13, NFR-15 | High | Product / Legal |
 
 ---
 
@@ -705,11 +705,12 @@ The document complements the Functional Requirements Specification and Non-Funct
 **Actors**
 
 - Primary: Learner
-- Supporting: Authentication Provider, Ad Network, Consent Store
+- Supporting: Authentication Provider, Ad Network, Consent Store, Mobile OS
 
 **Preconditions**
 
 - Learner is at the age gate, account creation step, or ad personalization step.
+- A store-provided age signal may be available on supported platforms, but the app must still support an in-app age gate fallback.
 
 **Success Postconditions**
 
@@ -717,6 +718,7 @@ The document complements the Functional Requirements Specification and Non-Funct
 - Consent choices are stored.
 - Account creation can continue only when the age gate is passed.
 - Personalized ads are used only when permitted by age and consent.
+- If a store-provided age signal is available, it is used as an age-eligibility shortcut; otherwise the in-app age gate is used.
 
 **Failure Postconditions**
 
@@ -725,22 +727,25 @@ The document complements the Functional Requirements Specification and Non-Funct
 
 **Main Success Scenario**
 
-1. App presents the age gate before account creation.
-2. Learner confirms eligibility.
-3. App presents privacy and ad-consent choices.
-4. Learner accepts or declines each optional choice.
-5. App stores the consent state.
-6. App continues to account creation or returns to the prior flow.
+1. App checks for a supported store-provided age signal.
+2. If the signal is unavailable or inconclusive, app presents the age gate before account creation.
+3. Learner confirms eligibility or is verified by the supported store signal.
+4. App presents privacy and ad-consent choices.
+5. Learner accepts or declines each optional choice.
+6. App stores the consent state.
+7. App continues to account creation or returns to the prior flow.
 
 **Extensions / Alternate Flows**
 
-- 2a. Learner does not meet the age requirement: App blocks account creation and shows the eligibility message.
+- 2a. Store-provided age signal indicates the learner is underage: App blocks account creation and shows the eligibility message.
+- 2b. Learner does not meet the age requirement in the in-app age gate: App blocks account creation and shows the eligibility message.
 - 4a. Learner declines ad personalization: App disables personalized ad requests.
-- 5a. Consent is withdrawn later: App updates the stored choice and stops requesting personalized ads.
+- 6a. Consent is withdrawn later: App updates the stored choice and stops requesting personalized ads.
 
 **Acceptance Criteria**
 
 - Given a learner does not meet the age requirement, when they continue the age gate, then the app blocks account creation.
+- Given the app has a supported store-provided age signal that indicates the learner is underage, when onboarding starts, then the app blocks account creation before sign-in.
 - Given the learner declines personalized ads, when the app reaches an ad boundary later, then the app sends only non-personalized or no ad request according to policy.
 - Given the learner later changes consent, when they reopen consent settings, then the stored choice updates and the new choice applies immediately.
 - Given the learner is underage, when they reach the age gate, then the app stops the account flow before any personalized ad consent is requested.
@@ -754,6 +759,7 @@ The document complements the Functional Requirements Specification and Non-Funct
 
 - Consent language must be concise and legible on mobile screens.
 - The app must not request personalized ad targeting before age verification is complete.
+- If the store-provided age signal is unavailable, the in-app age gate must be shown before account creation.
 
 ---
 
@@ -761,7 +767,7 @@ The document complements the Functional Requirements Specification and Non-Funct
 
 | ID | Rule | BRD Mapping | FRS Mapping | NFR Mapping |
 |----|------|-------------|-------------|-------------|
-| UC-BR-01 | Minimum age for account creation is 13, and age eligibility must be confirmed before any account is created or personalized ads are requested. | OBJ-2, OBJ-5 | FR-1, FR-6, FR-8 | NFR-13, NFR-15 |
+| UC-BR-01 | Minimum age for account creation is 13, and age eligibility must be confirmed before any account is created or personalized ads are requested. Store-provided age signals may be used as a shortcut when available, but the in-app age gate remains the fallback and final decision. | OBJ-2, OBJ-5 | FR-1, FR-6, FR-8, FR-9 | NFR-13, NFR-15 |
 | UC-BR-02 | First-time onboarding must complete within 3 minutes for most learners. | OBJ-1 | FR-1, FR-8 | NFR-19 |
 | UC-BR-03 | "Reference audio" is the standard term for lesson-model audio across the product and specification set. | OBJ-1, OBJ-3 | FR-3, FR-4 | NFR-2 |
 | UC-BR-04 | Lesson completion counts only when the learner reaches 90% of lesson duration or explicitly ends the session after 90% has elapsed. | OBJ-1 | FR-3, FR-5 | NFR-21 |

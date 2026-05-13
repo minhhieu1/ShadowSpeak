@@ -36,6 +36,7 @@ ShadowSpeak enables learners to improve English speaking fluency by listening to
 3. **Progress Tracking** -- Store session metrics (completion, time spent) and visualise trends.
 4. **Ad-Supported Monetisation** -- Serve non-intrusive ads between lessons.
 5. **Offline Capability** -- Download lessons for practice without internet connectivity.
+6. **Age Gating and Consent** -- Confirm age eligibility before account creation and ad consent.
 
 No real-time AI processing is used inside the app during practice sessions. AI is only used offline for content generation (TTS voices, script writing) outside the app.
 
@@ -53,6 +54,7 @@ No real-time AI processing is used inside the app during practice sessions. AI i
 | FR-6 | **Ad Insertion** -- Load and display a non-intrusive banner ad after every completed lesson. | Lesson completed; ad SDK initialized. | Ad rendered; click-through tracked. | Ad loads within 1 second; no more than one ad per lesson. | Ads displayed for all users in MVP. | If ad fails, continue without disruption. |
 | FR-7 | **Offline Lesson Download** -- Allow user to download lesson assets for offline practice. | User selects "Download" and has sufficient storage. | Lesson files saved locally; marked as available offline. | Download completes with 100% integrity checksum. | Max 500 MB total offline storage per user. | Show "Download failed -- retry?" on network error. |
 | FR-8 | **User Settings Management** -- Users can update profile, notification preferences, and delete account. | User is authenticated. | Changes saved; confirmation displayed. | All fields validated per type; email change triggers verification email. | Deleting account removes all personal data within 30 days. | Show specific error messages for each validation failure. |
+| FR-9 | **Age Gate and Consent Handling** -- Confirm age eligibility before account creation, and store privacy/ad consent choices before onboarding continues. | User has opened the app and is not yet authenticated. Store-provided age signals may be available on supported platforms. | Age eligibility is recorded; underage users are blocked; eligible users continue to sign-in. | Age check must occur before account creation; consent choices must be persisted; unknown age defaults to an in-app age gate. | Minimum age for account creation is 13; personalized ads are only allowed when age and consent requirements are satisfied. | If age verification is unavailable, show the in-app age gate; if the user is underage, block account creation and do not request personalized ad consent. |
 
 ---
 
@@ -62,6 +64,7 @@ No real-time AI processing is used inside the app during practice sessions. AI i
 - The application backend is built with Python FastAPI for REST APIs.
 - No real-time AI or speech-to-text processing is performed inside the app during MVP. AI is used offline only for content generation (TTS audio, lesson scripts).
 - Internet connectivity is required for registration, sync, and ad loading; offline mode is limited to already downloaded lessons.
+- Age eligibility must be confirmed before account creation; if a store-provided age signal is unavailable, the app must fall back to a self-attested in-app age gate.
 
 ---
 
