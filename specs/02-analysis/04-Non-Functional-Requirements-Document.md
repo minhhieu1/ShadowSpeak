@@ -10,7 +10,7 @@
 
 ## 1. Introduction
 
-This Non-Functional Requirements (NFR) document defines the quality attributes, measurable criteria, and constraints that apply to the ShadowSpeak audio‑first English shadowing practice application.  The NFRs complement the functional requirements specified in `specs/06-functional_requirements/Functional_Requirements_Specification.md` and are used by architects, developers, QA, and operations to ensure the MVP meets performance, security, scalability, availability, compliance and other quality goals.
+This Non-Functional Requirements (NFR) document defines the quality attributes, measurable criteria, and constraints that apply to the ShadowSpeak audio‑first English shadowing practice application.  The NFRs complement the functional requirements specified in `specs/02-analysis/03-Functional-Requirements-Specification.md` and are used by architects, developers, QA, and operations to ensure the MVP meets performance, security, scalability, availability, compliance and other quality goals.
 
 ---
 

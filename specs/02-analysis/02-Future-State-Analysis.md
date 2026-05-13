@@ -296,7 +296,7 @@ The future state introduces several architectural changes compared to the MVP:
 ---
 
 **References**
-- [Business Requirements Document](../03-business-requirements/Business_Requirements_Document.md)
-- [AS-IS Analysis](../04-current_state_analysis/AS-IS_Analysis.md)
-- [Product Discovery Document](../02-product_discovery/Product_Discovery_Document.md)
-- [Business Request Document](../01-business-request/ShadowSpeak_Business_Request_Document.md)
+- [Business Requirements Document](../01-initiation-discovery/03-Business-Requirements-Document.md)
+- [AS-IS Analysis](./01-AS-IS-Analysis.md)
+- [Product Discovery Document](../01-initiation-discovery/02-Product-Discovery-Document.md)
+- [Business Request Document](../01-initiation-discovery/01-Business-Request-Document.md)

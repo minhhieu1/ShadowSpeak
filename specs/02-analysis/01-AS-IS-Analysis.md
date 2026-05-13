@@ -4,7 +4,7 @@
 
 **Prepared by:** Business Analyst – [Name]
 
-**Reference:** [Business Requirements Document](../03-business-requirements/Business_Requirements_Document.md)
+**Reference:** [Business Requirements Document](../01-initiation-discovery/03-Business-Requirements-Document.md)
 
 ---
 

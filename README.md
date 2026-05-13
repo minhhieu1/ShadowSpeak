@@ -6,7 +6,7 @@ The MVP is designed to help learners build a daily speaking habit by listening t
 
 ## What This Repo Contains
 
-This repository is currently in the analyst phase for ShadowSpeak. The focus here is requirements gathering, product definition, and validating the MVP scope before implementation begins.
+This repository is currently in the analyst and documentation phase for ShadowSpeak. The focus here is requirements gathering, product definition, and keeping the project documentation organized before implementation begins.
 
 ## MVP Summary
 
@@ -37,27 +37,41 @@ This repository is currently in the analyst phase for ShadowSpeak. The focus her
 
 ## Documentation
 
-The spec set lives under `specs/` and is organized by document type.
+The spec set lives under `specs/` and is organized by lifecycle phase and numbered document name.
 
-- `specs/01-business-request/ShadowSpeak_Business_Request_Document.md`
-- `specs/02-product_discovery/Product_Discovery_Document.md`
-- `specs/03-business-requirements/Business_Requirements_Document.md`
-- `specs/04-current_state_analysis/AS-IS_Analysis.md`
-- `specs/05-future_state_analysis/Future_State_Analysis.md`
-- `specs/06-functional_requirements/Functional_Requirements_Specification.md`
-- `specs/07-non-functional-requirements/Non-Functional_Requirements_Document.md`
-- `specs/08-use-case-specification/Use_Case_Specification.md`
-- `specs/09-user-story/User_Story_Document.md`
+### Structure
+
+- `specs/00-reference/` - reference material and checklists
+- `specs/01-initiation-discovery/` - phase 1 documents
+- `specs/02-analysis/` - phase 2 documents
+
+### Current Documents
+
+- `specs/00-reference/00-Development-Lifecycle-Document-Checklist.md`
+- `specs/01-initiation-discovery/01-Business-Request-Document.md`
+- `specs/01-initiation-discovery/02-Product-Discovery-Document.md`
+- `specs/01-initiation-discovery/03-Business-Requirements-Document.md`
+- `specs/02-analysis/01-AS-IS-Analysis.md`
+- `specs/02-analysis/02-Future-State-Analysis.md`
+- `specs/02-analysis/03-Functional-Requirements-Specification.md`
+- `specs/02-analysis/04-Non-Functional-Requirements-Document.md`
+- `specs/02-analysis/05-Use-Case-Specification.md`
+- `specs/02-analysis/06-User-Story-Document.md`
+
+See [AGENTS.md](AGENTS.md) and [CLAUDE.md](.claude/CLAUDE.md) for the doc-creation rules that follow this layout.
 
 ## Recommended Reading Order
 
 If you are getting up to speed on the project, start here:
 
-1. Business Requirements Document
-2. Functional Requirements Specification
-3. Non-Functional Requirements Document
-4. Use Case Specification
-5. User Story Document
+1. [00-Development-Lifecycle-Document-Checklist.md](specs/00-reference/00-Development-Lifecycle-Document-Checklist.md)
+2. [03-Business-Requirements-Document.md](specs/01-initiation-discovery/03-Business-Requirements-Document.md)
+3. [01-AS-IS-Analysis.md](specs/02-analysis/01-AS-IS-Analysis.md)
+4. [02-Future-State-Analysis.md](specs/02-analysis/02-Future-State-Analysis.md)
+5. [03-Functional-Requirements-Specification.md](specs/02-analysis/03-Functional-Requirements-Specification.md)
+6. [04-Non-Functional-Requirements-Document.md](specs/02-analysis/04-Non-Functional-Requirements-Document.md)
+7. [05-Use-Case-Specification.md](specs/02-analysis/05-Use-Case-Specification.md)
+8. [06-User-Story-Document.md](specs/02-analysis/06-User-Story-Document.md)
 
 ## Current Status
 
