@@ -20,10 +20,10 @@ The FRS covers all user-facing functionalities within the MVP, including content
 
 **References**
 
-- TO-BE Process Document (specs/05-future_state_analysis/Future_State_Analysis.md)
-- Business Requirements Document (specs/03-business-requirements/Business_Requirements_Document.md)
-- AS-IS Analysis (specs/04-current_state_analysis/AS-IS_Analysis.md)
-- Future State Analysis (specs/05-future_state_analysis/Future_State_Analysis.md)
+- TO-BE Process Document (specs/02-analysis/02-Future-State-Analysis.md)
+- Business Requirements Document (specs/01-initiation-discovery/03-Business-Requirements-Document.md)
+- AS-IS Analysis (specs/02-analysis/01-AS-IS-Analysis.md)
+- Future State Analysis (specs/02-analysis/02-Future-State-Analysis.md)
 
 ---
 
@@ -58,7 +58,7 @@ No real-time AI processing is used inside the app during practice sessions. AI i
 
 ## 4. Assumptions & Dependencies
 
-- The TO-BE Process Document provides detailed workflow diagrams and external service contracts (e.g., AWS Cognito, AdMob SDK). See `specs/05-future_state_analysis/Future_State_Analysis.md`.
+- The TO-BE Process Document provides detailed workflow diagrams and external service contracts (e.g., AWS Cognito, AdMob SDK). See `specs/02-analysis/02-Future-State-Analysis.md`.
 - The application backend is built with Python FastAPI for REST APIs.
 - No real-time AI or speech-to-text processing is performed inside the app during MVP. AI is used offline only for content generation (TTS audio, lesson scripts).
 - Internet connectivity is required for registration, sync, and ad loading; offline mode is limited to already downloaded lessons.

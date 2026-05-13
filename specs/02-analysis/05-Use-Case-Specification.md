@@ -17,9 +17,9 @@ The document complements the Functional Requirements Specification and Non-Funct
 
 **References**
 
-- Business Requirements Document (`specs/03-business-requirements/Business_Requirements_Document.md`)
-- Functional Requirements Specification (`specs/06-functional_requirements/Functional_Requirements_Specification.md`)
-- Non-Functional Requirements Document (`specs/07-non-functional-requirements/Non-Functional_Requirements_Document.md`)
+- Business Requirements Document (`specs/01-initiation-discovery/03-Business-Requirements-Document.md`)
+- Functional Requirements Specification (`specs/02-analysis/03-Functional-Requirements-Specification.md`)
+- Non-Functional Requirements Document (`specs/02-analysis/04-Non-Functional-Requirements-Document.md`)
 
 ---
 

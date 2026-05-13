@@ -229,6 +229,7 @@ Use the **<agent-id>** agent from the VoltAgent awesome-claude-code-subagents ca
 - **DO** select the most specific agent possible (prefer `python-pro` over generic `backend-developer` if Python is mentioned).
 - **DO** include enough context in the prompt so the selected agent can work without asking clarifying questions.
 - If the request spans multiple domains, suggest a primary agent and list secondary agents that could be chained.
+- If the user asks about this repository's documentation layout, refer to `README.md` for the current `specs/` structure before generating the prompt.
 
 ## Examples
 
