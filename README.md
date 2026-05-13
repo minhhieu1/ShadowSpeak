@@ -45,10 +45,10 @@ The spec set lives under `specs/` and is organized by lifecycle phase and number
 - `specs/01-initiation-discovery/` - phase 1 documents
 - `specs/02-analysis/` - phase 2 documents
 - `specs/03-ux-ui-design/` - phase 3 UX/UI design documents
+- `specs/04-solution-architecture/` - phase 4 solution architecture documents
 
 ### Current Documents
 
-- `specs/00-reference/00-Development-Lifecycle-Document-Checklist.md`
 - `specs/01-initiation-discovery/01-Business-Request-Document.md`
 - `specs/01-initiation-discovery/02-Product-Discovery-Document.md`
 - `specs/01-initiation-discovery/03-Business-Requirements-Document.md`
@@ -63,6 +63,7 @@ The spec set lives under `specs/` and is organized by lifecycle phase and number
 - `specs/03-ux-ui-design/03-Wireframe-Document.md`
 - `specs/03-ux-ui-design/04-UI-Design-Specification.md`
 - `specs/03-ux-ui-design/05-Interactive-Prototype.md`
+- `specs/04-solution-architecture/01-Solution-Architecture-Document.md`
 
 See [AGENTS.md](AGENTS.md) and [CLAUDE.md](.claude/CLAUDE.md) for the doc-creation rules that follow this layout.
 
@@ -70,19 +71,19 @@ See [AGENTS.md](AGENTS.md) and [CLAUDE.md](.claude/CLAUDE.md) for the doc-creati
 
 If you are getting up to speed on the project, start here:
 
-1. [00-Development-Lifecycle-Document-Checklist.md](specs/00-reference/00-Development-Lifecycle-Document-Checklist.md)
-2. [03-Business-Requirements-Document.md](specs/01-initiation-discovery/03-Business-Requirements-Document.md)
-3. [01-AS-IS-Analysis.md](specs/02-analysis/01-AS-IS-Analysis.md)
-4. [02-Future-State-Analysis.md](specs/02-analysis/02-Future-State-Analysis.md)
-5. [03-Functional-Requirements-Specification.md](specs/02-analysis/03-Functional-Requirements-Specification.md)
-6. [04-Non-Functional-Requirements-Document.md](specs/02-analysis/04-Non-Functional-Requirements-Document.md)
-7. [05-Use-Case-Specification.md](specs/02-analysis/05-Use-Case-Specification.md)
-8. [06-User-Story-Document.md](specs/02-analysis/06-User-Story-Document.md)
-9. [01-User-Flow-Diagram.md](specs/03-ux-ui-design/01-User-Flow-Diagram.md)
-10. [02-Information-Architecture-Document.md](specs/03-ux-ui-design/02-Information-Architecture-Document.md)
-11. [03-Wireframe-Document.md](specs/03-ux-ui-design/03-Wireframe-Document.md)
-12. [04-UI-Design-Specification.md](specs/03-ux-ui-design/04-UI-Design-Specification.md)
-13. [05-Interactive-Prototype.md](specs/03-ux-ui-design/05-Interactive-Prototype.md)
+1. [03-Business-Requirements-Document.md](specs/01-initiation-discovery/03-Business-Requirements-Document.md)
+2. [01-AS-IS-Analysis.md](specs/02-analysis/01-AS-IS-Analysis.md)
+3. [02-Future-State-Analysis.md](specs/02-analysis/02-Future-State-Analysis.md)
+4. [03-Functional-Requirements-Specification.md](specs/02-analysis/03-Functional-Requirements-Specification.md)
+5. [04-Non-Functional-Requirements-Document.md](specs/02-analysis/04-Non-Functional-Requirements-Document.md)
+6. [05-Use-Case-Specification.md](specs/02-analysis/05-Use-Case-Specification.md)
+7. [06-User-Story-Document.md](specs/02-analysis/06-User-Story-Document.md)
+8. [01-User-Flow-Diagram.md](specs/03-ux-ui-design/01-User-Flow-Diagram.md)
+9. [02-Information-Architecture-Document.md](specs/03-ux-ui-design/02-Information-Architecture-Document.md)
+10. [03-Wireframe-Document.md](specs/03-ux-ui-design/03-Wireframe-Document.md)
+11. [04-UI-Design-Specification.md](specs/03-ux-ui-design/04-UI-Design-Specification.md)
+12. [05-Interactive-Prototype.md](specs/03-ux-ui-design/05-Interactive-Prototype.md)
+13. [01-Solution-Architecture-Document.md](specs/04-solution-architecture/01-Solution-Architecture-Document.md)
 
 ## Current Status
 
