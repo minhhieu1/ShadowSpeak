@@ -61,6 +61,8 @@ The spec set lives under `specs/` and is organized by lifecycle phase and number
 - `specs/03-ux-ui-design/01-User-Flow-Diagram.md`
 - `specs/03-ux-ui-design/02-Information-Architecture-Document.md`
 - `specs/03-ux-ui-design/03-Wireframe-Document.md`
+- `specs/03-ux-ui-design/04-UI-Design-Specification.md`
+- `specs/03-ux-ui-design/05-Interactive-Prototype.md`
 
 See [AGENTS.md](AGENTS.md) and [CLAUDE.md](.claude/CLAUDE.md) for the doc-creation rules that follow this layout.
 
@@ -79,6 +81,8 @@ If you are getting up to speed on the project, start here:
 9. [01-User-Flow-Diagram.md](specs/03-ux-ui-design/01-User-Flow-Diagram.md)
 10. [02-Information-Architecture-Document.md](specs/03-ux-ui-design/02-Information-Architecture-Document.md)
 11. [03-Wireframe-Document.md](specs/03-ux-ui-design/03-Wireframe-Document.md)
+12. [04-UI-Design-Specification.md](specs/03-ux-ui-design/04-UI-Design-Specification.md)
+13. [05-Interactive-Prototype.md](specs/03-ux-ui-design/05-Interactive-Prototype.md)
 
 ## Current Status
 
