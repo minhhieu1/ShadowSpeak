@@ -44,6 +44,7 @@ The spec set lives under `specs/` and is organized by lifecycle phase and number
 - `specs/00-reference/` - reference material and checklists
 - `specs/01-initiation-discovery/` - phase 1 documents
 - `specs/02-analysis/` - phase 2 documents
+- `specs/03-ux-ui-design/` - phase 3 UX/UI design documents
 
 ### Current Documents
 
@@ -57,6 +58,11 @@ The spec set lives under `specs/` and is organized by lifecycle phase and number
 - `specs/02-analysis/04-Non-Functional-Requirements-Document.md`
 - `specs/02-analysis/05-Use-Case-Specification.md`
 - `specs/02-analysis/06-User-Story-Document.md`
+- `specs/03-ux-ui-design/01-User-Flow-Diagram.md`
+- `specs/03-ux-ui-design/02-Information-Architecture-Document.md`
+- `specs/03-ux-ui-design/03-Wireframe-Document.md`
+- `specs/03-ux-ui-design/04-UI-Design-Specification.md`
+- `specs/03-ux-ui-design/05-Interactive-Prototype.md`
 
 See [AGENTS.md](AGENTS.md) and [CLAUDE.md](.claude/CLAUDE.md) for the doc-creation rules that follow this layout.
 
@@ -72,6 +78,11 @@ If you are getting up to speed on the project, start here:
 6. [04-Non-Functional-Requirements-Document.md](specs/02-analysis/04-Non-Functional-Requirements-Document.md)
 7. [05-Use-Case-Specification.md](specs/02-analysis/05-Use-Case-Specification.md)
 8. [06-User-Story-Document.md](specs/02-analysis/06-User-Story-Document.md)
+9. [01-User-Flow-Diagram.md](specs/03-ux-ui-design/01-User-Flow-Diagram.md)
+10. [02-Information-Architecture-Document.md](specs/03-ux-ui-design/02-Information-Architecture-Document.md)
+11. [03-Wireframe-Document.md](specs/03-ux-ui-design/03-Wireframe-Document.md)
+12. [04-UI-Design-Specification.md](specs/03-ux-ui-design/04-UI-Design-Specification.md)
+13. [05-Interactive-Prototype.md](specs/03-ux-ui-design/05-Interactive-Prototype.md)
 
 ## Current Status
 
