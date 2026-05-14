@@ -65,6 +65,7 @@ The spec set lives under `specs/` and is organized by lifecycle phase and number
 - `specs/03-ux-ui-design/05-Interactive-Prototype.md`
 - `specs/04-solution-architecture/01-Solution-Architecture-Document.md`
 - `specs/04-solution-architecture/02-High-Level-Design-Document.md`
+- `specs/04-solution-architecture/03-Low-Level-Design-Document.md`
 
 See [AGENTS.md](AGENTS.md) and [CLAUDE.md](.claude/CLAUDE.md) for the doc-creation rules that follow this layout.
 
@@ -86,6 +87,7 @@ If you are getting up to speed on the project, start here:
 12. [05-Interactive-Prototype.md](specs/03-ux-ui-design/05-Interactive-Prototype.md)
 13. [01-Solution-Architecture-Document.md](specs/04-solution-architecture/01-Solution-Architecture-Document.md)
 14. [02-High-Level-Design-Document.md](specs/04-solution-architecture/02-High-Level-Design-Document.md)
+15. [03-Low-Level-Design-Document.md](specs/04-solution-architecture/03-Low-Level-Design-Document.md)
 
 ## Current Status
 
