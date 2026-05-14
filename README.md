@@ -46,6 +46,7 @@ The spec set lives under `specs/` and is organized by lifecycle phase and number
 - `specs/02-analysis/` - phase 2 documents
 - `specs/03-ux-ui-design/` - phase 3 UX/UI design documents
 - `specs/04-solution-architecture/` - phase 4 solution architecture documents
+- `specs/05-planning/` - phase 5 planning documents
 
 ### Current Documents
 
@@ -66,6 +67,7 @@ The spec set lives under `specs/` and is organized by lifecycle phase and number
 - `specs/04-solution-architecture/01-Solution-Architecture-Document.md`
 - `specs/04-solution-architecture/02-High-Level-Design-Document.md`
 - `specs/04-solution-architecture/03-Low-Level-Design-Document.md`
+- `specs/05-planning/01-Effort-Estimation-Document.md`
 
 See [AGENTS.md](AGENTS.md) and [CLAUDE.md](.claude/CLAUDE.md) for the doc-creation rules that follow this layout.
 
@@ -88,6 +90,7 @@ If you are getting up to speed on the project, start here:
 13. [01-Solution-Architecture-Document.md](specs/04-solution-architecture/01-Solution-Architecture-Document.md)
 14. [02-High-Level-Design-Document.md](specs/04-solution-architecture/02-High-Level-Design-Document.md)
 15. [03-Low-Level-Design-Document.md](specs/04-solution-architecture/03-Low-Level-Design-Document.md)
+16. [01-Effort-Estimation-Document.md](specs/05-planning/01-Effort-Estimation-Document.md)
 
 ## Current Status
 

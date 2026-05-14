@@ -2,14 +2,14 @@
 
 ## Document Metadata
 
-| Field | Value |
-|-------|-------|
-| Project | ShadowSpeak |
+| Field         | Value                             |
+| ------------- | --------------------------------- |
+| Project       | ShadowSpeak                       |
 | Document Type | Information Architecture Document |
-| Date | 2026-05-13 |
-| Status | Draft |
-| Version | 1.0 |
-| Owner | UX Design |
+| Date          | 2026-05-13                        |
+| Status        | Draft                             |
+| Version       | 1.1                               |
+| Owner         | UX Design                         |
 
 ## Source Basis
 
@@ -59,54 +59,55 @@ The current source set supports browse, filter, recommendation, and download flo
 
 ### 1. Entry, Compliance, and Onboarding
 
-| Screen | Description | Primary Function |
-|--------|-------------|------------------|
-| App Launch | Startup state while the app resolves age, consent, and session state. | Route to onboarding or home |
-| Age Gate | Self-attested age confirmation when no store signal is available. | Enforce minimum age |
-| Age Policy Block | Blocking screen for underage users or failed eligibility. | Stop access and offer support path |
-| Privacy and Ad Consent | Consent capture for privacy and ad targeting choices. | Record legal and monetization consent |
-| Sign In | Email/social authentication entry. | Authenticate learner |
-| Level Selection | Choose proficiency level. | Seed recommendation and practice difficulty |
-| Reminder Setup | Choose reminder preference during onboarding. | Schedule local reminder |
-| Permission Prompts | Microphone and notification permission handling. | Restore access to practice and reminders |
+| Screen                 | Description                                                           | Primary Function                            |
+| ---------------------- | --------------------------------------------------------------------- | ------------------------------------------- |
+| App Launch             | Startup state while the app resolves age, consent, and session state. | Route to onboarding or home                 |
+| Age Gate               | Self-attested age confirmation when no store signal is available.     | Enforce minimum age                         |
+| Age Policy Block       | Blocking screen for underage users or failed eligibility.             | Stop access and offer support path          |
+| Privacy and Ad Consent | Consent capture for privacy and ad targeting choices.                 | Record legal and monetization consent       |
+| Sign In                | Email/social authentication entry.                                    | Authenticate learner                        |
+| Sign Up                | New account creation with email/password and validation.              | Create new learner account                  |
+| Level Selection        | Choose proficiency level.                                             | Seed recommendation and practice difficulty |
+| Reminder Setup         | Choose reminder preference during onboarding.                         | Schedule local reminder                     |
+| Permission Prompts     | Microphone and notification permission handling.                      | Restore access to practice and reminders    |
 
 ### 2. Core Daily Practice
 
-| Screen | Description | Primary Function |
-|--------|-------------|------------------|
+| Screen                | Description                                                             | Primary Function                           |
+| --------------------- | ----------------------------------------------------------------------- | ------------------------------------------ |
 | Home / Daily Practice | Primary landing screen with recommendation, streak, and current action. | Orient the learner and drive the next step |
-| Lesson Catalog | Lesson discovery surface with filters and recommended content. | Browse and filter lessons |
-| Lesson Detail | Detail view for a selected lesson. | Review metadata and start or download |
-| Practice Session | Active audio-first practice state. | Play reference audio and capture recording |
-| Recording Comparison | Post-session playback and manual self-comparison. | Review recording against reference audio |
-| Progress View | History, streak, and completion summary. | Show retention and progress status |
+| Lesson Catalog        | Lesson discovery surface with filters and recommended content.          | Browse and filter lessons                  |
+| Lesson Detail         | Detail view for a selected lesson.                                      | Review metadata and start or download      |
+| Practice Session      | Active audio-first practice state.                                      | Play reference audio and capture recording |
+| Recording Comparison  | Post-session playback and manual self-comparison.                       | Review recording against reference audio   |
+| Progress View         | History, streak, and completion summary.                                | Show retention and progress status         |
 
 ### 3. Offline and Return Paths
 
-| Screen | Description | Primary Function |
-|--------|-------------|------------------|
-| Downloaded Lessons / Offline Library | Library of locally stored lessons. | Access downloaded content offline |
-| Offline Practice Session | Practice mode when a downloaded lesson is opened offline. | Continue practice without network |
-| Local Reminder Notification | OS-delivered reminder entry point that deep-links into the app. | Return learner to daily practice |
+| Screen                               | Description                                                     | Primary Function                  |
+| ------------------------------------ | --------------------------------------------------------------- | --------------------------------- |
+| Downloaded Lessons / Offline Library | Library of locally stored lessons.                              | Access downloaded content offline |
+| Offline Practice Session             | Practice mode when a downloaded lesson is opened offline.       | Continue practice without network |
+| Local Reminder Notification          | OS-delivered reminder entry point that deep-links into the app. | Return learner to daily practice  |
 
 ### 4. Settings and Control
 
-| Screen | Description | Primary Function |
-|--------|-------------|------------------|
-| Settings | Primary control center for preferences and account actions. | Manage app configuration |
-| Reminder Settings | Reminder-specific preference management. | Edit local schedule |
-| Consent Settings | Privacy and ad consent management. | Review or change stored consent |
-| Playback Settings | Audio playback speed and related controls. | Tune listening experience |
-| Account Management | Sign-out, account deletion, and profile-related account actions. | Manage account lifecycle |
-| Profile Settings | Learner profile and preference fields. | Update user profile data |
-| Recording Library | Saved recordings and deletion actions. | Manage local and synced recordings |
+| Screen             | Description                                                      | Primary Function                   |
+| ------------------ | ---------------------------------------------------------------- | ---------------------------------- |
+| Settings           | Primary control center for preferences and account actions.      | Manage app configuration           |
+| Reminder Settings  | Reminder-specific preference management.                         | Edit local schedule                |
+| Consent Settings   | Privacy and ad consent management.                               | Review or change stored consent    |
+| Playback Settings  | Audio playback speed and related controls.                       | Tune listening experience          |
+| Account Management | Sign-out, account deletion, and profile-related account actions. | Manage account lifecycle           |
+| Profile Settings   | Learner profile and preference fields.                           | Update user profile data           |
+| Recording Library  | Saved recordings and deletion actions.                           | Manage local and synced recordings |
 
 ### 5. Recovery and Support
 
-| Screen | Description | Primary Function |
-|--------|-------------|------------------|
+| Screen                 | Description                                                              | Primary Function                  |
+| ---------------------- | ------------------------------------------------------------------------ | --------------------------------- |
 | Retryable Error States | Contextual error surfaces for audio, auth, storage, or network failures. | Preserve state and offer recovery |
-| Exit / Support Path | Final blocked path for underage or non-recoverable onboarding outcomes. | Exit or direct to support |
+| Exit / Support Path    | Final blocked path for underage or non-recoverable onboarding outcomes.  | Exit or direct to support         |
 
 ## Navigation Architecture
 
@@ -145,19 +146,19 @@ The current source set supports browse, filter, recommendation, and download flo
 
 ## Content Inventory
 
-| Content Type | Core Attributes | Relationships |
-|--------------|-----------------|---------------|
-| Lesson | lesson ID, title, level, topic, duration, description, script, audio URL, download eligibility, availability status | Belongs to catalog, may be downloaded, can generate practice sessions |
-| Lesson Metadata | level, topic, duration, difficulty, recommendation rank, availability | Attached to lesson and used in catalog and home recommendation |
-| Lesson Asset Package | reference audio, script, cover image, checksum, version, file size | Stored locally when downloaded; tied to a lesson |
-| Practice Session | session ID, lesson ID, start time, end time, duration, completion state, interruption state | Produces recording, progress metrics, and comparison entry |
-| Recording | recording ID, session ID, local file path, sync status, retention status | Attached to a practice session and accessible in recordings / comparison |
-| Progress Record | streak, practice minutes, completion count, recent sessions, sync queue state | Derived from completed sessions and shown in Progress View |
-| Reminder Preference | reminder enabled flag, time of day, permission state, last scheduled time | Drives local notification schedule |
-| Consent Record | age status, privacy consent, ad consent, consent timestamp, source | Required for onboarding and ad eligibility |
-| User Profile | display name, email, level, preferences, account status | Used in onboarding, settings, and home personalization |
-| Download Record | lesson ID, download state, local storage path, checksum status, last verified time | Powers offline library and offline practice access |
-| Error Record | error type, context, retryability, timestamp | Used by recovery screens and support flows |
+| Content Type         | Core Attributes                                                                                                     | Relationships                                                            |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Lesson               | lesson ID, title, level, topic, duration, description, script, audio URL, download eligibility, availability status | Belongs to catalog, may be downloaded, can generate practice sessions    |
+| Lesson Metadata      | level, topic, duration, difficulty, recommendation rank, availability                                               | Attached to lesson and used in catalog and home recommendation           |
+| Lesson Asset Package | reference audio, script, cover image, checksum, version, file size                                                  | Stored locally when downloaded; tied to a lesson                         |
+| Practice Session     | session ID, lesson ID, start time, end time, duration, completion state, interruption state                         | Produces recording, progress metrics, and comparison entry               |
+| Recording            | recording ID, session ID, local file path, sync status, retention status                                            | Attached to a practice session and accessible in recordings / comparison |
+| Progress Record      | streak, practice minutes, completion count, recent sessions, sync queue state                                       | Derived from completed sessions and shown in Progress View               |
+| Reminder Preference  | reminder enabled flag, time of day, permission state, last scheduled time                                           | Drives local notification schedule                                       |
+| Consent Record       | age status, privacy consent, ad consent, consent timestamp, source                                                  | Required for onboarding and ad eligibility                               |
+| User Profile         | display name, email, level, preferences, account status                                                             | Used in onboarding, settings, and home personalization                   |
+| Download Record      | lesson ID, download state, local storage path, checksum status, last verified time                                  | Powers offline library and offline practice access                       |
+| Error Record         | error type, context, retryability, timestamp                                                                        | Used by recovery screens and support flows                               |
 
 ### Content Relationships
 
@@ -337,23 +338,23 @@ flowchart TD
 
 ## Traceability
 
-| Screen / Area | Related Use Cases | Related Functional Requirements |
-|---------------|-------------------|----------------------------------|
-| App Launch, Age Gate, Consent, Sign In | UC-01, UC-11 | FR-1, FR-8, FR-9 |
-| Home / Daily Practice | UC-05, UC-08 | FR-5, FR-8 |
-| Lesson Catalog | UC-02 | FR-2, FR-7 |
-| Lesson Detail | UC-02, UC-03 | FR-2, FR-3 |
-| Practice Session | UC-03 | FR-3, FR-5 |
-| Recording Comparison | UC-04, UC-03 | FR-4 |
-| Progress View | UC-05, UC-08 | FR-5, FR-8 |
-| Downloads / Offline Library | UC-06, UC-02 | FR-7 |
-| Reminder Settings | UC-07 | FR-8 |
-| Consent Settings | UC-11 | FR-9, FR-6 |
-| Playback Settings | UC-10 | FR-8 |
-| Account Management | UC-10 | FR-8 |
-| Profile Settings | UC-10 | FR-8 |
-| Recording Library | UC-10 | FR-4, FR-8 |
-| Error and Recovery States | UC-03, UC-06, UC-08, UC-10, UC-11 | FR-1, FR-3, FR-4, FR-5, FR-7, FR-8, FR-9 |
+| Screen / Area                                   | Related Use Cases                 | Related Functional Requirements          |
+| ----------------------------------------------- | --------------------------------- | ---------------------------------------- |
+| App Launch, Age Gate, Consent, Sign In, Sign Up | UC-01, UC-11                      | FR-1, FR-8, FR-9                         |
+| Home / Daily Practice                           | UC-05, UC-08                      | FR-5, FR-8                               |
+| Lesson Catalog                                  | UC-02                             | FR-2, FR-7                               |
+| Lesson Detail                                   | UC-02, UC-03                      | FR-2, FR-3                               |
+| Practice Session                                | UC-03                             | FR-3, FR-5                               |
+| Recording Comparison                            | UC-04, UC-03                      | FR-4                                     |
+| Progress View                                   | UC-05, UC-08                      | FR-5, FR-8                               |
+| Downloads / Offline Library                     | UC-06, UC-02                      | FR-7                                     |
+| Reminder Settings                               | UC-07                             | FR-8                                     |
+| Consent Settings                                | UC-11                             | FR-9, FR-6                               |
+| Playback Settings                               | UC-10                             | FR-8                                     |
+| Account Management                              | UC-10                             | FR-8                                     |
+| Profile Settings                                | UC-10                             | FR-8                                     |
+| Recording Library                               | UC-10                             | FR-4, FR-8                               |
+| Error and Recovery States                       | UC-03, UC-06, UC-08, UC-10, UC-11 | FR-1, FR-3, FR-4, FR-5, FR-7, FR-8, FR-9 |
 
 ## Design Notes
 
@@ -362,4 +363,3 @@ flowchart TD
 - Lessons and downloads should feel like two views of the same content system, not separate products.
 - Settings should be easy to reach but never visually dominant over the practice loop.
 - Recovery states should preserve local progress and context whenever possible.
-

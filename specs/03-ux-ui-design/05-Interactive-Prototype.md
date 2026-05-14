@@ -2,14 +2,14 @@
 
 ## Document Metadata
 
-| Field | Value |
-|-------|-------|
-| Project | ShadowSpeak |
+| Field         | Value                          |
+| ------------- | ------------------------------ |
+| Project       | ShadowSpeak                    |
 | Document Type | Interactive Prototype Document |
-| Date | 2026-05-13 |
-| Status | Draft |
-| Version | 1.1 |
-| Owner | UX Design |
+| Date          | 2026-05-13                     |
+| Status        | Draft                          |
+| Version       | 1.2                            |
+| Owner         | UX Design                      |
 
 ## Source Basis
 
@@ -40,18 +40,18 @@ The prototype should demonstrate the complete MVP interaction model for ShadowSp
 
 ### Recommended Tooling
 
-| Tool | Use |
-|------|-----|
-| Figma | Primary clickable prototype authoring and review |
-| ProtoPie | Optional for audio-state and gesture-rich simulation |
-| Maze / Useberry | Optional for lightweight prototype testing |
+| Tool            | Use                                                  |
+| --------------- | ---------------------------------------------------- |
+| Figma           | Primary clickable prototype authoring and review     |
+| ProtoPie        | Optional for audio-state and gesture-rich simulation |
+| Maze / Useberry | Optional for lightweight prototype testing           |
 
 ### Frame Sizes
 
-| Platform | Frame Size | Notes |
-|----------|------------|-------|
-| iOS | 375 x 812 | Reference iPhone-sized frame with safe areas |
-| Android | 360 x 800 | Reference Pixel-sized frame with Android bottom nav conventions |
+| Platform | Frame Size | Notes                                                           |
+| -------- | ---------- | --------------------------------------------------------------- |
+| iOS      | 375 x 812  | Reference iPhone-sized frame with safe areas                    |
+| Android  | 360 x 800  | Reference Pixel-sized frame with Android bottom nav conventions |
 
 ### Prototype Presentation Rules
 
@@ -82,6 +82,8 @@ flowchart TD
     AgeGate --> Consent[Privacy and Ad Consent]
     Consent --> SignIn[Sign In]
     SignIn --> Level[Level Selection]
+    SignIn --> SignUp[Sign Up]
+    SignUp --> Level[Level Selection]
     Level --> Reminder[Reminder Setup]
     Reminder --> Perms[Permission Prompts]
     Perms --> Home[Home / Daily Practice]
@@ -127,24 +129,24 @@ flowchart TD
 
 ### Gesture and Navigation Conventions
 
-| Interaction | Standard |
-|-------------|----------|
-| Tap | Primary action on cards, buttons, tabs, and controls |
-| Long-press | Context actions only in recordings or lesson lists if needed |
-| Swipe back | iOS stacked screens only; Android uses system back |
+| Interaction     | Standard                                                             |
+| --------------- | -------------------------------------------------------------------- |
+| Tap             | Primary action on cards, buttons, tabs, and controls                 |
+| Long-press      | Context actions only in recordings or lesson lists if needed         |
+| Swipe back      | iOS stacked screens only; Android uses system back                   |
 | Pull-to-refresh | Home, Lesson Catalog, Progress, and Downloads where data can refresh |
-| Drag | Optional for sliders or scrubbers in playback |
+| Drag            | Optional for sliders or scrubbers in playback                        |
 
 ### Timing and Easing Standards
 
-| Transition Type | Duration | Easing | Use |
-|----------------|----------|--------|-----|
-| Button press feedback | 120-200 ms | Spring / ease-out | Tap feedback on active controls |
-| Card selection | 180-220 ms | Ease-out | Catalog and home card activation |
-| Screen push | 280-320 ms | Ease-in-out | Navigation between stacked screens |
-| Modal / bottom sheet | 320-400 ms | Ease-in-out | Permissions, ad overlays, confirmations |
-| Cross-dissolve | 200-240 ms | Ease-in-out | State changes within the same screen |
-| Progress updates | 250-300 ms | Linear or ease-out | Streak, downloads, completion progress |
+| Transition Type       | Duration   | Easing             | Use                                     |
+| --------------------- | ---------- | ------------------ | --------------------------------------- |
+| Button press feedback | 120-200 ms | Spring / ease-out  | Tap feedback on active controls         |
+| Card selection        | 180-220 ms | Ease-out           | Catalog and home card activation        |
+| Screen push           | 280-320 ms | Ease-in-out        | Navigation between stacked screens      |
+| Modal / bottom sheet  | 320-400 ms | Ease-in-out        | Permissions, ad overlays, confirmations |
+| Cross-dissolve        | 200-240 ms | Ease-in-out        | State changes within the same screen    |
+| Progress updates      | 250-300 ms | Linear or ease-out | Streak, downloads, completion progress  |
 
 ### Audio Interaction Standards
 
@@ -169,17 +171,17 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Retry button | Retries startup | None | None | None |
+| Element      | Tap             | Long-press | Swipe | Drag |
+| ------------ | --------------- | ---------- | ----- | ---- |
+| Retry button | Retries startup | None       | None  | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Launch loading | Home | Startup resolves successfully | Cross-dissolve | 200 ms | ease-in-out | No |
-| Launch loading | Onboarding / Age Gate | First launch requires setup | Cross-dissolve | 200 ms | ease-in-out | No |
-| Launch loading | Retryable Error | Startup failure | Fade in error state | 220 ms | ease-out | Yes |
+| From           | To                    | Trigger                       | Transition          | Duration | Easing      | Overlay |
+| -------------- | --------------------- | ----------------------------- | ------------------- | -------- | ----------- | ------- |
+| Launch loading | Home                  | Startup resolves successfully | Cross-dissolve      | 200 ms   | ease-in-out | No      |
+| Launch loading | Onboarding / Age Gate | First launch requires setup   | Cross-dissolve      | 200 ms   | ease-in-out | No      |
+| Launch loading | Retryable Error       | Startup failure               | Fade in error state | 220 ms   | ease-out    | Yes     |
 
 Navigation connections:
 
@@ -214,18 +216,18 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Age input / affirmation | Selects or fills value | None | None | None |
-| Continue | Validates and advances | None | None | None |
-| Exit / Support | Leaves flow | None | None | None |
+| Element                 | Tap                    | Long-press | Swipe | Drag |
+| ----------------------- | ---------------------- | ---------- | ----- | ---- |
+| Age input / affirmation | Selects or fills value | None       | None  | None |
+| Continue                | Validates and advances | None       | None  | None |
+| Exit / Support          | Leaves flow            | None       | None  | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Age Gate | Privacy and Ad Consent | Valid age entered | Push | 300 ms | ease-in-out | No |
-| Age Gate | Age Policy Block | Underage / invalid age | Fade to block state | 240 ms | ease-out | No |
+| From     | To                     | Trigger                | Transition          | Duration | Easing      | Overlay |
+| -------- | ---------------------- | ---------------------- | ------------------- | -------- | ----------- | ------- |
+| Age Gate | Privacy and Ad Consent | Valid age entered      | Push                | 300 ms   | ease-in-out | No      |
+| Age Gate | Age Policy Block       | Underage / invalid age | Fade to block state | 240 ms   | ease-out    | No      |
 
 Navigation connections:
 
@@ -260,16 +262,16 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Exit | Ends flow | None | None | None |
-| Support | Opens support path | None | None | None |
+| Element | Tap                | Long-press | Swipe | Drag |
+| ------- | ------------------ | ---------- | ----- | ---- |
+| Exit    | Ends flow          | None       | None  | None |
+| Support | Opens support path | None       | None  | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Age Policy Block | Exit / Support Path | User taps exit/support | Instant or fade out | 150-200 ms | ease-out | No |
+| From             | To                  | Trigger                | Transition          | Duration   | Easing   | Overlay |
+| ---------------- | ------------------- | ---------------------- | ------------------- | ---------- | -------- | ------- |
+| Age Policy Block | Exit / Support Path | User taps exit/support | Instant or fade out | 150-200 ms | ease-out | No      |
 
 Navigation connections:
 
@@ -302,19 +304,19 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Privacy checkbox / toggle | Selects state | None | None | None |
-| Ad preference control | Selects state | None | None | None |
-| Accept and Continue | Validates consent and advances | None | None | None |
-| Decline and Exit | Leaves flow | None | None | None |
+| Element                   | Tap                            | Long-press | Swipe | Drag |
+| ------------------------- | ------------------------------ | ---------- | ----- | ---- |
+| Privacy checkbox / toggle | Selects state                  | None       | None  | None |
+| Ad preference control     | Selects state                  | None       | None  | None |
+| Accept and Continue       | Validates consent and advances | None       | None  | None |
+| Decline and Exit          | Leaves flow                    | None       | None  | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Consent | Sign In | Accepted | Push | 300 ms | ease-in-out | No |
-| Consent | Blocked / Exit | Declined required consent | Fade out / route to exit | 200 ms | ease-out | No |
+| From    | To             | Trigger                   | Transition               | Duration | Easing      | Overlay |
+| ------- | -------------- | ------------------------- | ------------------------ | -------- | ----------- | ------- |
+| Consent | Sign In        | Accepted                  | Push                     | 300 ms   | ease-in-out | No      |
+| Consent | Blocked / Exit | Declined required consent | Fade out / route to exit | 200 ms   | ease-out    | No      |
 
 Navigation connections:
 
@@ -349,23 +351,24 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Email / password fields | Focus and edit | None | None | None |
-| Social buttons | Opens auth flow | None | None | None |
-| Sign In | Submits form | None | None | None |
+| Element                 | Tap             | Long-press | Swipe | Drag |
+| ----------------------- | --------------- | ---------- | ----- | ---- |
+| Email / password fields | Focus and edit  | None       | None  | None |
+| Social buttons          | Opens auth flow | None       | None  | None |
+| Sign In                 | Submits form    | None       | None  | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Sign In | Level Selection | Auth success | Push | 300 ms | ease-in-out | No |
-| Sign In | Sign In error | Auth failure | In-place error | 200 ms | ease-out | No |
-| Sign In | Loading | Submit | Spinner / disabled controls | 0-100 ms | linear | No |
+| From    | To              | Trigger      | Transition                  | Duration | Easing      | Overlay |
+| ------- | --------------- | ------------ | --------------------------- | -------- | ----------- | ------- |
+| Sign In | Level Selection | Auth success | Push                        | 300 ms   | ease-in-out | No      |
+| Sign In | Sign In error   | Auth failure | In-place error              | 200 ms   | ease-out    | No      |
+| Sign In | Loading         | Submit       | Spinner / disabled controls | 0-100 ms | linear      | No      |
 
 Navigation connections:
 
 - Back returns to Privacy and Ad Consent.
+- "Create account" navigates to Sign Up.
 
 Gesture map:
 
@@ -384,27 +387,79 @@ Platform notes:
 
 - Preserve platform-native keyboard behavior.
 
-#### 1.6 Level Selection
+#### 1.6 Sign Up
+
+Purpose: Create a new account with email/password validation.
+
+Visual reference:
+
+- Wireframe: [1.6 Sign Up](03-Wireframe-Document.md#16-sign-up)
+- UI spec: [1.6 Sign Up](04-UI-Design-Specification.md#16-sign-up)
+
+Component interactions:
+
+| Element                | Tap                              | Long-press | Swipe | Drag |
+| ---------------------- | -------------------------------- | ---------- | ----- | ---- |
+| Email field            | Focus and edit                   | None       | None  | None |
+| Password field         | Focus and edit, show/hide toggle | None       | None  | None |
+| Confirm password field | Focus and edit, show/hide toggle | None       | None  | None |
+| Terms link             | Opens external browser           | None       | None  | None |
+| Create Account         | Submits form                     | None       | None  | None |
+
+State transitions:
+
+| From    | To              | Trigger                       | Transition                  | Duration | Easing      | Overlay |
+| ------- | --------------- | ----------------------------- | --------------------------- | -------- | ----------- | ------- |
+| Sign Up | Level Selection | Registration success          | Push                        | 300 ms   | ease-in-out | No      |
+| Sign Up | Sign Up error   | Validation or network failure | In-place error              | 200 ms   | ease-out    | No      |
+| Sign Up | Loading         | Submit                        | Spinner / disabled controls | 0-100 ms | linear      | No      |
+
+Navigation connections:
+
+- Back returns to Sign In.
+- "Already have account? Sign In" returns to Sign In.
+
+Gesture map:
+
+- No gesture navigation; keyboard and tap interactions only.
+
+Audio interaction patterns:
+
+- None.
+
+Micro-interactions:
+
+- Password strength indicator updates in real-time as user types.
+- Confirm password field shows match/mismatch feedback on blur.
+- Button disables during registration request.
+- Error highlights the relevant field group subtly.
+
+Platform notes:
+
+- Preserve platform-native keyboard behavior with "Next" and "Done" keyboard return keys.
+- Password auto-fill should be supported on both platforms.
+
+#### 1.7 Level Selection
 
 Purpose: Capture proficiency level.
 
 Visual reference:
 
-- Wireframe: [1.6 Level Selection](03-Wireframe-Document.md#16-level-selection)
-- UI spec: [1.6 Level Selection](04-UI-Design-Specification.md#16-level-selection)
+- Wireframe: [1.7 Level Selection](03-Wireframe-Document.md#17-level-selection)
+- UI spec: [1.7 Level Selection](04-UI-Design-Specification.md#17-level-selection)
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Level cards | Select level | None | None | None |
-| Continue | Advances | None | None | None |
+| Element     | Tap          | Long-press | Swipe | Drag |
+| ----------- | ------------ | ---------- | ----- | ---- |
+| Level cards | Select level | None       | None  | None |
+| Continue    | Advances     | None       | None  | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Level Selection | Reminder Setup | Continue | Push | 300 ms | ease-in-out | No |
+| From            | To             | Trigger  | Transition | Duration | Easing      | Overlay |
+| --------------- | -------------- | -------- | ---------- | -------- | ----------- | ------- |
+| Level Selection | Reminder Setup | Continue | Push       | 300 ms   | ease-in-out | No      |
 
 Navigation connections:
 
@@ -426,29 +481,29 @@ Platform notes:
 
 - Keep the selection affordance obvious for both platforms.
 
-#### 1.7 Reminder Setup
+#### 1.8 Reminder Setup
 
 Purpose: Set reminder time.
 
 Visual reference:
 
-- Wireframe: [1.7 Reminder Setup](03-Wireframe-Document.md#17-reminder-setup)
-- UI spec: [1.7 Reminder Setup](04-UI-Design-Specification.md#17-reminder-setup)
+- Wireframe: [1.8 Reminder Setup](03-Wireframe-Document.md#18-reminder-setup)
+- UI spec: [1.8 Reminder Setup](04-UI-Design-Specification.md#18-reminder-setup)
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Toggle | Enable/disable reminders | None | None | None |
-| Time picker | Select time | None | Scroll wheel / drag where native | Drag in picker |
-| Continue | Advances | None | None | None |
-| Skip reminders | Advances without schedule | None | None | None |
+| Element        | Tap                       | Long-press | Swipe                            | Drag           |
+| -------------- | ------------------------- | ---------- | -------------------------------- | -------------- |
+| Toggle         | Enable/disable reminders  | None       | None                             | None           |
+| Time picker    | Select time               | None       | Scroll wheel / drag where native | Drag in picker |
+| Continue       | Advances                  | None       | None                             | None           |
+| Skip reminders | Advances without schedule | None       | None                             | None           |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Reminder Setup | Permission Prompts | Continue | Push | 300 ms | ease-in-out | No |
+| From           | To                 | Trigger  | Transition | Duration | Easing      | Overlay |
+| -------------- | ------------------ | -------- | ---------- | -------- | ----------- | ------- |
+| Reminder Setup | Permission Prompts | Continue | Push       | 300 ms   | ease-in-out | No      |
 
 Navigation connections:
 
@@ -470,30 +525,30 @@ Platform notes:
 
 - iOS may use a wheel picker; Android may use a time dialog or bottom sheet.
 
-#### 1.8 Permission Prompts
+#### 1.9 Permission Prompts
 
 Purpose: Handle notification and microphone permissions.
 
 Visual reference:
 
-- Wireframe: [1.8 Permission Prompts](03-Wireframe-Document.md#18-permission-prompts)
-- UI spec: [1.8 Permission Prompts](04-UI-Design-Specification.md#18-permission-prompts)
+- Wireframe: [1.9 Permission Prompts](03-Wireframe-Document.md#19-permission-prompts)
+- UI spec: [1.9 Permission Prompts](04-UI-Design-Specification.md#19-permission-prompts)
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Notification card | Opens system prompt | None | None | None |
-| Microphone card | Opens system prompt | None | None | None |
-| Continue | Advances based on current permission state | None | None | None |
-| Open Settings | Opens OS settings | None | None | None |
+| Element           | Tap                                        | Long-press | Swipe | Drag |
+| ----------------- | ------------------------------------------ | ---------- | ----- | ---- |
+| Notification card | Opens system prompt                        | None       | None  | None |
+| Microphone card   | Opens system prompt                        | None       | None  | None |
+| Continue          | Advances based on current permission state | None       | None  | None |
+| Open Settings     | Opens OS settings                          | None       | None  | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Permission Prompts | Home | Granted / accepted | Push | 300 ms | ease-in-out | No |
-| Permission Prompts | Home | Denied but recoverable | Push | 300 ms | ease-in-out | No |
+| From               | To   | Trigger                | Transition | Duration | Easing      | Overlay |
+| ------------------ | ---- | ---------------------- | ---------- | -------- | ----------- | ------- |
+| Permission Prompts | Home | Granted / accepted     | Push       | 300 ms   | ease-in-out | No      |
+| Permission Prompts | Home | Denied but recoverable | Push       | 300 ms   | ease-in-out | No      |
 
 Navigation connections:
 
@@ -528,21 +583,20 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Recommendation card | Opens lesson or resume flow | Context options if needed | None | None |
-| Streak card | Opens Progress | None | None | None |
-| Resume card | Reopens practice or comparison | None | None | None |
-| Shortcut row | Navigates to corresponding tabs | None | Horizontal scroll if needed | None |
-| Bottom tabs | Switches sections | None | None | None |
+| Element             | Tap                             | Long-press                | Swipe                       | Drag |
+| ------------------- | ------------------------------- | ------------------------- | --------------------------- | ---- |
+| Recommendation card | Opens lesson or resume flow     | Context options if needed | None                        | None |
+| Streak card         | Opens Progress                  | None                      | None                        | None |
+| Resume card         | Reopens practice or comparison  | None                      | None                        | None |
+| Bottom tabs         | Switches sections               | None                      | None                        | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Home | Lesson Detail | Tap recommendation | Push | 300 ms | ease-in-out | No |
-| Home | Progress | Tap streak | Push | 300 ms | ease-in-out | No |
-| Home | Settings / Downloads / Lessons | Tap shortcut or tab | Tab switch or push | 200-300 ms | ease-in-out | No |
+| From | To                             | Trigger             | Transition         | Duration   | Easing      | Overlay |
+| ---- | ------------------------------ | ------------------- | ------------------ | ---------- | ----------- | ------- |
+| Home | Lesson Detail                  | Tap recommendation  | Push               | 300 ms     | ease-in-out | No      |
+| Home | Progress                       | Tap streak          | Push               | 300 ms     | ease-in-out | No      |
+| Home | Settings / Downloads / Lessons | Tap bottom tab      | Tab switch         | 200-300 ms | ease-in-out | No      |
 
 Navigation connections:
 
@@ -578,18 +632,18 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Filter chips | Toggle filter states | None | Horizontal swipe to reveal overflow | None |
-| Lesson card | Opens Lesson Detail | Optional context menu | None | None |
-| Bottom tabs | Switch sections | None | None | None |
+| Element      | Tap                  | Long-press            | Swipe                               | Drag |
+| ------------ | -------------------- | --------------------- | ----------------------------------- | ---- |
+| Filter chips | Toggle filter states | None                  | Horizontal swipe to reveal overflow | None |
+| Lesson card  | Opens Lesson Detail  | Optional context menu | None                                | None |
+| Bottom tabs  | Switch sections      | None                  | None                                | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Catalog | Lesson Detail | Tap lesson card | Push | 300 ms | ease-in-out | No |
-| Catalog | Empty state | Filters eliminate results | In-place cross-dissolve | 200 ms | ease-in-out | No |
+| From    | To            | Trigger                   | Transition              | Duration | Easing      | Overlay |
+| ------- | ------------- | ------------------------- | ----------------------- | -------- | ----------- | ------- |
+| Catalog | Lesson Detail | Tap lesson card           | Push                    | 300 ms   | ease-in-out | No      |
+| Catalog | Empty state   | Filters eliminate results | In-place cross-dissolve | 200 ms   | ease-in-out | No      |
 
 Navigation connections:
 
@@ -622,19 +676,19 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Start practice | Opens Practice Session | None | None | None |
-| Download lesson | Starts download flow | None | None | None |
-| Back to catalog | Returns to catalog | None | None | None |
+| Element         | Tap                    | Long-press | Swipe | Drag |
+| --------------- | ---------------------- | ---------- | ----- | ---- |
+| Start practice  | Opens Practice Session | None       | None  | None |
+| Download lesson | Starts download flow   | None       | None  | None |
+| Back to catalog | Returns to catalog     | None       | None  | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Detail | Practice Session | Start practice | Push | 300 ms | ease-in-out | No |
-| Detail | Downloads | Download complete | Push or return via status | 300 ms | ease-in-out | No |
-| Detail | Error | Asset failure | In-place error | 200 ms | ease-out | No |
+| From   | To               | Trigger           | Transition                | Duration | Easing      | Overlay |
+| ------ | ---------------- | ----------------- | ------------------------- | -------- | ----------- | ------- |
+| Detail | Practice Session | Start practice    | Push                      | 300 ms   | ease-in-out | No      |
+| Detail | Downloads        | Download complete | Push or return via status | 300 ms   | ease-in-out | No      |
+| Detail | Error            | Asset failure     | In-place error            | 200 ms   | ease-out    | No      |
 
 Navigation connections:
 
@@ -667,21 +721,21 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Play / pause / resume | Toggles playback | None | None | None |
-| Repeat | Replays current segment or lesson | None | None | Optional scrub if supported |
-| Finish | Ends session and opens comparison | None | None | None |
-| Timer/progress | Opens optional detail state | None | Scrub if allowed by prototype scope | Drag if progress scrubber exists |
+| Element               | Tap                               | Long-press | Swipe                               | Drag                             |
+| --------------------- | --------------------------------- | ---------- | ----------------------------------- | -------------------------------- |
+| Play / pause / resume | Toggles playback                  | None       | None                                | None                             |
+| Repeat                | Replays current segment or lesson | None       | None                                | Optional scrub if supported      |
+| Finish                | Ends session and opens comparison | None       | None                                | None                             |
+| Timer/progress        | Opens optional detail state       | None       | Scrub if allowed by prototype scope | Drag if progress scrubber exists |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Practice | Recording | Start recording | Control state change | 100 ms | ease-out | No |
-| Practice | Comparison | Finish after completion threshold | Push | 300 ms | ease-in-out | No |
-| Practice | Error | Load failure | In-place error | 220 ms | ease-out | No |
-| Practice | Ad interstitial | Session boundary reached | Modal slide up | 350 ms | ease-in-out | Yes |
+| From     | To              | Trigger                           | Transition           | Duration | Easing      | Overlay |
+| -------- | --------------- | --------------------------------- | -------------------- | -------- | ----------- | ------- |
+| Practice | Recording       | Start recording                   | Control state change | 100 ms   | ease-out    | No      |
+| Practice | Comparison      | Finish after completion threshold | Push                 | 300 ms   | ease-in-out | No      |
+| Practice | Error           | Load failure                      | In-place error       | 220 ms   | ease-out    | No      |
+| Practice | Ad interstitial | Session boundary reached          | Modal slide up       | 350 ms   | ease-in-out | Yes     |
 
 Navigation connections:
 
@@ -717,20 +771,20 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Playback mode selector | Chooses mode | None | Horizontal switch possible | None |
-| Continue | Completes comparison and returns home/progress | None | None | None |
-| Skip comparison | Returns without review | None | None | None |
-| Repeat session | Returns to practice | None | None | None |
+| Element                | Tap                                            | Long-press | Swipe                      | Drag |
+| ---------------------- | ---------------------------------------------- | ---------- | -------------------------- | ---- |
+| Playback mode selector | Chooses mode                                   | None       | Horizontal switch possible | None |
+| Continue               | Completes comparison and returns home/progress | None       | None                       | None |
+| Skip comparison        | Returns without review                         | None       | None                       | None |
+| Repeat session         | Returns to practice                            | None       | None                       | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Comparison | Home | Skip or finish | Push | 300 ms | ease-in-out | No |
-| Comparison | Practice | Repeat session | Push | 300 ms | ease-in-out | No |
-| Comparison | Error state | Recording missing | In-place error | 220 ms | ease-out | No |
+| From       | To          | Trigger           | Transition     | Duration | Easing      | Overlay |
+| ---------- | ----------- | ----------------- | -------------- | -------- | ----------- | ------- |
+| Comparison | Home        | Skip or finish    | Push           | 300 ms   | ease-in-out | No      |
+| Comparison | Practice    | Repeat session    | Push           | 300 ms   | ease-in-out | No      |
+| Comparison | Error state | Recording missing | In-place error | 220 ms   | ease-out    | No      |
 
 Navigation connections:
 
@@ -764,18 +818,18 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Start a lesson | Opens Home or Lesson Catalog | None | None | None |
-| View downloads | Opens Downloads | None | None | None |
-| Session row | Opens session detail if used | Optional menu | None | None |
+| Element        | Tap                          | Long-press    | Swipe | Drag |
+| -------------- | ---------------------------- | ------------- | ----- | ---- |
+| Start a lesson | Opens Home or Lesson Catalog | None          | None  | None |
+| View downloads | Opens Downloads              | None          | None  | None |
+| Session row    | Opens session detail if used | Optional menu | None  | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Progress | Home | Start a lesson | Push | 300 ms | ease-in-out | No |
-| Progress | Empty state | No history | In-place cross-dissolve | 200 ms | ease-in-out | No |
+| From     | To          | Trigger        | Transition              | Duration | Easing      | Overlay |
+| -------- | ----------- | -------------- | ----------------------- | -------- | ----------- | ------- |
+| Progress | Home        | Start a lesson | Push                    | 300 ms   | ease-in-out | No      |
+| Progress | Empty state | No history     | In-place cross-dissolve | 200 ms   | ease-in-out | No      |
 
 Navigation connections:
 
@@ -810,18 +864,18 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Lesson card | Opens offline practice or lesson detail | Context actions if supported | Swipe to reveal manage actions | None |
-| Manage downloads | Opens manage state | None | None | None |
-| Bottom tabs | Switch sections | None | None | None |
+| Element          | Tap                                     | Long-press                   | Swipe                          | Drag |
+| ---------------- | --------------------------------------- | ---------------------------- | ------------------------------ | ---- |
+| Lesson card      | Opens offline practice or lesson detail | Context actions if supported | Swipe to reveal manage actions | None |
+| Manage downloads | Opens manage state                      | None                         | None                           | None |
+| Bottom tabs      | Switch sections                         | None                         | None                           | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Downloads | Offline Practice | Tap lesson card | Push | 300 ms | ease-in-out | No |
-| Downloads | Empty state | No downloads | In-place cross-dissolve | 200 ms | ease-in-out | No |
+| From      | To               | Trigger         | Transition              | Duration | Easing      | Overlay |
+| --------- | ---------------- | --------------- | ----------------------- | -------- | ----------- | ------- |
+| Downloads | Offline Practice | Tap lesson card | Push                    | 300 ms   | ease-in-out | No      |
+| Downloads | Empty state      | No downloads    | In-place cross-dissolve | 200 ms   | ease-in-out | No      |
 
 Navigation connections:
 
@@ -854,17 +908,17 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Play / pause | Toggles playback | None | None | None |
-| Finish | Saves local progress and exits | None | None | None |
+| Element      | Tap                            | Long-press | Swipe | Drag |
+| ------------ | ------------------------------ | ---------- | ----- | ---- |
+| Play / pause | Toggles playback               | None       | None  | None |
+| Finish       | Saves local progress and exits | None       | None  | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Offline Practice | Comparison | Finish | Push | 300 ms | ease-in-out | No |
-| Offline Practice | Error | Authorization invalid | Fade to error state | 220 ms | ease-out | No |
+| From             | To         | Trigger               | Transition          | Duration | Easing      | Overlay |
+| ---------------- | ---------- | --------------------- | ------------------- | -------- | ----------- | ------- |
+| Offline Practice | Comparison | Finish                | Push                | 300 ms   | ease-in-out | No      |
+| Offline Practice | Error      | Authorization invalid | Fade to error state | 220 ms   | ease-out    | No      |
 
 Navigation connections:
 
@@ -897,15 +951,15 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Notification card | Opens Home | None | Dismiss on system gesture | None |
+| Element           | Tap        | Long-press | Swipe                     | Drag |
+| ----------------- | ---------- | ---------- | ------------------------- | ---- |
+| Notification card | Opens Home | None       | Dismiss on system gesture | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Notification | Home | Tap | System deep link | Instant | linear | No |
+| From         | To   | Trigger | Transition       | Duration | Easing | Overlay |
+| ------------ | ---- | ------- | ---------------- | -------- | ------ | ------- |
+| Notification | Home | Tap     | System deep link | Instant  | linear | No      |
 
 Navigation connections:
 
@@ -940,16 +994,16 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Settings row | Opens subsection | Optional context menu | None | None |
-| Bottom tabs | Switch sections | None | None | None |
+| Element      | Tap              | Long-press            | Swipe | Drag |
+| ------------ | ---------------- | --------------------- | ----- | ---- |
+| Settings row | Opens subsection | Optional context menu | None  | None |
+| Bottom tabs  | Switch sections  | None                  | None  | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Settings | Reminder Settings / Consent / Playback / Profile / Recordings / Account | Tap row | Push | 300 ms | ease-in-out | No |
+| From     | To                                                                      | Trigger | Transition | Duration | Easing      | Overlay |
+| -------- | ----------------------------------------------------------------------- | ------- | ---------- | -------- | ----------- | ------- |
+| Settings | Reminder Settings / Consent / Playback / Profile / Recordings / Account | Tap row | Push       | 300 ms   | ease-in-out | No      |
 
 Navigation connections:
 
@@ -982,18 +1036,18 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Toggle | Enable / disable reminders | None | None | None |
-| Time picker | Change time | None | Native picker scroll | Drag/scroll |
-| Save | Save changes | None | None | None |
-| Disable | Cancel schedule | None | None | None |
+| Element     | Tap                        | Long-press | Swipe                | Drag        |
+| ----------- | -------------------------- | ---------- | -------------------- | ----------- |
+| Toggle      | Enable / disable reminders | None       | None                 | None        |
+| Time picker | Change time                | None       | Native picker scroll | Drag/scroll |
+| Save        | Save changes               | None       | None                 | None        |
+| Disable     | Cancel schedule            | None       | None                 | None        |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Reminder Settings | Home / Settings | Save | Push or return | 250-300 ms | ease-in-out | No |
+| From              | To              | Trigger | Transition     | Duration   | Easing      | Overlay |
+| ----------------- | --------------- | ------- | -------------- | ---------- | ----------- | ------- |
+| Reminder Settings | Home / Settings | Save    | Push or return | 250-300 ms | ease-in-out | No      |
 
 Navigation connections:
 
@@ -1026,16 +1080,16 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Consent controls | Toggle state | None | None | None |
-| Save | Persists changes | None | None | None |
+| Element          | Tap              | Long-press | Swipe | Drag |
+| ---------------- | ---------------- | ---------- | ----- | ---- |
+| Consent controls | Toggle state     | None       | None  | None |
+| Save             | Persists changes | None       | None  | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Consent Settings | Home / Settings | Save | Return / push | 250 ms | ease-in-out | No |
+| From             | To              | Trigger | Transition    | Duration | Easing      | Overlay |
+| ---------------- | --------------- | ------- | ------------- | -------- | ----------- | ------- |
+| Consent Settings | Home / Settings | Save    | Return / push | 250 ms   | ease-in-out | No      |
 
 Navigation connections:
 
@@ -1068,17 +1122,17 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Speed selector | Chooses speed | None | None | Slider drag if used |
-| Save | Saves settings | None | None | None |
-| Reset | Restores default | None | None | None |
+| Element        | Tap              | Long-press | Swipe | Drag                |
+| -------------- | ---------------- | ---------- | ----- | ------------------- |
+| Speed selector | Chooses speed    | None       | None  | Slider drag if used |
+| Save           | Saves settings   | None       | None  | None                |
+| Reset          | Restores default | None       | None  | None                |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Playback Settings | Settings / Home | Save | Return / push | 250 ms | ease-in-out | No |
+| From              | To              | Trigger | Transition    | Duration | Easing      | Overlay |
+| ----------------- | --------------- | ------- | ------------- | -------- | ----------- | ------- |
+| Playback Settings | Settings / Home | Save    | Return / push | 250 ms   | ease-in-out | No      |
 
 Navigation connections:
 
@@ -1111,17 +1165,17 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Editable fields | Focus and edit | None | None | None |
-| Save | Saves profile | None | None | None |
-| Cancel | Discards edits | None | None | None |
+| Element         | Tap            | Long-press | Swipe | Drag |
+| --------------- | -------------- | ---------- | ----- | ---- |
+| Editable fields | Focus and edit | None       | None  | None |
+| Save            | Saves profile  | None       | None  | None |
+| Cancel          | Discards edits | None       | None  | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Profile Settings | Settings | Save / cancel | Return | 250 ms | ease-in-out | No |
+| From             | To       | Trigger       | Transition | Duration | Easing      | Overlay |
+| ---------------- | -------- | ------------- | ---------- | -------- | ----------- | ------- |
+| Profile Settings | Settings | Save / cancel | Return     | 250 ms   | ease-in-out | No      |
 
 Navigation connections:
 
@@ -1154,16 +1208,16 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Play | Opens playback | None | None | None |
-| Delete | Deletes recording | Optional context menu | Swipe to reveal delete where supported | None |
+| Element | Tap               | Long-press            | Swipe                                  | Drag |
+| ------- | ----------------- | --------------------- | -------------------------------------- | ---- |
+| Play    | Opens playback    | None                  | None                                   | None |
+| Delete  | Deletes recording | Optional context menu | Swipe to reveal delete where supported | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Recording Library | Settings | Back / done | Return | 250 ms | ease-in-out | No |
+| From              | To       | Trigger     | Transition | Duration | Easing      | Overlay |
+| ----------------- | -------- | ----------- | ---------- | -------- | ----------- | ------- |
+| Recording Library | Settings | Back / done | Return     | 250 ms   | ease-in-out | No      |
 
 Navigation connections:
 
@@ -1196,17 +1250,17 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap | Long-press | Swipe | Drag |
-|---------|-----|------------|-------|------|
-| Sign out | Ends session | None | None | None |
-| Delete account | Opens confirmation and deletes if confirmed | None | None | None |
+| Element        | Tap                                         | Long-press | Swipe | Drag |
+| -------------- | ------------------------------------------- | ---------- | ----- | ---- |
+| Sign out       | Ends session                                | None       | None  | None |
+| Delete account | Opens confirmation and deletes if confirmed | None       | None  | None |
 
 State transitions:
 
-| From | To | Trigger | Transition | Duration | Easing | Overlay |
-|------|----|---------|------------|----------|--------|---------|
-| Account Management | Settings / Exit | Sign out or completed delete | Return or exit | 250-300 ms | ease-in-out | No |
-| Account Management | Retryable Error | Backend deletion failure | In-place error | 220 ms | ease-out | No |
+| From               | To              | Trigger                      | Transition     | Duration   | Easing      | Overlay |
+| ------------------ | --------------- | ---------------------------- | -------------- | ---------- | ----------- | ------- |
+| Account Management | Settings / Exit | Sign out or completed delete | Return or exit | 250-300 ms | ease-in-out | No      |
+| Account Management | Retryable Error | Backend deletion failure     | In-place error | 220 ms     | ease-out    | No      |
 
 Navigation connections:
 
@@ -1358,22 +1412,22 @@ Timing:
 
 ## Animation and Transition Specs
 
-| Trigger | From | To | Transition Type | Duration | Easing | Platform Parity Notes |
-|---------|------|----|-----------------|----------|--------|-----------------------|
-| App launch resolves | Launch | Age Gate / Home | Cross-dissolve | 200 ms | ease-in-out | Same on iOS and Android |
-| Valid age / consent | Age Gate / Consent | Next onboarding step | Push | 300 ms | ease-in-out | Same |
-| Sign-in success | Sign In | Level Selection | Push | 300 ms | ease-in-out | Same |
-| Continue onboarding | Reminder / Permissions | Home | Push | 300 ms | ease-in-out | Same |
-| Open lesson | Home / Catalog | Lesson Detail | Push from right | 300 ms | ease-in-out | Same |
-| Start practice | Lesson Detail | Practice Session | Push from right | 300 ms | ease-in-out | Same |
-| Session boundary ad | Practice | Ad Interstitial | Modal slide up | 350-400 ms | ease-in-out | Android may feel more bottom-sheet-like |
-| Ad completes | Ad Interstitial | Practice / Comparison | Cross-dissolve or push | 200 ms | ease-out | Same |
-| Finish session | Practice | Comparison | Push | 300 ms | ease-in-out | Same |
-| Skip comparison | Comparison | Home | Push | 300 ms | ease-in-out | Same |
-| Open settings item | Settings | Settings subsection | Push | 300 ms | ease-in-out | Same |
-| Error appears | Any screen | Retryable Error | Fade in | 220 ms | ease-out | Same |
-| Error recovery | Retryable Error | Source screen or related destination | Push or instant | 200-300 ms | ease-in-out | Same |
-| Download completes | Downloads | Downloaded state | Cross-dissolve | 250 ms | ease-in-out | Same |
+| Trigger             | From                   | To                                   | Transition Type        | Duration   | Easing      | Platform Parity Notes                   |
+| ------------------- | ---------------------- | ------------------------------------ | ---------------------- | ---------- | ----------- | --------------------------------------- |
+| App launch resolves | Launch                 | Age Gate / Home                      | Cross-dissolve         | 200 ms     | ease-in-out | Same on iOS and Android                 |
+| Valid age / consent | Age Gate / Consent     | Next onboarding step                 | Push                   | 300 ms     | ease-in-out | Same                                    |
+| Sign-in success     | Sign In                | Level Selection                      | Push                   | 300 ms     | ease-in-out | Same                                    |
+| Continue onboarding | Reminder / Permissions | Home                                 | Push                   | 300 ms     | ease-in-out | Same                                    |
+| Open lesson         | Home / Catalog         | Lesson Detail                        | Push from right        | 300 ms     | ease-in-out | Same                                    |
+| Start practice      | Lesson Detail          | Practice Session                     | Push from right        | 300 ms     | ease-in-out | Same                                    |
+| Session boundary ad | Practice               | Ad Interstitial                      | Modal slide up         | 350-400 ms | ease-in-out | Android may feel more bottom-sheet-like |
+| Ad completes        | Ad Interstitial        | Practice / Comparison                | Cross-dissolve or push | 200 ms     | ease-out    | Same                                    |
+| Finish session      | Practice               | Comparison                           | Push                   | 300 ms     | ease-in-out | Same                                    |
+| Skip comparison     | Comparison             | Home                                 | Push                   | 300 ms     | ease-in-out | Same                                    |
+| Open settings item  | Settings               | Settings subsection                  | Push                   | 300 ms     | ease-in-out | Same                                    |
+| Error appears       | Any screen             | Retryable Error                      | Fade in                | 220 ms     | ease-out    | Same                                    |
+| Error recovery      | Retryable Error        | Source screen or related destination | Push or instant        | 200-300 ms | ease-in-out | Same                                    |
+| Download completes  | Downloads              | Downloaded state                     | Cross-dissolve         | 250 ms     | ease-in-out | Same                                    |
 
 ## Prototype Testing Checklist
 
@@ -1393,31 +1447,32 @@ Timing:
 
 ## Traceability Matrix
 
-| Prototype Screen | Wireframe Reference | UI Spec Reference | IA Screen Taxonomy |
-|------------------|---------------------|-------------------|--------------------|
-| App Launch | 1.1 | 1.1 | App Launch |
-| Age Gate | 1.2 | 1.2 | Age Gate |
-| Age Policy Block | 1.3 | 1.3 | Age Policy Block |
-| Privacy and Ad Consent | 1.4 | 1.4 | Privacy and Ad Consent |
-| Sign In | 1.5 | 1.5 | Sign In |
-| Level Selection | 1.6 | 1.6 | Level Selection |
-| Reminder Setup | 1.7 | 1.7 | Reminder Setup |
-| Permission Prompts | 1.8 | 1.8 | Permission Prompts |
-| Home / Daily Practice | 2.1 | 2.1 | Home / Daily Practice |
-| Lesson Catalog | 2.2 | 2.2 | Lesson Catalog |
-| Lesson Detail | 2.3 | 2.3 | Lesson Detail |
-| Practice Session | 2.4 / 2.5 | 2.4 / 2.5 | Practice Session |
-| Recording Comparison | 2.6 | 2.6 | Recording Comparison |
-| Progress View | 2.7 | 2.7 | Progress View |
-| Downloaded Lessons / Offline Library | 3.1 | 3.1 | Downloaded Lessons / Offline Library |
-| Offline Practice Session | 3.2 | 3.2 | Offline Practice Session |
-| Local Reminder Notification | 3.3 | 3.3 | Local Reminder Notification |
-| Settings | 4.1 | 4.1 | Settings |
-| Reminder Settings | 4.2 | 4.2 | Reminder Settings |
-| Consent Settings | 4.3 | 4.3 | Consent Settings |
-| Playback Settings | 4.4 | 4.4 | Playback Settings |
-| Profile Settings | 4.5 | 4.5 | Profile Settings |
-| Recording Library | 4.6 | 4.6 | Recording Library |
-| Account Management | 4.7 | 4.7 | Account Management |
-| Retryable Error States | 5.1 | 5.1 | Retryable Error States |
-| Exit / Support Path | 5.2 | 5.2 | Exit / Support Path |
+| Prototype Screen                     | Wireframe Reference | UI Spec Reference | IA Screen Taxonomy                   |
+| ------------------------------------ | ------------------- | ----------------- | ------------------------------------ |
+| App Launch                           | 1.1                 | 1.1               | App Launch                           |
+| Age Gate                             | 1.2                 | 1.2               | Age Gate                             |
+| Age Policy Block                     | 1.3                 | 1.3               | Age Policy Block                     |
+| Privacy and Ad Consent               | 1.4                 | 1.4               | Privacy and Ad Consent               |
+| Sign In                              | 1.5                 | 1.5               | Sign In                              |
+| Sign Up                              | 1.6                 | 1.6               | Sign Up                              |
+| Level Selection                      | 1.7                 | 1.7               | Level Selection                      |
+| Reminder Setup                       | 1.8                 | 1.8               | Reminder Setup                       |
+| Permission Prompts                   | 1.9                 | 1.9               | Permission Prompts                   |
+| Home / Daily Practice                | 2.1                 | 2.1               | Home / Daily Practice                |
+| Lesson Catalog                       | 2.2                 | 2.2               | Lesson Catalog                       |
+| Lesson Detail                        | 2.3                 | 2.3               | Lesson Detail                        |
+| Practice Session                     | 2.4 / 2.5           | 2.4 / 2.5         | Practice Session                     |
+| Recording Comparison                 | 2.6                 | 2.6               | Recording Comparison                 |
+| Progress View                        | 2.7                 | 2.7               | Progress View                        |
+| Downloaded Lessons / Offline Library | 3.1                 | 3.1               | Downloaded Lessons / Offline Library |
+| Offline Practice Session             | 3.2                 | 3.2               | Offline Practice Session             |
+| Local Reminder Notification          | 3.3                 | 3.3               | Local Reminder Notification          |
+| Settings                             | 4.1                 | 4.1               | Settings                             |
+| Reminder Settings                    | 4.2                 | 4.2               | Reminder Settings                    |
+| Consent Settings                     | 4.3                 | 4.3               | Consent Settings                     |
+| Playback Settings                    | 4.4                 | 4.4               | Playback Settings                    |
+| Profile Settings                     | 4.5                 | 4.5               | Profile Settings                     |
+| Recording Library                    | 4.6                 | 4.6               | Recording Library                    |
+| Account Management                   | 4.7                 | 4.7               | Account Management                   |
+| Retryable Error States               | 5.1                 | 5.1               | Retryable Error States               |
+| Exit / Support Path                  | 5.2                 | 5.2               | Exit / Support Path                  |

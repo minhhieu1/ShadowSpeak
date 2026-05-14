@@ -1,0 +1,15 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+X-Request-Id: req-mock-070
+
+{
+  "requestId": "req-mock-070",
+  "ok": true,
+  "data": {
+    "lessonId": "lesson-001",
+    "verified": true,
+    "offlineAvailable": true,
+    "expectedChecksum": "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6"
+  },
+  "error": null
+}

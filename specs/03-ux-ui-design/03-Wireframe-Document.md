@@ -2,14 +2,14 @@
 
 ## Document Metadata
 
-| Field | Value |
-|-------|-------|
-| Project | ShadowSpeak |
+| Field         | Value              |
+| ------------- | ------------------ |
+| Project       | ShadowSpeak        |
 | Document Type | Wireframe Document |
-| Date | 2026-05-13 |
-| Status | Draft |
-| Version | 1.0 |
-| Owner | UX Design |
+| Date          | 2026-05-13         |
+| Status        | Draft              |
+| Version       | 1.0                |
+| Owner         | UX Design          |
 
 ## Source Basis
 
@@ -58,6 +58,8 @@ flowchart TD
     AgeGate --> Consent[Privacy and Ad Consent]
     Consent --> SignIn[Sign In]
     SignIn --> Level[Level Selection]
+    SignIn --> SignUp[Sign Up]
+    SignUp --> Level[Level Selection]
     Level --> Reminder[Reminder Setup]
     Reminder --> Perms[Permission Prompts]
     Perms --> Home[Home / Daily Practice]
@@ -137,16 +139,16 @@ Purpose: Resolve session state, age/consent readiness, and route to the correct 
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Center | Loading indicator and status text |
-| Bottom | Optional retry if startup fails |
+| Placement | Component                         |
+| --------- | --------------------------------- |
+| Center    | Loading indicator and status text |
+| Bottom    | Optional retry if startup fails   |
 
-| State | Behavior |
-|-------|----------|
+| State   | Behavior                                     |
+| ------- | -------------------------------------------- |
 | Loading | App resolves age, consent, and session state |
-| Error | Show retryable startup error |
-| Success | Route to onboarding or Home |
+| Error   | Show retryable startup error                 |
+| Success | Route to onboarding or Home                  |
 
 Audio-first note: keep this screen brief so the learner reaches the practice flow quickly.
 
@@ -167,17 +169,17 @@ Purpose: Confirm age eligibility when no store signal is available.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Top | Back action and title |
-| Middle | Age attestation control and explanation |
-| Bottom | Continue and support actions |
+| Placement | Component                               |
+| --------- | --------------------------------------- |
+| Top       | Back action and title                   |
+| Middle    | Age attestation control and explanation |
+| Bottom    | Continue and support actions            |
 
-| State | Behavior |
-|-------|----------|
-| Default | Learner confirms age and continues |
+| State            | Behavior                              |
+| ---------------- | ------------------------------------- |
+| Default          | Learner confirms age and continues    |
 | Validation error | Show in-place age requirement message |
-| Success | Route to Privacy and Ad Consent |
+| Success          | Route to Privacy and Ad Consent       |
 
 Audio-first note: keep the copy short and readable on a small screen.
 
@@ -197,15 +199,15 @@ Purpose: Block onboarding for underage learners and route them to support.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Center | Eligibility block message |
-| Bottom | Exit and support actions |
+| Placement | Component                 |
+| --------- | ------------------------- |
+| Center    | Eligibility block message |
+| Bottom    | Exit and support actions  |
 
-| State | Behavior |
-|-------|----------|
-| Default | Inform learner the app cannot continue |
-| Support path | Open exit/support flow |
+| State        | Behavior                               |
+| ------------ | -------------------------------------- |
+| Default      | Inform learner the app cannot continue |
+| Support path | Open exit/support flow                 |
 
 Audio-first note: this should be a dead-end state with no practice navigation.
 
@@ -226,17 +228,17 @@ Purpose: Capture required privacy and ad consent before account creation continu
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Top | Back action and title |
-| Middle | Consent copy and choices |
-| Bottom | Accept / decline actions |
+| Placement | Component                |
+| --------- | ------------------------ |
+| Top       | Back action and title    |
+| Middle    | Consent copy and choices |
+| Bottom    | Accept / decline actions |
 
-| State | Behavior |
-|-------|----------|
-| Default | Learner accepts or declines consent |
-| Declined required consent | Block onboarding |
-| Success | Route to Sign In |
+| State                     | Behavior                            |
+| ------------------------- | ----------------------------------- |
+| Default                   | Learner accepts or declines consent |
+| Declined required consent | Block onboarding                    |
+| Success                   | Route to Sign In                    |
 
 Audio-first note: consent text must remain concise enough to scan quickly.
 
@@ -258,21 +260,57 @@ Purpose: Authenticate the learner through email/password or social sign-in.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Top | Back action and title |
-| Middle | Credential fields and social options |
-| Bottom | Sign in CTA and helper actions |
+| Placement | Component                            |
+| --------- | ------------------------------------ |
+| Top       | Back action and title                |
+| Middle    | Credential fields and social options |
+| Bottom    | Sign in CTA and helper actions       |
 
-| State | Behavior |
-|-------|----------|
-| Loading | Show signing-in state |
-| Error | Keep fields visible and show retryable error |
-| Success | Route to Level Selection |
+| State   | Behavior                                     |
+| ------- | -------------------------------------------- |
+| Loading | Show signing-in state                        |
+| Error   | Keep fields visible and show retryable error |
+| Success | Route to Level Selection                     |
 
 Audio-first note: minimize typing where possible and keep error copy short.
 
-### 1.6 Level Selection
+### 1.6 Sign Up
+
+Purpose: Create a new account through email/password with validation and consent.
+
+```text
++--------------------------------------------------+
+| Back | Sign Up                                   |
+|--------------------------------------------------|
+| Email field                                      |
+| Password field                                   |
+| Confirm password field                           |
+| Terms of Service & Privacy Policy link            |
+|--------------------------------------------------|
+| Primary CTA: Create Account                     |
+| Secondary CTA: Already have account? Sign In     |
++--------------------------------------------------+
+```
+
+| Placement | Component                             |
+| --------- | ------------------------------------- |
+| Top       | Back action and title                 |
+| Middle    | Registration fields and consent       |
+| Bottom    | Create account CTA and helper actions |
+
+| State               | Behavior                                     |
+| ------------------- | -------------------------------------------- |
+| Default             | Show empty form with validation hints        |
+| Email validation    | Show real-time email format feedback         |
+| Password validation | Show password strength indicator             |
+| Password mismatch   | Show error when passwords don't match        |
+| Loading             | Disable controls and show progress           |
+| Error               | Keep fields visible and show retryable error |
+| Success             | Route to Level Selection                     |
+
+Audio-first note: minimize typing where possible and keep error copy short.
+
+### 1.7 Level Selection
 
 Purpose: Capture proficiency level to seed the first recommendation.
 
@@ -289,20 +327,20 @@ Purpose: Capture proficiency level to seed the first recommendation.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Middle | Level choice cards or segmented control |
-| Bottom | Continue action |
+| Placement | Component                               |
+| --------- | --------------------------------------- |
+| Middle    | Level choice cards or segmented control |
+| Bottom    | Continue action                         |
 
-| State | Behavior |
-|-------|----------|
+| State   | Behavior                  |
+| ------- | ------------------------- |
 | Default | Pick a level and continue |
-| Error | Highlight required choice |
-| Success | Route to Reminder Setup |
+| Error   | Highlight required choice |
+| Success | Route to Reminder Setup   |
 
 Audio-first note: use a simple choice set, not a dense form.
 
-### 1.7 Reminder Setup
+### 1.8 Reminder Setup
 
 Purpose: Capture local reminder preference during onboarding.
 
@@ -319,20 +357,20 @@ Purpose: Capture local reminder preference during onboarding.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Middle | Reminder toggle and time picker |
-| Bottom | Continue / skip actions |
+| Placement | Component                       |
+| --------- | ------------------------------- |
+| Middle    | Reminder toggle and time picker |
+| Bottom    | Continue / skip actions         |
 
-| State | Behavior |
-|-------|----------|
-| Enabled | Save preferred time |
-| Disabled | Continue without reminder |
-| Success | Route to Permission Prompts |
+| State    | Behavior                    |
+| -------- | --------------------------- |
+| Enabled  | Save preferred time         |
+| Disabled | Continue without reminder   |
+| Success  | Route to Permission Prompts |
 
 Audio-first note: reminders are a support feature, not a prerequisite for practice.
 
-### 1.8 Permission Prompts
+### 1.9 Permission Prompts
 
 Purpose: Handle notification and microphone permissions before the learner enters the main shell.
 
@@ -349,16 +387,16 @@ Purpose: Handle notification and microphone permissions before the learner enter
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Middle | Permission cards and rationale |
-| Bottom | Continue and settings actions |
+| Placement | Component                      |
+| --------- | ------------------------------ |
+| Middle    | Permission cards and rationale |
+| Bottom    | Continue and settings actions  |
 
-| State | Behavior |
-|-------|----------|
-| Permission granted | Save and continue |
-| Notification denied | Continue with reminders disabled |
-| Microphone denied | Continue with listening-only capability |
+| State               | Behavior                                |
+| ------------------- | --------------------------------------- |
+| Permission granted  | Save and continue                       |
+| Notification denied | Continue with reminders disabled        |
+| Microphone denied   | Continue with listening-only capability |
 
 Audio-first note: microphone permission may be deferred just-in-time in implementation, but the wireframe should still show the recovery path.
 
@@ -377,26 +415,23 @@ Purpose: Orchestrate the learner’s next action, daily recommendation, and stre
 | [Resume unfinished lesson card]                  |
 |--------------------------------------------------|
 | Primary CTA: Start practice                      |
-| Secondary CTA row: Lessons | Downloads |         |
-| Progress | Settings                              |
-|--------------------------------------------------|
 | Bottom tabs                                      |
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Top | Home title and optional reminder status |
-| Upper content | Recommendation card |
-| Mid content | Streak, resume, and progress cards |
-| Bottom | Shell tabs |
+| Placement     | Component                               |
+| ------------- | --------------------------------------- |
+| Top           | Home title and optional reminder status |
+| Upper content | Recommendation card                     |
+| Mid content   | Streak, resume, and progress cards      |
+| Bottom        | Shell tabs                              |
 
-| State | Behavior |
-|-------|----------|
-| Loading | Skeleton cards while progress hydrates |
-| Empty | Show starter lesson and first-step guidance |
-| Offline | Show cached recommendation and local state |
-| Error | Surface retryable sync or hydration error |
+| State   | Behavior                                    |
+| ------- | ------------------------------------------- |
+| Loading | Skeleton cards while progress hydrates      |
+| Empty   | Show starter lesson and first-step guidance |
+| Offline | Show cached recommendation and local state  |
+| Error   | Surface retryable sync or hydration error   |
 
 Audio-first note: the recommendation card should be the largest tap target on the screen.
 
@@ -421,19 +456,19 @@ Purpose: Let learners browse and filter lessons quickly.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Top | Title and back navigation |
+| Placement     | Component                             |
+| ------------- | ------------------------------------- |
+| Top           | Title and back navigation             |
 | Upper content | Recommendation strip and filter chips |
-| Middle | Scrollable lesson cards |
-| Bottom | Shell tabs |
+| Middle        | Scrollable lesson cards               |
+| Bottom        | Shell tabs                            |
 
-| State | Behavior |
-|-------|----------|
-| Loading | Show catalog skeletons |
-| Empty | Show no-results state with editable filters |
-| Offline | Show cached lessons and offline note |
-| Error | Show retry and catalog recovery path |
+| State   | Behavior                                    |
+| ------- | ------------------------------------------- |
+| Loading | Show catalog skeletons                      |
+| Empty   | Show no-results state with editable filters |
+| Offline | Show cached lessons and offline note        |
+| Error   | Show retry and catalog recovery path        |
 
 Audio-first note: keep filters compact and accessible with one-handed interaction.
 
@@ -455,18 +490,18 @@ Purpose: Present lesson summary and give direct paths to start or download.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Top | Back action and title |
-| Middle | Metadata and preview summary |
-| Bottom | Start and download actions |
+| Placement | Component                    |
+| --------- | ---------------------------- |
+| Top       | Back action and title        |
+| Middle    | Metadata and preview summary |
+| Bottom    | Start and download actions   |
 
-| State | Behavior |
-|-------|----------|
-| Default | Show lesson metadata and actions |
-| Stale lesson | Replace with valid lesson choice |
-| Downloaded | Show downloaded badge / status |
-| Error | Show retry if asset data fails to load |
+| State        | Behavior                               |
+| ------------ | -------------------------------------- |
+| Default      | Show lesson metadata and actions       |
+| Stale lesson | Replace with valid lesson choice       |
+| Downloaded   | Show downloaded badge / status         |
+| Error        | Show retry if asset data fails to load |
 
 Audio-first note: the primary action should be obvious and high priority.
 
@@ -490,20 +525,20 @@ Purpose: Support the audio-first practice loop with minimal screen interaction.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Top | Title, timer, and progress |
-| Center | Large playback control |
-| Lower center | Recording and cue status |
-| Bottom | Hands-free action strip |
+| Placement    | Component                  |
+| ------------ | -------------------------- |
+| Top          | Title, timer, and progress |
+| Center       | Large playback control     |
+| Lower center | Recording and cue status   |
+| Bottom       | Hands-free action strip    |
 
-| State | Behavior |
-|-------|----------|
-| Loading | Show audio loading state |
-| Recording | Highlight mic and recording state |
-| Paused | Show paused playback and resume CTA |
-| Error | Retryable lesson load / recording error |
-| Offline | Allow downloaded-offline practice if available |
+| State     | Behavior                                       |
+| --------- | ---------------------------------------------- |
+| Loading   | Show audio loading state                       |
+| Recording | Highlight mic and recording state              |
+| Paused    | Show paused playback and resume CTA            |
+| Error     | Retryable lesson load / recording error        |
+| Offline   | Allow downloaded-offline practice if available |
 
 Audio-first note: the largest control should always be the next likely audio action.
 
@@ -559,18 +594,18 @@ Purpose: Let learners manually compare their recording with the reference audio.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Top | Title and back action |
-| Middle | Playback mode selector |
+| Placement    | Component                              |
+| ------------ | -------------------------------------- |
+| Top          | Title and back action                  |
+| Middle       | Playback mode selector                 |
 | Lower middle | Comparison playback controls and notes |
-| Bottom | Continue, skip, repeat actions |
+| Bottom       | Continue, skip, repeat actions         |
 
-| State | Behavior |
-|-------|----------|
-| Recording missing | Show retry-oriented error |
-| Sync unavailable | Fall back to separate playback modes |
-| Skip selected | Continue without forcing review |
+| State             | Behavior                             |
+| ----------------- | ------------------------------------ |
+| Recording missing | Show retry-oriented error            |
+| Sync unavailable  | Fall back to separate playback modes |
+| Skip selected     | Continue without forcing review      |
 
 Audio-first note: keep comparison optional and fast to exit.
 
@@ -593,19 +628,19 @@ Purpose: Show streak, practice history, and sync status.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Top | Title and back action |
-| Upper content | Streak summary |
-| Mid content | Recent sessions and stats |
-| Bottom | Start lesson and downloads actions |
+| Placement     | Component                          |
+| ------------- | ---------------------------------- |
+| Top           | Title and back action              |
+| Upper content | Streak summary                     |
+| Mid content   | Recent sessions and stats          |
+| Bottom        | Start lesson and downloads actions |
 
-| State | Behavior |
-|-------|----------|
-| Loading | Hydrating progress data |
-| Empty | Show starter lesson and no-history state |
-| Sync pending | Show retry / queued state |
-| Error | Preserve local progress and surface retry |
+| State        | Behavior                                  |
+| ------------ | ----------------------------------------- |
+| Loading      | Hydrating progress data                   |
+| Empty        | Show starter lesson and no-history state  |
+| Sync pending | Show retry / queued state                 |
+| Error        | Preserve local progress and surface retry |
 
 Audio-first note: progress is support content, not the main loop.
 
@@ -630,18 +665,18 @@ Purpose: Provide access to lessons that have been downloaded for offline practic
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Top | Title and storage summary |
-| Middle | Downloaded lesson cards |
-| Bottom | Manage and open actions |
+| Placement | Component                 |
+| --------- | ------------------------- |
+| Top       | Title and storage summary |
+| Middle    | Downloaded lesson cards   |
+| Bottom    | Manage and open actions   |
 
-| State | Behavior |
-|-------|----------|
-| Empty | Show no downloaded lessons state |
-| Offline | Normal operation with local content |
+| State   | Behavior                                     |
+| ------- | -------------------------------------------- |
+| Empty   | Show no downloaded lessons state             |
+| Offline | Normal operation with local content          |
 | Invalid | Block playback and point to another download |
-| Error | Show storage / verification recovery |
+| Error   | Show storage / verification recovery         |
 
 Audio-first note: downloaded content should feel directly playable, not buried behind management UI.
 
@@ -663,18 +698,18 @@ Purpose: Let the learner continue practice without network connectivity.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Top | Offline badge and title |
-| Center | Large audio control |
-| Lower center | Recording status |
-| Bottom | Finish and save actions |
+| Placement    | Component               |
+| ------------ | ----------------------- |
+| Top          | Offline badge and title |
+| Center       | Large audio control     |
+| Lower center | Recording status        |
+| Bottom       | Finish and save actions |
 
-| State | Behavior |
-|-------|----------|
-| Offline available | Continue normally |
+| State                 | Behavior                           |
+| --------------------- | ---------------------------------- |
+| Offline available     | Continue normally                  |
 | Authorization invalid | Block and suggest another download |
-| Sync queued | Save progress locally |
+| Sync queued           | Save progress locally              |
 
 Audio-first note: the learner should be able to start immediately after opening a downloaded lesson.
 
@@ -694,14 +729,14 @@ Purpose: Deep-link the learner back into the app at the reminder time.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
+| Placement     | Component            |
+| ------------- | -------------------- |
 | Whole surface | OS notification card |
 
-| State | Behavior |
-|-------|----------|
+| State     | Behavior               |
+| --------- | ---------------------- |
 | Delivered | Tapping routes to Home |
-| Dismissed | No app state change |
+| Dismissed | No app state change    |
 
 Audio-first note: this is a return path, not a content screen.
 
@@ -726,17 +761,17 @@ Purpose: Act as the control center for preferences, consent, account, and record
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Top | Title |
-| Middle | Settings category list |
-| Bottom | Shell tabs |
+| Placement | Component              |
+| --------- | ---------------------- |
+| Top       | Title                  |
+| Middle    | Settings category list |
+| Bottom    | Shell tabs             |
 
-| State | Behavior |
-|-------|----------|
-| Default | Show all settings entry points |
-| Offline | Keep local settings accessible |
-| Error | Preserve current state and show retry if needed |
+| State   | Behavior                                        |
+| ------- | ----------------------------------------------- |
+| Default | Show all settings entry points                  |
+| Offline | Keep local settings accessible                  |
+| Error   | Preserve current state and show retry if needed |
 
 Audio-first note: settings should be accessible but secondary to practice.
 
@@ -757,17 +792,17 @@ Purpose: Edit reminder time and permission state.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Top | Back and title |
-| Middle | Time picker and status |
-| Bottom | Save / disable actions |
+| Placement | Component              |
+| --------- | ---------------------- |
+| Top       | Back and title         |
+| Middle    | Time picker and status |
+| Bottom    | Save / disable actions |
 
-| State | Behavior |
-|-------|----------|
-| Permission denied | Show recovery path |
-| Disabled | Cancel local schedule |
-| Success | Return to Settings or Home |
+| State             | Behavior                   |
+| ----------------- | -------------------------- |
+| Permission denied | Show recovery path         |
+| Disabled          | Cancel local schedule      |
+| Success           | Return to Settings or Home |
 
 Audio-first note: remind the learner this is a local device schedule.
 
@@ -788,17 +823,17 @@ Purpose: Review and update privacy and ad consent decisions.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Top | Back and title |
-| Middle | Consent state controls |
-| Bottom | Save action |
+| Placement | Component              |
+| --------- | ---------------------- |
+| Top       | Back and title         |
+| Middle    | Consent state controls |
+| Bottom    | Save action            |
 
-| State | Behavior |
-|-------|----------|
-| Default | Show current consent state |
+| State             | Behavior                      |
+| ----------------- | ----------------------------- |
+| Default           | Show current consent state    |
 | Withdrawn consent | Stop personalized ad requests |
-| Success | Persist immediately |
+| Success           | Persist immediately           |
 
 Audio-first note: keep the language concise and mobile-readable.
 
@@ -818,15 +853,15 @@ Purpose: Control audio playback speed and related listening preferences.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Middle | Speed selector |
-| Bottom | Save and reset actions |
+| Placement | Component              |
+| --------- | ---------------------- |
+| Middle    | Speed selector         |
+| Bottom    | Save and reset actions |
 
-| State | Behavior |
-|-------|----------|
-| Invalid value | Reject and keep current setting |
-| Success | Apply to future playback sessions |
+| State         | Behavior                          |
+| ------------- | --------------------------------- |
+| Invalid value | Reject and keep current setting   |
+| Success       | Apply to future playback sessions |
 
 Audio-first note: speed controls should be simple and touch-friendly.
 
@@ -846,16 +881,16 @@ Purpose: Update learner profile and preference fields.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Middle | Editable profile fields |
-| Bottom | Save and cancel actions |
+| Placement | Component               |
+| --------- | ----------------------- |
+| Middle    | Editable profile fields |
+| Bottom    | Save and cancel actions |
 
-| State | Behavior |
-|-------|----------|
-| Default | Show current profile values |
+| State            | Behavior                                 |
+| ---------------- | ---------------------------------------- |
+| Default          | Show current profile values              |
 | Validation error | Keep fields visible and highlight errors |
-| Success | Return to Settings |
+| Success          | Return to Settings                       |
 
 Audio-first note: avoid unnecessary typing and keep editable fields few.
 
@@ -876,16 +911,16 @@ Purpose: Manage saved recordings, including deletion of local and synced copies.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Middle | Recording cards |
-| Bottom | Play, delete, and back actions |
+| Placement | Component                      |
+| --------- | ------------------------------ |
+| Middle    | Recording cards                |
+| Bottom    | Play, delete, and back actions |
 
-| State | Behavior |
-|-------|----------|
-| Empty | Show no recordings state |
+| State         | Behavior                                 |
+| ------------- | ---------------------------------------- |
+| Empty         | Show no recordings state                 |
 | Synced delete | Queue remote deletion after local delete |
-| Error | Show retryable delete failure |
+| Error         | Show retryable delete failure            |
 
 Audio-first note: recordings are support artifacts for comparison and management.
 
@@ -907,17 +942,17 @@ Purpose: Handle sign-out and account deletion.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Top | Title and back action |
-| Middle | Account summary and warning copy |
-| Bottom | Destructive and non-destructive actions |
+| Placement | Component                               |
+| --------- | --------------------------------------- |
+| Top       | Title and back action                   |
+| Middle    | Account summary and warning copy        |
+| Bottom    | Destructive and non-destructive actions |
 
-| State | Behavior |
-|-------|----------|
-| Confirmed deletion | Remove local data and exit |
-| Backend failure | Keep learner signed in and show retryable error |
-| Sign out | End session without data deletion |
+| State              | Behavior                                        |
+| ------------------ | ----------------------------------------------- |
+| Confirmed deletion | Remove local data and exit                      |
+| Backend failure    | Keep learner signed in and show retryable error |
+| Sign out           | End session without data deletion               |
 
 Audio-first note: destructive actions should require explicit confirmation.
 
@@ -940,17 +975,17 @@ Purpose: Preserve context and give the learner a clear recovery path for common 
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Center | Error message and explanation |
-| Bottom | Retry and recovery actions |
+| Placement | Component                     |
+| --------- | ----------------------------- |
+| Center    | Error message and explanation |
+| Bottom    | Retry and recovery actions    |
 
-| State | Behavior |
-|-------|----------|
-| Audio load failure | Retry current lesson |
-| Auth expired | Sign in again |
-| Storage full | Free space and retry |
-| Network loss | Continue offline where supported |
+| State              | Behavior                         |
+| ------------------ | -------------------------------- |
+| Audio load failure | Retry current lesson             |
+| Auth expired       | Sign in again                    |
+| Storage full       | Free space and retry             |
+| Network loss       | Continue offline where supported |
 
 Audio-first note: error states should keep the learner’s place whenever possible.
 
@@ -970,13 +1005,13 @@ Purpose: Final support exit for blocked onboarding or non-recoverable flows.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Center | Blocked state message |
-| Bottom | Exit and support actions |
+| Placement | Component                |
+| --------- | ------------------------ |
+| Center    | Blocked state message    |
+| Bottom    | Exit and support actions |
 
-| State | Behavior |
-|-------|----------|
+| State   | Behavior            |
+| ------- | ------------------- |
 | Default | End the flow safely |
 
 Audio-first note: this should be rare and clearly distinct from normal navigation.
@@ -996,52 +1031,53 @@ The MVP uses non-blocking audio interstitial ads at session boundaries only.
 +--------------------------------------------------+
 ```
 
-| Placement | Component |
-|-----------|-----------|
-| Overlay | Temporary modal sheet at session boundary |
+| Placement | Component                                 |
+| --------- | ----------------------------------------- |
+| Overlay   | Temporary modal sheet at session boundary |
 
-| State | Behavior |
-|-------|----------|
-| No fill / offline | Skip and continue flow |
-| Playback failure | Close container and return to learner flow |
-| Success | Record impression and continue |
+| State             | Behavior                                   |
+| ----------------- | ------------------------------------------ |
+| No fill / offline | Skip and continue flow                     |
+| Playback failure  | Close container and return to learner flow |
+| Success           | Record impression and continue             |
 
 Audio-first note: the ad must not block lesson completion or navigation beyond the session boundary.
 
 ## 7. Traceability
 
-| Screen / Wireframe | Related User Flow | Related IA Area | Related Use Cases | Related Functional Requirements |
-|-------------------|-------------------|-----------------|-------------------|----------------------------------|
-| App Launch | First-Time Onboarding | Entry, Compliance, Onboarding | UC-01, UC-11 | FR-1, FR-8, FR-9 |
-| Age Gate | First-Time Onboarding | Entry, Compliance, Onboarding | UC-01, UC-11 | FR-9 |
-| Age Policy Block | Cross-Cutting Error / Edge Case | Recovery and Support | UC-11 | FR-9 |
-| Privacy and Ad Consent | First-Time Onboarding | Entry, Compliance, Onboarding | UC-01, UC-11 | FR-9 |
-| Sign In | First-Time Onboarding | Entry, Compliance, Onboarding | UC-01 | FR-1 |
-| Level Selection | First-Time Onboarding | Entry, Compliance, Onboarding | UC-01 | FR-8 |
-| Reminder Setup | First-Time Onboarding | Entry, Compliance, Onboarding | UC-01, UC-07 | FR-8 |
-| Permission Prompts | First-Time Onboarding | Entry, Compliance, Onboarding | UC-01 | FR-8 |
-| Home / Daily Practice | Returning-User Daily Practice | Core Daily Practice | UC-05, UC-08 | FR-5, FR-8 |
-| Lesson Catalog | Browse and Select a Lesson | Core Daily Practice | UC-02 | FR-2, FR-7 |
-| Lesson Detail | Browse and Select a Lesson | Core Daily Practice | UC-02, UC-03 | FR-2, FR-3 |
-| Practice Session | Shadowing Practice Session | Core Daily Practice | UC-03 | FR-3, FR-5 |
-| Recording Comparison | Recording Playback Comparison | Core Daily Practice | UC-04 | FR-4 |
-| Progress View | Returning-User Daily Practice | Core Daily Practice | UC-05, UC-08 | FR-5, FR-8 |
-| Downloaded Lessons / Offline Library | Offline Lesson Download and Practice | Offline and Return Paths | UC-06, UC-02 | FR-7 |
-| Offline Practice Session | Offline Lesson Download and Practice | Offline and Return Paths | UC-06 | FR-7 |
-| Local Reminder Notification | Manage Local Reminder Notifications | Offline and Return Paths | UC-07 | FR-8 |
-| Settings | Manage Settings and Account | Settings and Control | UC-10 | FR-8 |
-| Reminder Settings | Manage Local Reminder Notifications | Settings and Control | UC-07 | FR-8 |
-| Consent Settings | Handle Age Gate and Consent | Settings and Control | UC-11 | FR-9 |
-| Playback Settings | Manage Settings and Account | Settings and Control | UC-10 | FR-8 |
-| Profile Settings | Manage Settings and Account | Settings and Control | UC-10 | FR-8 |
-| Recording Library | Manage Settings and Account | Settings and Control | UC-10 | FR-4, FR-8 |
-| Account Management | Manage Settings and Account | Settings and Control | UC-10 | FR-8 |
-| Retryable Error States | Cross-Cutting Error and Edge-Case Flows | Recovery and Support | UC-03, UC-06, UC-08, UC-10, UC-11 | FR-1, FR-3, FR-4, FR-5, FR-7, FR-8, FR-9 |
-| Exit / Support Path | Cross-Cutting Error and Edge-Case Flows | Recovery and Support | UC-11 | FR-9 |
+| Screen / Wireframe                   | Related User Flow                       | Related IA Area               | Related Use Cases                 | Related Functional Requirements          |
+| ------------------------------------ | --------------------------------------- | ----------------------------- | --------------------------------- | ---------------------------------------- |
+| App Launch                           | First-Time Onboarding                   | Entry, Compliance, Onboarding | UC-01, UC-11                      | FR-1, FR-8, FR-9                         |
+| Age Gate                             | First-Time Onboarding                   | Entry, Compliance, Onboarding | UC-01, UC-11                      | FR-9                                     |
+| Age Policy Block                     | Cross-Cutting Error / Edge Case         | Recovery and Support          | UC-11                             | FR-9                                     |
+| Privacy and Ad Consent               | First-Time Onboarding                   | Entry, Compliance, Onboarding | UC-01, UC-11                      | FR-9                                     |
+| Sign In                              | First-Time Onboarding                   | Entry, Compliance, Onboarding | UC-01                             | FR-1                                     |
+| Sign Up                              | First-Time Onboarding                   | Entry, Compliance, Onboarding | UC-01                             | FR-1                                     |
+| Level Selection                      | First-Time Onboarding                   | Entry, Compliance, Onboarding | UC-01                             | FR-1                                     |
+| Reminder Setup                       | First-Time Onboarding                   | Entry, Compliance, Onboarding | UC-01, UC-07                      | FR-8                                     |
+| Permission Prompts                   | First-Time Onboarding                   | Entry, Compliance, Onboarding | UC-01                             | FR-8                                     |
+| Home / Daily Practice                | Returning-User Daily Practice           | Core Daily Practice           | UC-05, UC-08                      | FR-5, FR-8                               |
+| Lesson Catalog                       | Browse and Select a Lesson              | Core Daily Practice           | UC-02                             | FR-2, FR-7                               |
+| Lesson Detail                        | Browse and Select a Lesson              | Core Daily Practice           | UC-02, UC-03                      | FR-2, FR-3                               |
+| Practice Session                     | Shadowing Practice Session              | Core Daily Practice           | UC-03                             | FR-3, FR-5                               |
+| Recording Comparison                 | Recording Playback Comparison           | Core Daily Practice           | UC-04                             | FR-4                                     |
+| Progress View                        | Returning-User Daily Practice           | Core Daily Practice           | UC-05, UC-08                      | FR-5, FR-8                               |
+| Downloaded Lessons / Offline Library | Offline Lesson Download and Practice    | Offline and Return Paths      | UC-06, UC-02                      | FR-7                                     |
+| Offline Practice Session             | Offline Lesson Download and Practice    | Offline and Return Paths      | UC-06                             | FR-7                                     |
+| Local Reminder Notification          | Manage Local Reminder Notifications     | Offline and Return Paths      | UC-07                             | FR-8                                     |
+| Settings                             | Manage Settings and Account             | Settings and Control          | UC-10                             | FR-8                                     |
+| Reminder Settings                    | Manage Local Reminder Notifications     | Settings and Control          | UC-07                             | FR-8                                     |
+| Consent Settings                     | Handle Age Gate and Consent             | Settings and Control          | UC-11                             | FR-9                                     |
+| Playback Settings                    | Manage Settings and Account             | Settings and Control          | UC-10                             | FR-8                                     |
+| Profile Settings                     | Manage Settings and Account             | Settings and Control          | UC-10                             | FR-8                                     |
+| Recording Library                    | Manage Settings and Account             | Settings and Control          | UC-10                             | FR-4, FR-8                               |
+| Account Management                   | Manage Settings and Account             | Settings and Control          | UC-10                             | FR-8                                     |
+| Retryable Error States               | Cross-Cutting Error and Edge-Case Flows | Recovery and Support          | UC-03, UC-06, UC-08, UC-10, UC-11 | FR-1, FR-3, FR-4, FR-5, FR-7, FR-8, FR-9 |
+| Exit / Support Path                  | Cross-Cutting Error and Edge-Case Flows | Recovery and Support          | UC-11                             | FR-9                                     |
 
 ## Revision History
 
-| Version | Date | Author | Description |
-|---------|------|--------|-------------|
-| 1.0 | 2026-05-13 | UX Design | Initial wireframe document for ShadowSpeak MVP |
-
+| Version | Date       | Author    | Description                                                  |
+| ------- | ---------- | --------- | ------------------------------------------------------------ |
+| 1.0     | 2026-05-13 | UX Design | Initial wireframe document for ShadowSpeak MVP               |
+| 1.1     | 2026-05-14 | UX Design | Added Sign Up screen (1.6) and renumbered subsequent screens |

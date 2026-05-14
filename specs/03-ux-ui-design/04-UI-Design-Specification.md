@@ -2,14 +2,14 @@
 
 ## Document Metadata
 
-| Field | Value |
-|-------|-------|
-| Project | ShadowSpeak |
+| Field         | Value                   |
+| ------------- | ----------------------- |
+| Project       | ShadowSpeak             |
 | Document Type | UI Design Specification |
-| Date | 2026-05-13 |
-| Status | Draft |
-| Version | 1.1 |
-| Owner | UX Design |
+| Date          | 2026-05-13              |
+| Status        | Draft                   |
+| Version       | 1.2                     |
+| Owner         | UX Design               |
 
 ## Source Basis
 
@@ -57,23 +57,23 @@ Design goals:
 
 ### Color Palette
 
-| Token | Hex | Use |
-|-------|-----|-----|
-| `color-bg` | `#F7F5F0` | Default app background |
-| `color-surface` | `#FFFFFF` | Cards, sheets, elevated panels |
-| `color-surface-alt` | `#EEF2F5` | Secondary surfaces, chips, grouped sections |
-| `color-primary` | `#0E5A6A` | Primary CTAs, active states, emphasis |
-| `color-primary-pressed` | `#0A4652` | Pressed primary buttons |
-| `color-secondary` | `#D97706` | Accent for progress, reminders, and audio cues |
-| `color-text` | `#111827` | Main text |
-| `color-text-muted` | `#6B7280` | Secondary text and helper copy |
-| `color-border` | `#D6D9DE` | Dividers and input borders |
-| `color-focus` | `#2563EB` | Keyboard and accessibility focus ring |
-| `color-success` | `#1F8A70` | Success and completed states |
-| `color-warning` | `#D97706` | Cautions, storage warnings, offline guidance |
-| `color-error` | `#C2410C` | Errors and destructive feedback |
-| `color-info` | `#2563EB` | Informational notices |
-| `color-disabled` | `#A8B0B8` | Disabled text and controls |
+| Token                   | Hex       | Use                                            |
+| ----------------------- | --------- | ---------------------------------------------- |
+| `color-bg`              | `#F7F5F0` | Default app background                         |
+| `color-surface`         | `#FFFFFF` | Cards, sheets, elevated panels                 |
+| `color-surface-alt`     | `#EEF2F5` | Secondary surfaces, chips, grouped sections    |
+| `color-primary`         | `#0E5A6A` | Primary CTAs, active states, emphasis          |
+| `color-primary-pressed` | `#0A4652` | Pressed primary buttons                        |
+| `color-secondary`       | `#D97706` | Accent for progress, reminders, and audio cues |
+| `color-text`            | `#111827` | Main text                                      |
+| `color-text-muted`      | `#6B7280` | Secondary text and helper copy                 |
+| `color-border`          | `#D6D9DE` | Dividers and input borders                     |
+| `color-focus`           | `#2563EB` | Keyboard and accessibility focus ring          |
+| `color-success`         | `#1F8A70` | Success and completed states                   |
+| `color-warning`         | `#D97706` | Cautions, storage warnings, offline guidance   |
+| `color-error`           | `#C2410C` | Errors and destructive feedback                |
+| `color-info`            | `#2563EB` | Informational notices                          |
+| `color-disabled`        | `#A8B0B8` | Disabled text and controls                     |
 
 Color usage rules:
 
@@ -86,17 +86,17 @@ Color usage rules:
 
 Use a mobile-first scale that is readable at short distances and supports dynamic type.
 
-| Style | Size / Line Height | Weight | Use |
-|-------|--------------------|--------|-----|
-| Display | 28 / 34 | Semibold | Major home headlines or onboarding emphasis |
-| H1 | 24 / 30 | Semibold | Screen titles |
-| H2 | 20 / 26 | Semibold | Section headings |
-| H3 | 18 / 24 | Semibold | Card titles and prominent labels |
-| Body | 16 / 24 | Regular | Main copy |
-| Body Emphasis | 16 / 24 | Medium | Key values, actions, and state labels |
-| Body Small | 14 / 20 | Regular | Supporting copy |
-| Caption | 12 / 16 | Regular | Metadata, helper text, legal notes |
-| Audio Label | 13 / 16 | Medium, slightly tracked | Play, pause, recording, timer labels |
+| Style         | Size / Line Height | Weight                   | Use                                         |
+| ------------- | ------------------ | ------------------------ | ------------------------------------------- |
+| Display       | 28 / 34            | Semibold                 | Major home headlines or onboarding emphasis |
+| H1            | 24 / 30            | Semibold                 | Screen titles                               |
+| H2            | 20 / 26            | Semibold                 | Section headings                            |
+| H3            | 18 / 24            | Semibold                 | Card titles and prominent labels            |
+| Body          | 16 / 24            | Regular                  | Main copy                                   |
+| Body Emphasis | 16 / 24            | Medium                   | Key values, actions, and state labels       |
+| Body Small    | 14 / 20            | Regular                  | Supporting copy                             |
+| Caption       | 12 / 16            | Regular                  | Metadata, helper text, legal notes          |
+| Audio Label   | 13 / 16            | Medium, slightly tracked | Play, pause, recording, timer labels        |
 
 Typeface guidance:
 
@@ -112,15 +112,15 @@ Typography rules:
 
 ### Spacing System
 
-| Token | Value | Use |
-|-------|-------|-----|
-| `space-1` | 4 | Fine spacing, icon/text gaps |
-| `space-2` | 8 | Tight grouping |
-| `space-3` | 12 | Default between related controls |
-| `space-4` | 16 | Default inner padding and section spacing |
-| `space-5` | 20 | Group separation |
-| `space-6` | 24 | Screen section spacing |
-| `space-8` | 32 | Major vertical separation |
+| Token     | Value | Use                                       |
+| --------- | ----- | ----------------------------------------- |
+| `space-1` | 4     | Fine spacing, icon/text gaps              |
+| `space-2` | 8     | Tight grouping                            |
+| `space-3` | 12    | Default between related controls          |
+| `space-4` | 16    | Default inner padding and section spacing |
+| `space-5` | 20    | Group separation                          |
+| `space-6` | 24    | Screen section spacing                    |
+| `space-8` | 32    | Major vertical separation                 |
 
 Spacing rules:
 
@@ -138,14 +138,14 @@ Spacing rules:
 
 ### Iconography Style
 
-| Token | Standard |
-|-------|----------|
-| Style | Simple outline icons with filled active states |
-| Default size | 24px |
-| Small utility icons | 16px |
-| Large audio icons | 32px to 48px |
-| Stroke | Medium, consistent weight |
-| Corner style | Rounded, approachable |
+| Token               | Standard                                       |
+| ------------------- | ---------------------------------------------- |
+| Style               | Simple outline icons with filled active states |
+| Default size        | 24px                                           |
+| Small utility icons | 16px                                           |
+| Large audio icons   | 32px to 48px                                   |
+| Stroke              | Medium, consistent weight                      |
+| Corner style        | Rounded, approachable                          |
 
 Iconography rules:
 
@@ -157,61 +157,61 @@ Iconography rules:
 
 #### Button System
 
-| Component | Default | Pressed | Disabled | Loading | Focused |
-|-----------|---------|---------|----------|---------|---------|
-| Primary Button | Filled primary background, white text | Darker primary fill | Muted fill and text | Spinner + disabled label | Blue focus ring |
-| Secondary Button | Neutral border, primary text | Light neutral fill | Low-contrast border/text | Spinner where needed | Blue focus ring |
-| Tertiary Button | Text-only | Underlined or tinted | Muted text | No spinner by default | Blue focus ring |
+| Component        | Default                               | Pressed              | Disabled                 | Loading                  | Focused         |
+| ---------------- | ------------------------------------- | -------------------- | ------------------------ | ------------------------ | --------------- |
+| Primary Button   | Filled primary background, white text | Darker primary fill  | Muted fill and text      | Spinner + disabled label | Blue focus ring |
+| Secondary Button | Neutral border, primary text          | Light neutral fill   | Low-contrast border/text | Spinner where needed     | Blue focus ring |
+| Tertiary Button  | Text-only                             | Underlined or tinted | Muted text               | No spinner by default    | Blue focus ring |
 
 #### Inputs and Controls
 
-| Component | Guidance |
-|-----------|----------|
-| Text input | 16px body text, 48pt minimum height, clear label above field |
-| Password field | Show/hide control and helper copy |
-| Select / picker | Mobile-native picker when appropriate |
-| Toggle | Use for reminders and consent-related switches |
+| Component         | Guidance                                                                |
+| ----------------- | ----------------------------------------------------------------------- |
+| Text input        | 16px body text, 48pt minimum height, clear label above field            |
+| Password field    | Show/hide control and helper copy                                       |
+| Select / picker   | Mobile-native picker when appropriate                                   |
+| Toggle            | Use for reminders and consent-related switches                          |
 | Segmented control | Use for playback mode and ad choices where a small choice set is needed |
-| Checkbox | Use for consent acknowledgements |
-| Slider | Use for playback speed only when paired with labeled steps |
+| Checkbox          | Use for consent acknowledgements                                        |
+| Slider            | Use for playback speed only when paired with labeled steps              |
 
 #### Navigation Components
 
-| Component | Guidance |
-|-----------|----------|
-| Bottom tab bar | 5 destinations maximum, always visible on main shell screens |
-| Top bar | Back action on secondary screens, title centered or leading depending on platform norms |
-| Back button | Always visible on stacked screens unless blocked by a full-screen state |
-| Bottom sheet | Use for ad interstitial container or contextual actions, not as a default navigation surface |
+| Component      | Guidance                                                                                     |
+| -------------- | -------------------------------------------------------------------------------------------- |
+| Bottom tab bar | 5 destinations maximum, always visible on main shell screens                                 |
+| Top bar        | Back action on secondary screens, title centered or leading depending on platform norms      |
+| Back button    | Always visible on stacked screens unless blocked by a full-screen state                      |
+| Bottom sheet   | Use for ad interstitial container or contextual actions, not as a default navigation surface |
 
 #### Content Components
 
-| Component | Guidance |
-|-----------|----------|
-| Card | Primary content container for lessons, streak summaries, downloads, and settings groups |
-| List item | Use for settings and recordings |
-| Chip | Use for filters and quick state selection |
-| Badge | Use for offline, downloaded, synced, or completed status |
-| Empty state block | Use for no history, no results, and no downloads |
+| Component         | Guidance                                                                                |
+| ----------------- | --------------------------------------------------------------------------------------- |
+| Card              | Primary content container for lessons, streak summaries, downloads, and settings groups |
+| List item         | Use for settings and recordings                                                         |
+| Chip              | Use for filters and quick state selection                                               |
+| Badge             | Use for offline, downloaded, synced, or completed status                                |
+| Empty state block | Use for no history, no results, and no downloads                                        |
 
 #### Audio-Specific Components
 
-| Component | Guidance |
-|-----------|----------|
+| Component                     | Guidance                                                   |
+| ----------------------------- | ---------------------------------------------------------- |
 | Play / pause / resume control | Must be the largest actionable element in practice screens |
-| Recording state indicator | Show idle, recording, processing, and ready states clearly |
-| Progress ring / bar | Use for session progress and download progress |
-| Audio cue label | Use for timing, recording, and state prompts |
-| Level meter / mic indicator | Minimal, but visible during recording |
+| Recording state indicator     | Show idle, recording, processing, and ready states clearly |
+| Progress ring / bar           | Use for session progress and download progress             |
+| Audio cue label               | Use for timing, recording, and state prompts               |
+| Level meter / mic indicator   | Minimal, but visible during recording                      |
 
 #### Feedback Components
 
-| Component | Guidance |
-|-----------|----------|
-| Inline error text | Use for validation and local input errors |
+| Component               | Guidance                                                    |
+| ----------------------- | ----------------------------------------------------------- |
+| Inline error text       | Use for validation and local input errors                   |
 | Full-screen error state | Use for blocking onboarding, failed loads, and expired auth |
-| Toast / banner | Use sparingly for non-blocking status changes |
-| Skeleton loaders | Use for home, catalog, and progress hydration |
+| Toast / banner          | Use sparingly for non-blocking status changes               |
+| Skeleton loaders        | Use for home, catalog, and progress hydration               |
 
 ## Screen-by-Screen Specifications
 
@@ -229,20 +229,20 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Brand / wordmark | Upper or center | Small and unobtrusive |
-| Loading indicator | Center | Circular or linear, subtle |
-| Status text | Center below loader | Short, calm copy |
-| Retry button | Bottom or center on error | Only visible on failure |
+| Component         | Placement                 | Notes                      |
+| ----------------- | ------------------------- | -------------------------- |
+| Brand / wordmark  | Upper or center           | Small and unobtrusive      |
+| Loading indicator | Center                    | Circular or linear, subtle |
+| Status text       | Center below loader       | Short, calm copy           |
+| Retry button      | Bottom or center on error | Only visible on failure    |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Default/loading | Use muted text on `color-bg` with a single active loader |
-| Error | Show a short failure message and retry CTA in `color-error` or neutral with error accent |
-| Success | Transition directly to the next app state |
+| State           | Specification                                                                            |
+| --------------- | ---------------------------------------------------------------------------------------- |
+| Default/loading | Use muted text on `color-bg` with a single active loader                                 |
+| Error           | Show a short failure message and retry CTA in `color-error` or neutral with error accent |
+| Success         | Transition directly to the next app state                                                |
 
 Spacing / alignment:
 
@@ -276,21 +276,21 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Single-line |
-| Age control | Mid screen | Checkbox, date field, or age affirmation depending on implementation |
-| Helper copy | Mid or lower | Brief requirement explanation |
-| Continue button | Bottom primary | Full-width |
-| Exit/Support button | Bottom secondary | Secondary action |
+| Component           | Placement        | Notes                                                                |
+| ------------------- | ---------------- | -------------------------------------------------------------------- |
+| Title               | Top bar          | Single-line                                                          |
+| Age control         | Mid screen       | Checkbox, date field, or age affirmation depending on implementation |
+| Helper copy         | Mid or lower     | Brief requirement explanation                                        |
+| Continue button     | Bottom primary   | Full-width                                                           |
+| Exit/Support button | Bottom secondary | Secondary action                                                     |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Default | Age control active, helper copy visible |
-| Validation error | Inline message under the control |
-| Success | Route to consent screen |
+| State            | Specification                           |
+| ---------------- | --------------------------------------- |
+| Default          | Age control active, helper copy visible |
+| Validation error | Inline message under the control        |
+| Success          | Route to consent screen                 |
 
 Spacing / alignment:
 
@@ -322,19 +322,19 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Block title | Center | Direct and plain |
-| Explanation text | Center below title | Short, non-judgmental |
-| Exit button | Bottom primary or secondary | Safe exit |
-| Support link/button | Bottom secondary | Optional |
+| Component           | Placement                   | Notes                 |
+| ------------------- | --------------------------- | --------------------- |
+| Block title         | Center                      | Direct and plain      |
+| Explanation text    | Center below title          | Short, non-judgmental |
+| Exit button         | Bottom primary or secondary | Safe exit             |
+| Support link/button | Bottom secondary            | Optional              |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Default | No route into core app |
-| Support path | Exit/support flow |
+| State        | Specification          |
+| ------------ | ---------------------- |
+| Default      | No route into core app |
+| Support path | Exit/support flow      |
 
 Spacing / alignment:
 
@@ -367,22 +367,22 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Clear, concise |
-| Consent explanation | Upper body | Short summary, not legal wall text |
-| Privacy checkbox / toggle | Mid body | Required item |
-| Ad preference control | Mid body | Personalized vs non-personalized when allowed |
-| Accept and Continue | Bottom primary | Full-width |
-| Decline and Exit | Bottom secondary | Full-width or text button |
+| Component                 | Placement        | Notes                                         |
+| ------------------------- | ---------------- | --------------------------------------------- |
+| Title                     | Top bar          | Clear, concise                                |
+| Consent explanation       | Upper body       | Short summary, not legal wall text            |
+| Privacy checkbox / toggle | Mid body         | Required item                                 |
+| Ad preference control     | Mid body         | Personalized vs non-personalized when allowed |
+| Accept and Continue       | Bottom primary   | Full-width                                    |
+| Decline and Exit          | Bottom secondary | Full-width or text                            |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Default | Consent choices visible and editable |
-| Declined required consent | Block progression |
-| Success | Route to Sign In |
+| State                     | Specification                        |
+| ------------------------- | ------------------------------------ |
+| Default                   | Consent choices visible and editable |
+| Declined required consent | Block progression                    |
+| Success                   | Route to Sign In                     |
 
 Spacing / alignment:
 
@@ -414,22 +414,22 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | "Sign In" |
-| Email input | Upper body | Full-width |
-| Password input | Upper body | Full-width, show/hide |
-| Social buttons | Mid body | Optional depending on implementation |
-| Help link | Lower body | Secondary |
-| Sign In button | Bottom primary | Full-width |
+| Component      | Placement      | Notes                                |
+| -------------- | -------------- | ------------------------------------ |
+| Title          | Top bar        | "Sign In"                            |
+| Email input    | Upper body     | Full-width                           |
+| Password input | Upper body     | Full-width, show/hide                |
+| Social buttons | Mid body       | Optional depending on implementation |
+| Help link      | Lower body     | Secondary                            |
+| Sign In button | Bottom primary | Full-width                           |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Loading | Disable controls and show progress |
-| Error | Keep inputs in place and show retryable copy |
-| Success | Route to Level Selection |
+| State   | Specification                                |
+| ------- | -------------------------------------------- |
+| Loading | Disable controls and show progress           |
+| Error   | Keep inputs in place and show retryable copy |
+| Success | Route to Level Selection                     |
 
 Spacing / alignment:
 
@@ -449,7 +449,76 @@ Audio-first:
 
 - Reduce friction with clear focus order and minimal visible text.
 
-#### 1.6 Level Selection
+#### 1.6 Sign Up
+
+Purpose: Create a new account through email/password with validation and consent.
+
+Layout:
+
+- Email and password fields stacked vertically
+- Confirm password field below password
+- Terms of Service & Privacy Policy link below fields
+- Primary Create Account action at the bottom
+
+Component inventory:
+
+| Component              | Placement        | Notes                                     |
+| ---------------------- | ---------------- | ----------------------------------------- |
+| Title                  | Top bar          | "Sign Up"                                 |
+| Email input            | Upper body       | Full-width, real-time validation          |
+| Password input         | Upper body       | Full-width, show/hide, strength indicator |
+| Confirm password input | Upper body       | Full-width, show/hide, match validation   |
+| Terms link             | Lower body       | Secondary, opens external browser         |
+| Create Account button  | Bottom primary   | Full-width                                |
+| Sign In link           | Bottom secondary | "Already have account? Sign In"           |
+
+State specs:
+
+| State               | Specification                                    |
+| ------------------- | ------------------------------------------------ |
+| Default             | Show empty form with validation hints            |
+| Email validation    | Real-time email format feedback                  |
+| Password validation | Password strength indicator (weak/medium/strong) |
+| Password mismatch   | Show error when passwords don't match            |
+| Loading             | Disable controls and show progress               |
+| Error               | Keep fields visible and show retryable error     |
+| Success             | Route to Level Selection                         |
+
+Spacing / alignment:
+
+- Maintain clear separation between credential fields and consent.
+- Use consistent spacing with Sign In screen for visual harmony.
+
+Typography:
+
+- Inputs: Body
+- Helper copy: Body Small
+- Terms link: Body Small, color-primary (link style)
+- Error text: Body Small, color-error
+
+Color:
+
+- Primary button uses `color-primary`.
+- Error text uses `color-error`.
+- Password strength indicator uses:
+  - Weak: `color-error`
+  - Medium: `color-warning`
+  - Strong: `color-success`
+
+Validation rules:
+
+- Email: Must be valid email format
+- Password: Minimum 8 characters, mixed case, numeric
+- Confirm password: Must match password exactly
+- Terms: Must be acknowledged (checkbox or implied acceptance)
+
+Audio-first:
+
+- Reduce typing friction with clear validation feedback.
+- Keep error messages concise and actionable.
+- Ensure form flows naturally from top to bottom.
+
+#### 1.7 Level Selection
 
 Purpose: Capture proficiency level to seed recommendations.
 
@@ -461,20 +530,20 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Clear and short |
-| Guidance text | Upper body | Short explainer |
-| Level cards / picker | Center | Large tap targets |
-| Continue button | Bottom primary | Full-width |
+| Component            | Placement      | Notes             |
+| -------------------- | -------------- | ----------------- |
+| Title                | Top bar        | Clear and short   |
+| Guidance text        | Upper body     | Short explainer   |
+| Level cards / picker | Center         | Large tap targets |
+| Continue button      | Bottom primary | Full-width        |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Default | One level selected |
-| Error | Highlight missing or invalid selection |
-| Success | Route to Reminder Setup |
+| State   | Specification                          |
+| ------- | -------------------------------------- |
+| Default | One level selected                     |
+| Error   | Highlight missing or invalid selection |
+| Success | Route to Reminder Setup                |
 
 Spacing / alignment:
 
@@ -493,7 +562,7 @@ Audio-first:
 
 - Keep the decision simple and fast.
 
-#### 1.7 Reminder Setup
+#### 1.8 Reminder Setup
 
 Purpose: Set reminder time and enable state during onboarding.
 
@@ -505,22 +574,22 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Short |
-| Reminder explainer | Upper body | Mention local device schedule |
-| Toggle | Mid body | On/off control |
-| Time picker | Mid body | Enabled when reminders are on |
-| Continue button | Bottom primary | Full-width |
-| Skip reminders button | Bottom secondary | Full-width or text |
+| Component             | Placement        | Notes                         |
+| --------------------- | ---------------- | ----------------------------- |
+| Title                 | Top bar          | Short                         |
+| Reminder explainer    | Upper body       | Mention local device schedule |
+| Toggle                | Mid body         | On/off control                |
+| Time picker           | Mid body         | Enabled when reminders are on |
+| Continue button       | Bottom primary   | Full-width                    |
+| Skip reminders button | Bottom secondary | Full-width or text            |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Enabled | Time picker active and visible |
-| Disabled | Time picker inactive / hidden |
-| Success | Route to Permission Prompts |
+| State    | Specification                  |
+| -------- | ------------------------------ |
+| Enabled  | Time picker active and visible |
+| Disabled | Time picker inactive / hidden  |
+| Success  | Route to Permission Prompts    |
 
 Spacing / alignment:
 
@@ -538,7 +607,7 @@ Audio-first:
 
 - Reminders should feel optional and supportive.
 
-#### 1.8 Permission Prompts
+#### 1.9 Permission Prompts
 
 Purpose: Handle notification and microphone permissions before the main shell.
 
@@ -550,21 +619,21 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | "Permission Prompts" |
-| Notification card | Upper body | Includes rationale and status |
-| Microphone card | Lower body | Includes rationale and status |
-| Continue button | Bottom primary | Full-width |
-| Open Settings button | Bottom secondary | Full-width or text |
+| Component            | Placement        | Notes                         |
+| -------------------- | ---------------- | ----------------------------- |
+| Title                | Top bar          | "Permission Prompts"          |
+| Notification card    | Upper body       | Includes rationale and status |
+| Microphone card      | Lower body       | Includes rationale and status |
+| Continue button      | Bottom primary   | Full-width                    |
+| Open Settings button | Bottom secondary | Full-width or text            |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Granted | Card shows granted badge and continue enabled |
-| Notification denied | Reminders disabled note visible |
-| Microphone denied | Listening-only note visible |
+| State               | Specification                                 |
+| ------------------- | --------------------------------------------- |
+| Granted             | Card shows granted badge and continue enabled |
+| Notification denied | Reminders disabled note visible               |
+| Microphone denied   | Listening-only note visible                   |
 
 Spacing / alignment:
 
@@ -594,27 +663,26 @@ Layout:
 - Hero recommendation card at top
 - Streak/progress summary below
 - Resume lesson card if applicable
-- Secondary shortcuts and bottom tabs below
+- Bottom tabs below
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top | Home |
+| Component           | Placement  | Notes                            |
+| ------------------- | ---------- | -------------------------------- |
+| Title               | Top        | Home                             |
 | Recommendation card | Upper body | Largest card, primary tap target |
-| Streak card | Mid body | High-visibility stats |
-| Resume card | Mid body | Conditional |
-| Shortcut row | Lower body | Lessons, Downloads, Progress, Settings |
-| Bottom tabs | Bottom | Main navigation |
+| Streak card         | Mid body   | High-visibility stats            |
+| Resume card         | Mid body   | Conditional                      |
+| Bottom tabs         | Bottom     | Main navigation                  |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Loading | Skeleton cards while progress hydrates |
-| Empty | Starter lesson state with guidance |
+| State   | Specification                              |
+| ------- | ------------------------------------------ |
+| Loading | Skeleton cards while progress hydrates     |
+| Empty   | Starter lesson state with guidance         |
 | Offline | Cached recommendation and local-state copy |
-| Error | Retryable hydration / sync issue |
+| Error   | Retryable hydration / sync issue           |
 
 Spacing / alignment:
 
@@ -649,22 +717,22 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Lesson Catalog |
-| Recommendation strip | Upper body | Optional |
-| Filter chips | Below header | Level, topic, duration |
-| Lesson cards | Main list | Repeating content blocks |
-| Bottom tabs | Bottom | Main navigation |
+| Component            | Placement    | Notes                    |
+| -------------------- | ------------ | ------------------------ |
+| Title                | Top bar      | Lesson Catalog           |
+| Recommendation strip | Upper body   | Optional                 |
+| Filter chips         | Below header | Level, topic, duration   |
+| Lesson cards         | Main list    | Repeating content blocks |
+| Bottom tabs          | Bottom       | Main navigation          |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
+| State   | Specification                          |
+| ------- | -------------------------------------- |
 | Loading | List skeletons and filter placeholders |
-| Empty | “No lessons found” empty state |
+| Empty   | “No lessons found” empty state         |
 | Offline | Cached lessons shown with offline note |
-| Error | Retryable catalog error |
+| Error   | Retryable catalog error                |
 
 Spacing / alignment:
 
@@ -696,22 +764,22 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Lesson name or title |
-| Lesson summary | Upper body | Level, topic, duration |
-| Description | Mid body | Short paragraph |
-| Start practice button | Bottom primary | Prominent |
-| Download button | Bottom secondary | Visible and secondary |
+| Component             | Placement        | Notes                  |
+| --------------------- | ---------------- | ---------------------- |
+| Title                 | Top bar          | Lesson name or title   |
+| Lesson summary        | Upper body       | Level, topic, duration |
+| Description           | Mid body         | Short paragraph        |
+| Start practice button | Bottom primary   | Prominent              |
+| Download button       | Bottom secondary | Visible and secondary  |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Default | Show lesson metadata and actions |
+| State        | Specification                     |
+| ------------ | --------------------------------- |
+| Default      | Show lesson metadata and actions  |
 | Stale lesson | Replace or disable primary action |
-| Downloaded | Show downloaded badge |
-| Error | Failed asset load state |
+| Downloaded   | Show downloaded badge             |
+| Error        | Failed asset load state           |
 
 Spacing / alignment:
 
@@ -744,24 +812,24 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title / timer / progress | Top | Compact |
-| Large audio control | Center | Largest touch target |
-| Mic indicator | Lower center | Idle / recording / processing |
-| Cue text / script snippet | Lower center | Optional, minimal |
-| Action strip | Bottom | Repeat, pause, finish |
+| Component                 | Placement    | Notes                         |
+| ------------------------- | ------------ | ----------------------------- |
+| Title / timer / progress  | Top          | Compact                       |
+| Large audio control       | Center       | Largest touch target          |
+| Mic indicator             | Lower center | Idle / recording / processing |
+| Cue text / script snippet | Lower center | Optional, minimal             |
+| Action strip              | Bottom       | Repeat, pause, finish         |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Loading | Show buffering / audio-loading state |
-| Playing | Active audio state |
-| Paused | Resume CTA visible |
-| Recording | Mic active, visual recording state |
-| Error | Retryable load or recording error |
-| Offline | Local downloaded content indicator |
+| State     | Specification                        |
+| --------- | ------------------------------------ |
+| Loading   | Show buffering / audio-loading state |
+| Playing   | Active audio state                   |
+| Paused    | Resume CTA visible                   |
+| Recording | Mic active, visual recording state   |
+| Error     | Retryable load or recording error    |
+| Offline   | Local downloaded content indicator   |
 
 Spacing / alignment:
 
@@ -786,26 +854,26 @@ Audio-first:
 
 Loading state:
 
-| Element | Spec |
-|---------|------|
+| Element  | Spec                           |
+| -------- | ------------------------------ |
 | Progress | Skeleton or thin progress line |
-| Controls | Disabled, muted |
-| Copy | “Loading lesson audio…” |
+| Controls | Disabled, muted                |
+| Copy     | “Loading lesson audio…”        |
 
 Error state:
 
-| Element | Spec |
-|---------|------|
-| Message | “Unable to load lesson” |
-| CTA | Retry current lesson |
-| Secondary | Return to catalog |
+| Element   | Spec                    |
+| --------- | ----------------------- |
+| Message   | “Unable to load lesson” |
+| CTA       | Retry current lesson    |
+| Secondary | Return to catalog       |
 
 Offline state:
 
-| Element | Spec |
-|---------|------|
-| Badge | “Offline practice available” |
-| CTA | Continue |
+| Element | Spec                         |
+| ------- | ---------------------------- |
+| Badge   | “Offline practice available” |
+| CTA     | Continue                     |
 
 #### 2.6 Recording Comparison
 
@@ -820,24 +888,24 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Recording Comparison |
-| Recording status | Upper body | Available / missing |
-| Mode selector | Mid body | Reference / recording / side-by-side |
-| Playback controls | Lower body | Large and obvious |
-| Continue button | Bottom primary | Default exit |
-| Skip comparison button | Bottom secondary | Important optional path |
-| Repeat session button | Bottom secondary | Optional |
+| Component              | Placement        | Notes                                |
+| ---------------------- | ---------------- | ------------------------------------ |
+| Title                  | Top bar          | Recording Comparison                 |
+| Recording status       | Upper body       | Available / missing                  |
+| Mode selector          | Mid body         | Reference / recording / side-by-side |
+| Playback controls      | Lower body       | Large and obvious                    |
+| Continue button        | Bottom primary   | Default exit                         |
+| Skip comparison button | Bottom secondary | Important optional path              |
+| Repeat session button  | Bottom secondary | Optional                             |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Default | Comparison controls visible |
-| Recording missing | Retry-oriented error |
-| Sync unavailable | Fallback to separate modes |
-| Skip | Continue to Home or Progress |
+| State             | Specification                |
+| ----------------- | ---------------------------- |
+| Default           | Comparison controls visible  |
+| Recording missing | Retry-oriented error         |
+| Sync unavailable  | Fallback to separate modes   |
+| Skip              | Continue to Home or Progress |
 
 Spacing / alignment:
 
@@ -870,23 +938,23 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Progress View |
-| Streak summary | Upper body | Largest metric |
-| Practice stats | Mid body | Minutes / completions |
-| Recent sessions | Lower body | List or cards |
-| Start a lesson button | Bottom primary | Returns to practice |
-| View downloads button | Bottom secondary | Optional |
+| Component             | Placement        | Notes                 |
+| --------------------- | ---------------- | --------------------- |
+| Title                 | Top bar          | Progress View         |
+| Streak summary        | Upper body       | Largest metric        |
+| Practice stats        | Mid body         | Minutes / completions |
+| Recent sessions       | Lower body       | List or cards         |
+| Start a lesson button | Bottom primary   | Returns to practice   |
+| View downloads button | Bottom secondary | Optional              |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Loading | Hydrating local and synced data |
-| Empty | No-history starter state |
-| Sync pending | Queue note / retry label |
-| Error | Preserve local progress and retry |
+| State        | Specification                     |
+| ------------ | --------------------------------- |
+| Loading      | Hydrating local and synced data   |
+| Empty        | No-history starter state          |
+| Sync pending | Queue note / retry label          |
+| Error        | Preserve local progress and retry |
 
 Spacing / alignment:
 
@@ -919,22 +987,22 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Downloaded Lessons / Offline Library |
-| Storage summary | Upper body | Remaining space and quota |
-| Downloaded cards | Main list | Each with status badge |
-| Open lesson button | Per card or bottom | Primary on selection |
-| Manage downloads button | Bottom secondary | Optional |
+| Component               | Placement          | Notes                                |
+| ----------------------- | ------------------ | ------------------------------------ |
+| Title                   | Top bar            | Downloaded Lessons / Offline Library |
+| Storage summary         | Upper body         | Remaining space and quota            |
+| Downloaded cards        | Main list          | Each with status badge               |
+| Open lesson button      | Per card or bottom | Primary on selection                 |
+| Manage downloads button | Bottom secondary   | Optional                             |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Empty | No downloaded lessons |
-| Offline | Fully functional locally |
+| State   | Specification                               |
+| ------- | ------------------------------------------- |
+| Empty   | No downloaded lessons                       |
+| Offline | Fully functional locally                    |
 | Invalid | Block playback and suggest another download |
-| Error | Storage / verification recovery |
+| Error   | Storage / verification recovery             |
 
 Spacing / alignment:
 
@@ -967,21 +1035,21 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Offline badge | Top | Visible state marker |
-| Lesson title | Top | Short and prominent |
-| Audio control | Center | Large touch target |
-| Recording status | Lower center | Idle / recording |
-| Finish button | Bottom primary | Save progress |
+| Component        | Placement      | Notes                |
+| ---------------- | -------------- | -------------------- |
+| Offline badge    | Top            | Visible state marker |
+| Lesson title     | Top            | Short and prominent  |
+| Audio control    | Center         | Large touch target   |
+| Recording status | Lower center   | Idle / recording     |
+| Finish button    | Bottom primary | Save progress        |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Offline available | Normal operation |
+| State                 | Specification                      |
+| --------------------- | ---------------------------------- |
+| Offline available     | Normal operation                   |
 | Authorization invalid | Block and suggest another download |
-| Sync queued | Save locally |
+| Sync queued           | Save locally                       |
 
 Spacing / alignment:
 
@@ -1009,16 +1077,16 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Notification title | OS surface | Direct and short |
-| Notification body | OS surface | One sentence |
-| Tap action | Entire card | Opens Home |
+| Component          | Placement   | Notes            |
+| ------------------ | ----------- | ---------------- |
+| Notification title | OS surface  | Direct and short |
+| Notification body  | OS surface  | One sentence     |
+| Tap action         | Entire card | Opens Home       |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
+| State     | Specification |
+| --------- | ------------- |
 | Delivered | Route to Home |
 | Dismissed | No navigation |
 
@@ -1039,19 +1107,19 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Settings |
+| Component       | Placement | Notes         |
+| --------------- | --------- | ------------- |
+| Title           | Top bar   | Settings      |
 | Settings groups | Main list | Tappable rows |
-| Bottom tabs | Bottom | Main nav |
+| Bottom tabs     | Bottom    | Main nav      |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Default | All categories visible |
-| Offline | Local settings available |
-| Error | Preserve list and show recovery if needed |
+| State   | Specification                             |
+| ------- | ----------------------------------------- |
+| Default | All categories visible                    |
+| Offline | Local settings available                  |
+| Error   | Preserve list and show recovery if needed |
 
 Spacing / alignment:
 
@@ -1082,22 +1150,22 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Reminder Settings |
-| Status copy | Upper body | Permission and enabled state |
-| Toggle | Mid body | Enable / disable reminders |
-| Time picker | Mid body | Active when reminders are on |
-| Save button | Bottom primary | Full-width |
-| Disable button | Bottom secondary | Full-width or text |
+| Component      | Placement        | Notes                        |
+| -------------- | ---------------- | ---------------------------- |
+| Title          | Top bar          | Reminder Settings            |
+| Status copy    | Upper body       | Permission and enabled state |
+| Toggle         | Mid body         | Enable / disable reminders   |
+| Time picker    | Mid body         | Active when reminders are on |
+| Save button    | Bottom primary   | Full-width                   |
+| Disable button | Bottom secondary | Full-width or text           |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
+| State             | Specification                       |
+| ----------------- | ----------------------------------- |
 | Permission denied | Recovery note and settings shortcut |
-| Disabled | Schedule canceled |
-| Success | Return to Settings or Home |
+| Disabled          | Schedule canceled                   |
+| Success           | Return to Settings or Home          |
 
 Typography:
 
@@ -1119,21 +1187,21 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Consent Settings |
-| Status summary | Upper body | Current consent state |
-| Privacy control | Mid body | Toggle / checkbox |
-| Ad consent control | Mid body | Toggle / radio set |
-| Save button | Bottom primary | Full-width |
+| Component          | Placement      | Notes                 |
+| ------------------ | -------------- | --------------------- |
+| Title              | Top bar        | Consent Settings      |
+| Status summary     | Upper body     | Current consent state |
+| Privacy control    | Mid body       | Toggle / checkbox     |
+| Ad consent control | Mid body       | Toggle / radio set    |
+| Save button        | Bottom primary | Full-width            |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Default | Show current stored choices |
+| State             | Specification                    |
+| ----------------- | -------------------------------- |
+| Default           | Show current stored choices      |
 | Withdrawn consent | Prevent personalized ad requests |
-| Success | Persist immediately |
+| Success           | Persist immediately              |
 
 Typography:
 
@@ -1155,21 +1223,21 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Playback Settings |
-| Speed selector | Main body | Stepper, segmented control, or slider with labels |
-| Explanation note | Lower body | Short |
-| Save button | Bottom primary | Full-width |
-| Reset button | Bottom secondary | Full-width |
+| Component        | Placement        | Notes                                             |
+| ---------------- | ---------------- | ------------------------------------------------- |
+| Title            | Top bar          | Playback Settings                                 |
+| Speed selector   | Main body        | Stepper, segmented control, or slider with labels |
+| Explanation note | Lower body       | Short                                             |
+| Save button      | Bottom primary   | Full-width                                        |
+| Reset button     | Bottom secondary | Full-width                                        |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Default | Current speed selected |
+| State         | Specification                   |
+| ------------- | ------------------------------- |
+| Default       | Current speed selected          |
 | Invalid value | Reject and retain current speed |
-| Success | Apply on future playback |
+| Success       | Apply on future playback        |
 
 Typography:
 
@@ -1191,21 +1259,21 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Profile Settings |
-| Profile fields | Main body | Limited to necessary fields |
-| Account summary | Upper body | Email / level overview |
-| Save button | Bottom primary | Full-width |
-| Cancel button | Bottom secondary | Full-width |
+| Component       | Placement        | Notes                       |
+| --------------- | ---------------- | --------------------------- |
+| Title           | Top bar          | Profile Settings            |
+| Profile fields  | Main body        | Limited to necessary fields |
+| Account summary | Upper body       | Email / level overview      |
+| Save button     | Bottom primary   | Full-width                  |
+| Cancel button   | Bottom secondary | Full-width                  |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Default | Fields editable |
+| State            | Specification       |
+| ---------------- | ------------------- |
+| Default          | Fields editable     |
 | Validation error | Inline field errors |
-| Success | Return to Settings |
+| Success          | Return to Settings  |
 
 Typography:
 
@@ -1224,21 +1292,21 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Recording Library |
-| Recording list | Main body | Cards or rows |
-| Play button | Per item | Secondary action |
-| Delete button | Per item | Destructive |
-| Back to settings | Bottom secondary | Optional |
+| Component        | Placement        | Notes             |
+| ---------------- | ---------------- | ----------------- |
+| Title            | Top bar          | Recording Library |
+| Recording list   | Main body        | Cards or rows     |
+| Play button      | Per item         | Secondary action  |
+| Delete button    | Per item         | Destructive       |
+| Back to settings | Bottom secondary | Optional          |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Empty | No recordings state |
-| Synced delete | Queue remote deletion |
-| Error | Retryable delete failure |
+| State         | Specification            |
+| ------------- | ------------------------ |
+| Empty         | No recordings state      |
+| Synced delete | Queue remote deletion    |
+| Error         | Retryable delete failure |
 
 Typography:
 
@@ -1260,21 +1328,21 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Top bar | Account Management |
-| Account summary | Upper body | Account and status |
-| Warning copy | Mid body | Destructive-action caution |
-| Sign out button | Bottom secondary | Non-destructive |
-| Delete account button | Bottom primary or destructive | Requires confirmation |
+| Component             | Placement                     | Notes                      |
+| --------------------- | ----------------------------- | -------------------------- |
+| Title                 | Top bar                       | Account Management         |
+| Account summary       | Upper body                    | Account and status         |
+| Warning copy          | Mid body                      | Destructive-action caution |
+| Sign out button       | Bottom secondary              | Non-destructive            |
+| Delete account button | Bottom primary or destructive | Requires confirmation      |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Confirmed deletion | Remove local data and exit |
-| Backend failure | Keep learner signed in and show retryable error |
-| Sign out | End session without deleting data |
+| State              | Specification                                   |
+| ------------------ | ----------------------------------------------- |
+| Confirmed deletion | Remove local data and exit                      |
+| Backend failure    | Keep learner signed in and show retryable error |
+| Sign out           | End session without deleting data               |
 
 Typography:
 
@@ -1298,21 +1366,21 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Error title | Center | Direct |
-| Explanation | Center below | Short |
-| Retry button | Bottom primary | Context-specific |
+| Component     | Placement        | Notes                       |
+| ------------- | ---------------- | --------------------------- |
+| Error title   | Center           | Direct                      |
+| Explanation   | Center below     | Short                       |
+| Retry button  | Bottom primary   | Context-specific            |
 | Recovery link | Bottom secondary | Return / settings / catalog |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| Audio load failure | Retry current lesson |
-| Auth expired | Prompt sign in again |
-| Storage full | Free space and retry |
-| Network loss | Continue offline where supported |
+| State              | Specification                    |
+| ------------------ | -------------------------------- |
+| Audio load failure | Retry current lesson             |
+| Auth expired       | Prompt sign in again             |
+| Storage full       | Free space and retry             |
+| Network loss       | Continue offline where supported |
 
 Typography:
 
@@ -1334,17 +1402,17 @@ Layout:
 
 Component inventory:
 
-| Component | Placement | Notes |
-|-----------|-----------|-------|
-| Title | Center | Exit / Support |
-| Message | Center below | Brief and neutral |
-| Exit button | Bottom primary | End the flow |
-| Support button | Bottom secondary | Optional |
+| Component      | Placement        | Notes             |
+| -------------- | ---------------- | ----------------- |
+| Title          | Center           | Exit / Support    |
+| Message        | Center below     | Brief and neutral |
+| Exit button    | Bottom primary   | End the flow      |
+| Support button | Bottom secondary | Optional          |
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
+| State   | Specification                       |
+| ------- | ----------------------------------- |
 | Default | End flow without further navigation |
 
 ## Ad Placement
@@ -1373,12 +1441,12 @@ Visual treatment:
 
 State specs:
 
-| State | Specification |
-|-------|---------------|
-| No fill | Skip immediately |
-| Offline | Skip immediately |
-| Playback failure | Close container and continue |
-| Success | Continue to next learner step |
+| State            | Specification                 |
+| ---------------- | ----------------------------- |
+| No fill          | Skip immediately              |
+| Offline          | Skip immediately              |
+| Playback failure | Close container and continue  |
+| Success          | Continue to next learner step |
 
 Color:
 
@@ -1422,16 +1490,16 @@ Audio-first:
 
 ## Accessibility Considerations
 
-| Area | Requirement |
-|------|-------------|
-| Contrast | Maintain at least WCAG AA contrast for text and controls |
-| Touch targets | Minimum 44pt, with 48pt preferred for audio controls |
-| Dynamic type | Support larger text sizes without breaking layout |
-| VoiceOver / TalkBack | All controls need clear labels, hints, and states |
-| Focus order | Logical top-to-bottom order with primary CTA first |
-| Motion reduction | Respect reduced motion preferences |
-| Error messaging | Clear, concise, and non-technical |
-| Audio controls | Distinct labels for play, pause, resume, finish, and recording |
+| Area                 | Requirement                                                    |
+| -------------------- | -------------------------------------------------------------- |
+| Contrast             | Maintain at least WCAG AA contrast for text and controls       |
+| Touch targets        | Minimum 44pt, with 48pt preferred for audio controls           |
+| Dynamic type         | Support larger text sizes without breaking layout              |
+| VoiceOver / TalkBack | All controls need clear labels, hints, and states              |
+| Focus order          | Logical top-to-bottom order with primary CTA first             |
+| Motion reduction     | Respect reduced motion preferences                             |
+| Error messaging      | Clear, concise, and non-technical                              |
+| Audio controls       | Distinct labels for play, pause, resume, finish, and recording |
 
 Accessibility rules:
 
@@ -1464,38 +1532,40 @@ Accessibility rules:
 
 ## Traceability Matrix
 
-| Screen | Wireframe Reference | IA Section | User Flow Reference |
-|--------|---------------------|------------|---------------------|
-| App Launch | 1.1 | Entry, Compliance, and Onboarding | Onboarding Flow |
-| Age Gate | 1.2 | Entry, Compliance, and Onboarding | Onboarding Flow |
-| Age Policy Block | 1.3 | Recovery and Support | Cross-Cutting Error and Edge-Case Flows |
-| Privacy and Ad Consent | 1.4 | Entry, Compliance, and Onboarding | Onboarding Flow |
-| Sign In | 1.5 | Entry, Compliance, and Onboarding | Onboarding Flow |
-| Level Selection | 1.6 | Entry, Compliance, and Onboarding | Onboarding Flow |
-| Reminder Setup | 1.7 | Entry, Compliance, and Onboarding | Onboarding Flow |
-| Permission Prompts | 1.8 | Entry, Compliance, and Onboarding | Onboarding Flow |
-| Home / Daily Practice | 2.1 | Core Daily Practice | Returning-User Daily Practice Flow |
-| Lesson Catalog | 2.2 | Core Daily Practice | Browse and Select a Lesson Flow |
-| Lesson Detail | 2.3 | Core Daily Practice | Browse and Select a Lesson Flow |
-| Practice Session | 2.4 / 2.5 | Core Daily Practice | Shadowing Practice Session Flow |
-| Recording Comparison | 2.6 | Core Daily Practice | Recording Playback Comparison Flow |
-| Progress View | 2.7 | Core Daily Practice | Returning-User Daily Practice Flow |
-| Downloaded Lessons / Offline Library | 3.1 | Offline and Return Paths | Offline Lesson Download and Practice Flow |
-| Offline Practice Session | 3.2 | Offline and Return Paths | Offline Lesson Download and Practice Flow |
-| Local Reminder Notification | 3.3 | Offline and Return Paths | Manage Reminder Notifications Flow |
-| Settings | 4.1 | Settings and Control | Settings and Account Management Path |
-| Reminder Settings | 4.2 | Settings and Control | Manage Reminder Notifications Flow |
-| Consent Settings | 4.3 | Settings and Control | Handle Age Gate and Consent |
-| Playback Settings | 4.4 | Settings and Control | Settings and Account Management Path |
-| Profile Settings | 4.5 | Settings and Control | Settings and Account Management Path |
-| Recording Library | 4.6 | Settings and Control | Settings and Account Management Path |
-| Account Management | 4.7 | Settings and Control | Settings and Account Management Path |
-| Retryable Error States | 5.1 | Recovery and Support | Cross-Cutting Error and Edge-Case Flows |
-| Exit / Support Path | 5.2 | Recovery and Support | Cross-Cutting Error and Edge-Case Flows |
-| Audio Interstitial Ad | Ad Placement | Ad Placement | Ad Interstitial Flow |
+| Screen                               | Wireframe Reference | IA Section                        | User Flow Reference                       |
+| ------------------------------------ | ------------------- | --------------------------------- | ----------------------------------------- |
+| App Launch                           | 1.1                 | Entry, Compliance, and Onboarding | Onboarding Flow                           |
+| Age Gate                             | 1.2                 | Entry, Compliance, and Onboarding | Onboarding Flow                           |
+| Age Policy Block                     | 1.3                 | Recovery and Support              | Cross-Cutting Error and Edge-Case Flows   |
+| Privacy and Ad Consent               | 1.4                 | Entry, Compliance, and Onboarding | Onboarding Flow                           |
+| Sign In                              | 1.5                 | Entry, Compliance, and Onboarding | Onboarding Flow                           |
+| Sign Up                              | 1.6                 | Entry, Compliance, and Onboarding | Onboarding Flow                           |
+| Level Selection                      | 1.7                 | Entry, Compliance, and Onboarding | Onboarding Flow                           |
+| Reminder Setup                       | 1.8                 | Entry, Compliance, and Onboarding | Onboarding Flow                           |
+| Permission Prompts                   | 1.9                 | Entry, Compliance, and Onboarding | Onboarding Flow                           |
+| Home / Daily Practice                | 2.1                 | Core Daily Practice               | Returning-User Daily Practice Flow        |
+| Lesson Catalog                       | 2.2                 | Core Daily Practice               | Browse and Select a Lesson Flow           |
+| Lesson Detail                        | 2.3                 | Core Daily Practice               | Browse and Select a Lesson Flow           |
+| Practice Session                     | 2.4 / 2.5           | Core Daily Practice               | Shadowing Practice Session Flow           |
+| Recording Comparison                 | 2.6                 | Core Daily Practice               | Recording Playback Comparison Flow        |
+| Progress View                        | 2.7                 | Core Daily Practice               | Returning-User Daily Practice Flow        |
+| Downloaded Lessons / Offline Library | 3.1                 | Offline and Return Paths          | Offline Lesson Download and Practice Flow |
+| Offline Practice Session             | 3.2                 | Offline and Return Paths          | Offline Lesson Download and Practice Flow |
+| Local Reminder Notification          | 3.3                 | Offline and Return Paths          | Manage Reminder Notifications Flow        |
+| Settings                             | 4.1                 | Settings and Control              | Settings and Account Management Path      |
+| Reminder Settings                    | 4.2                 | Settings and Control              | Manage Reminder Notifications Flow        |
+| Consent Settings                     | 4.3                 | Settings and Control              | Handle Age Gate and Consent               |
+| Playback Settings                    | 4.4                 | Settings and Control              | Settings and Account Management Path      |
+| Profile Settings                     | 4.5                 | Settings and Control              | Settings and Account Management Path      |
+| Recording Library                    | 4.6                 | Settings and Control              | Settings and Account Management Path      |
+| Account Management                   | 4.7                 | Settings and Control              | Settings and Account Management Path      |
+| Retryable Error States               | 5.1                 | Recovery and Support              | Cross-Cutting Error and Edge-Case Flows   |
+| Exit / Support Path                  | 5.2                 | Recovery and Support              | Cross-Cutting Error and Edge-Case Flows   |
+| Audio Interstitial Ad                | Ad Placement        | Ad Placement                      | Ad Interstitial Flow                      |
 
 ## Revision History
 
-| Version | Date | Author | Description |
-|---------|------|--------|-------------|
-| 1.0 | 2026-05-13 | UX Design | Initial UI design specification for ShadowSpeak MVP |
+| Version | Date       | Author    | Description                                                  |
+| ------- | ---------- | --------- | ------------------------------------------------------------ |
+| 1.0     | 2026-05-13 | UX Design | Initial UI design specification for ShadowSpeak MVP          |
+| 1.2     | 2026-05-14 | UX Design | Added Sign Up screen (1.6) and renumbered subsequent screens |

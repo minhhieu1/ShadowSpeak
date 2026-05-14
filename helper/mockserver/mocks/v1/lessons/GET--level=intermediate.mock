@@ -1,0 +1,38 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+X-Request-Id: req-mock-032
+
+{
+  "requestId": "req-mock-032",
+  "ok": true,
+  "data": {
+    "items": [
+      {
+        "lessonId": "lesson-003",
+        "title": "Business Meeting Introductions",
+        "level": "intermediate",
+        "topic": "business",
+        "durationSeconds": 300,
+        "language": "en-US",
+        "isPublished": true,
+        "audioAssetKey": "lessons/lesson-003/audio.mp3",
+        "scriptAssetKey": "lessons/lesson-003/script.json",
+        "updatedAt": "2026-05-03T12:00:00Z"
+      },
+      {
+        "lessonId": "lesson-004",
+        "title": "Small Talk at a Party",
+        "level": "intermediate",
+        "topic": "conversation",
+        "durationSeconds": 210,
+        "language": "en-US",
+        "isPublished": true,
+        "audioAssetKey": "lessons/lesson-004/audio.mp3",
+        "scriptAssetKey": "lessons/lesson-004/script.json",
+        "updatedAt": "2026-05-04T12:00:00Z"
+      }
+    ],
+    "nextCursor": null
+  },
+  "error": null
+}

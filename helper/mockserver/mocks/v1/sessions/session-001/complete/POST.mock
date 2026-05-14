@@ -1,0 +1,21 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+X-Request-Id: req-mock-110
+
+{
+  "requestId": "req-mock-110",
+  "ok": true,
+  "data": {
+    "sessionId": "session-001",
+    "userId": "user-abc-123",
+    "lessonId": "lesson-001",
+    "status": "completed",
+    "startedAt": "2026-05-14T08:30:00Z",
+    "expiresAt": "2026-05-14T10:30:00Z",
+    "completedAt": "2026-05-14T09:00:00Z",
+    "completionPercent": 100,
+    "recordingLocalUri": "/recordings/session-001-recording.m4a",
+    "clientMutationId": "mut-session-complete-001"
+  },
+  "error": null
+}

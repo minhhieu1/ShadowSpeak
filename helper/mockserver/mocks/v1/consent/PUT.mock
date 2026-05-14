@@ -1,0 +1,17 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+X-Request-Id: req-mock-011
+
+{
+  "requestId": "req-mock-011",
+  "ok": true,
+  "data": {
+    "userId": "device-anon-456",
+    "ageVerified": true,
+    "privacyAccepted": true,
+    "adConsent": "non_personalized",
+    "consentUpdatedAt": "2026-05-14T08:05:00Z",
+    "locale": "en-US"
+  },
+  "error": null
+}

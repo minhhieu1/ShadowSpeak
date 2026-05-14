@@ -1,0 +1,13 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+X-Request-Id: req-mock-140
+
+{
+  "requestId": "req-mock-140",
+  "ok": true,
+  "data": {
+    "synced": ["mut-offline-001", "mut-offline-002"],
+    "failed": ["mut-offline-003"]
+  },
+  "error": null
+}

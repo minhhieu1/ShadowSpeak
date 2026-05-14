@@ -1,0 +1,15 @@
+HTTP/1.1 202 Accepted
+Content-Type: application/json; charset=utf-8
+X-Request-Id: req-mock-020
+
+{
+  "requestId": "req-mock-020",
+  "ok": true,
+  "data": {
+    "userId": "user-abc-123",
+    "deletionRequestedAt": "2026-05-14T09:00:00Z",
+    "purgeAfter": "2026-06-13T09:00:00Z",
+    "status": "deletion_requested"
+  },
+  "error": null
+}

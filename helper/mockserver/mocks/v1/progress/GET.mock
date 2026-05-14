@@ -1,0 +1,18 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+X-Request-Id: req-mock-120
+
+{
+  "requestId": "req-mock-120",
+  "ok": true,
+  "data": {
+    "userId": "user-abc-123",
+    "lessonId": null,
+    "streakDays": 5,
+    "minutesPracticed": 47,
+    "lastPracticedAt": "2026-05-14T09:00:00Z",
+    "completedLessonCount": 3,
+    "updatedAt": "2026-05-14T09:00:00Z"
+  },
+  "error": null
+}

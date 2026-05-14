@@ -1,0 +1,41 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+X-Request-Id: req-mock-130
+
+{
+  "requestId": "req-mock-130",
+  "ok": true,
+  "data": {
+    "items": [
+      {
+        "userId": "user-abc-123",
+        "lessonId": "lesson-003",
+        "streakDays": 5,
+        "minutesPracticed": 15,
+        "lastPracticedAt": "2026-05-14T09:00:00Z",
+        "completedLessonCount": 3,
+        "updatedAt": "2026-05-14T09:00:00Z"
+      },
+      {
+        "userId": "user-abc-123",
+        "lessonId": "lesson-002",
+        "streakDays": 4,
+        "minutesPracticed": 12,
+        "lastPracticedAt": "2026-05-13T08:30:00Z",
+        "completedLessonCount": 2,
+        "updatedAt": "2026-05-13T08:30:00Z"
+      },
+      {
+        "userId": "user-abc-123",
+        "lessonId": "lesson-001",
+        "streakDays": 3,
+        "minutesPracticed": 20,
+        "lastPracticedAt": "2026-05-12T09:15:00Z",
+        "completedLessonCount": 1,
+        "updatedAt": "2026-05-12T09:15:00Z"
+      }
+    ],
+    "nextCursor": null
+  },
+  "error": null
+}

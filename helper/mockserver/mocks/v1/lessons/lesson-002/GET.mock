@@ -1,0 +1,21 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+X-Request-Id: req-mock-041
+
+{
+  "requestId": "req-mock-041",
+  "ok": true,
+  "data": {
+    "lessonId": "lesson-002",
+    "title": "Ordering Coffee – Real-Life Shadowing",
+    "level": "beginner",
+    "topic": "daily-life",
+    "durationSeconds": 240,
+    "language": "en-US",
+    "isPublished": true,
+    "audioAssetKey": "lessons/lesson-002/audio.mp3",
+    "scriptAssetKey": "lessons/lesson-002/script.json",
+    "updatedAt": "2026-05-02T12:00:00Z"
+  },
+  "error": null
+}

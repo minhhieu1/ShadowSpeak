@@ -1,0 +1,14 @@
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=utf-8
+X-Request-Id: req-mock-060
+
+{
+  "requestId": "req-mock-060",
+  "ok": true,
+  "data": {
+    "url": "https://shadow speak-s3.s3.us-east-1.amazonaws.com/lessons/lesson-001/audio.mp3?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=mock&X-Amz-Date=20260514T090000Z&X-Amz-Expires=3600&X-Amz-Signature=mock-signature",
+    "expiresAt": "2026-05-14T10:00:00Z",
+    "sizeBytes": 2841600
+  },
+  "error": null
+}

@@ -2,14 +2,14 @@
 
 ## Document Metadata
 
-| Field | Value |
-|-------|-------|
-| Project | ShadowSpeak |
+| Field         | Value             |
+| ------------- | ----------------- |
+| Project       | ShadowSpeak       |
 | Document Type | User Flow Diagram |
-| Date | 2026-05-13 |
-| Status | Draft |
-| Version | 1.1 |
-| Owner | UX Design |
+| Date          | 2026-05-13        |
+| Status        | Draft             |
+| Version       | 1.1               |
+| Owner         | UX Design         |
 
 ## Source Basis
 
@@ -43,6 +43,8 @@ flowchart TD
     Consent -->|Accepted| SignIn[Sign In]
     Consent -->|Declined required consent| Blocked
     SignIn --> Level[Level Selection]
+    SignIn --> SignUp[Sign Up]
+    SignUp --> Level[Level Selection]
     Level --> Reminder[Reminder Setup]
     Reminder --> Perms[Permission Prompts]
     Perms -->|Microphone and required permissions handled| Home[Home / Daily Practice]
@@ -96,6 +98,8 @@ flowchart TD
     J --> K{Authentication succeeds?}
     K -->|No| L[Retryable sign-in error]
     K -->|Yes| M[Select proficiency level]
+    J --> SignUp[Sign Up]
+    SignUp --> M[Select proficiency level]
     M --> N[Set reminder preference]
     N --> O{Notification permission granted?}
     O -->|No| P[Reminders disabled, recovery path saved]
@@ -596,7 +600,6 @@ flowchart TD
 - Permission denials must preserve the path to later recovery in Settings.
 - Audio and network failures should be retryable without clearing the learner’s current progress.
 - Authentication expiry should preserve queued local progress while prompting re-authentication.
-
 
 ## Assumptions
 

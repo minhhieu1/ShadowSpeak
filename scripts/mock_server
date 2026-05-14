@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+set -e
+
+MOCKSERVER_DIR="helper/mockserver"
+PORT=3001
+
+usage() {
+  echo "Usage: $0 {start|stop}"
+  echo ""
+  echo "  start   Start or restart the mock server on port $PORT (runs in background)"
+  echo "  stop    Stop the running mock server on port $PORT"
+  exit 1
+}
+
+if [ $# -ne 1 ]; then
+  usage
+fi
+
+case "$1" in
+  start)
+    # Check if already running
+    PID=$(lsof -ti:$PORT 2>/dev/null || true)
+    if [ -n "$PID" ]; then
+      echo "🔄 Mock server is running (PID $PID), restarting..."
+      kill "$PID"
+      sleep 1
+    fi
+
+    cd "$(dirname "$0")/../$MOCKSERVER_DIR" || exit 1
+    node server.js &
+    NEW_PID=$!
+    echo "🚀 Mock server started (PID $NEW_PID) at http://localhost:$PORT"
+    ;;
+  stop)
+    PID=$(lsof -ti:$PORT 2>/dev/null || true)
+    if [ -n "$PID" ]; then
+      kill "$PID"
+      echo "🛑 Mock server stopped (was PID $PID)"
+    else
+      echo "✅ No mock server running on port $PORT"
+    fi
+    ;;
+  *)
+    usage
+    ;;
+esac

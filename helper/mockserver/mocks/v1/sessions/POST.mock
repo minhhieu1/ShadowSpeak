@@ -1,0 +1,21 @@
+HTTP/1.1 201 Created
+Content-Type: application/json; charset=utf-8
+X-Request-Id: req-mock-090
+
+{
+  "requestId": "req-mock-090",
+  "ok": true,
+  "data": {
+    "sessionId": "session-new-xyz",
+    "userId": "user-abc-123",
+    "lessonId": "lesson-001",
+    "status": "created",
+    "startedAt": "2026-05-14T09:00:00Z",
+    "expiresAt": "2026-05-14T11:00:00Z",
+    "completedAt": null,
+    "completionPercent": 0,
+    "recordingLocalUri": null,
+    "clientMutationId": null
+  },
+  "error": null
+}
