@@ -97,7 +97,7 @@ flowchart TD
     Account --> Home
 
     Home --> Error[Retryable Error States]
-    Block --> Support[Exit / Support Path]
+    Block --> Exit[Exit Path]
 ```
 
 ## Shared Shell Pattern
@@ -165,7 +165,7 @@ Purpose: Confirm age eligibility when no store signal is available.
 | Legal/help copy                                   |
 |--------------------------------------------------|
 | Primary CTA: Continue                             |
-| Secondary CTA: Exit / Support                    |
+| Secondary CTA: Exit                              |
 +--------------------------------------------------+
 ```
 
@@ -173,7 +173,7 @@ Purpose: Confirm age eligibility when no store signal is available.
 | --------- | --------------------------------------- |
 | Top       | Back action and title                   |
 | Middle    | Age attestation control and explanation |
-| Bottom    | Continue and support actions            |
+| Bottom    | Continue and exit actions               |
 
 | State            | Behavior                              |
 | ---------------- | ------------------------------------- |
@@ -185,7 +185,7 @@ Audio-first note: keep the copy short and readable on a small screen.
 
 ### 1.3 Age Policy Block
 
-Purpose: Block onboarding for underage learners and route them to support.
+Purpose: Block onboarding for underage learners and end the flow safely.
 
 ```text
 +--------------------------------------------------+
@@ -195,19 +195,19 @@ Purpose: Block onboarding for underage learners and route them to support.
 | Brief reason for restriction                     |
 |--------------------------------------------------|
 | Primary CTA: Exit                                |
-| Secondary CTA: Support                            |
+| Secondary CTA: None                               |
 +--------------------------------------------------+
 ```
 
 | Placement | Component                 |
 | --------- | ------------------------- |
 | Center    | Eligibility block message |
-| Bottom    | Exit and support actions  |
+| Bottom    | Exit action               |
 
 | State        | Behavior                               |
 | ------------ | -------------------------------------- |
 | Default      | Inform learner the app cannot continue |
-| Support path | Open exit/support flow                 |
+| Exit path    | Open safe exit flow                    |
 
 Audio-first note: this should be a dead-end state with no practice navigation.
 
@@ -654,7 +654,6 @@ Purpose: Provide access to lessons that have been downloaded for offline practic
 +--------------------------------------------------+
 | Back | Downloaded Lessons / Offline Library      |
 |--------------------------------------------------|
-| Offline storage summary                          |
 | Downloaded lesson cards                          |
 | Verification / stale status                      |
 |--------------------------------------------------|
@@ -667,7 +666,7 @@ Purpose: Provide access to lessons that have been downloaded for offline practic
 
 | Placement | Component                 |
 | --------- | ------------------------- |
-| Top       | Title and storage summary |
+| Top       | Title and offline status  |
 | Middle    | Downloaded lesson cards   |
 | Bottom    | Manage and open actions   |
 
@@ -986,29 +985,30 @@ Purpose: Preserve context and give the learner a clear recovery path for common 
 | Auth expired       | Sign in again                    |
 | Storage full       | Free space and retry             |
 | Network loss       | Continue offline where supported |
+| Unknown error      | Retry, then return home safely    |
 
 Audio-first note: error states should keep the learner’s place whenever possible.
 
-### 5.2 Exit / Support Path
+### 5.2 Exit Path
 
-Purpose: Final support exit for blocked onboarding or non-recoverable flows.
+Purpose: Final safe exit for blocked onboarding or non-recoverable flows.
 
 ```text
 +--------------------------------------------------+
-| Exit / Support Path                              |
+| Exit Path                                        |
 |--------------------------------------------------|
 | Final message                                    |
-| Support / help link                              |
+| Self-service guidance                            |
 |--------------------------------------------------|
 | Primary CTA: Exit                                |
-| Secondary CTA: Support                           |
+| Secondary CTA: Return home where available       |
 +--------------------------------------------------+
 ```
 
 | Placement | Component                |
 | --------- | ------------------------ |
 | Center    | Blocked state message    |
-| Bottom    | Exit and support actions |
+| Bottom    | Exit and safe return actions |
 
 | State   | Behavior            |
 | ------- | ------------------- |
@@ -1018,22 +1018,22 @@ Audio-first note: this should be rare and clearly distinct from normal navigatio
 
 ## 6. Ad Placement Wireframe Note
 
-The MVP uses non-blocking audio interstitial ads at session boundaries only.
+The MVP uses full-screen interstitial ads at session boundaries only. The container may show any allowed ad format, such as audio, video, display, or rich media, depending on the ad network response and platform policy.
 
 ```text
 +--------------------------------------------------+
-| Audio Interstitial Overlay                       |
+| Full-Screen Ad Interstitial                      |
 |--------------------------------------------------|
-| Ad label / playback status                       |
-| Audio interstitial content                       |
+| Ad label / format status                         |
+| Allowed ad creative                              |
 |--------------------------------------------------|
 | Continue button appears only after completion    |
 +--------------------------------------------------+
 ```
 
-| Placement | Component                                 |
-| --------- | ----------------------------------------- |
-| Overlay   | Temporary modal sheet at session boundary |
+| Placement   | Component                                      |
+| ----------- | ---------------------------------------------- |
+| Full-screen | Temporary full-screen interstitial at boundary |
 
 | State             | Behavior                                   |
 | ----------------- | ------------------------------------------ |
@@ -1073,7 +1073,7 @@ Audio-first note: the ad must not block lesson completion or navigation beyond t
 | Recording Library                    | Manage Settings and Account             | Settings and Control          | UC-10                             | FR-4, FR-8                               |
 | Account Management                   | Manage Settings and Account             | Settings and Control          | UC-10                             | FR-8                                     |
 | Retryable Error States               | Cross-Cutting Error and Edge-Case Flows | Recovery and Support          | UC-03, UC-06, UC-08, UC-10, UC-11 | FR-1, FR-3, FR-4, FR-5, FR-7, FR-8, FR-9 |
-| Exit / Support Path                  | Cross-Cutting Error and Edge-Case Flows | Recovery and Support          | UC-11                             | FR-9                                     |
+| Exit Path                            | Cross-Cutting Error and Edge-Case Flows | Recovery and Safe Exit        | UC-11                             | FR-9                                     |
 
 ## Revision History
 

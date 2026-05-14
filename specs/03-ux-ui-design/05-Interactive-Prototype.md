@@ -122,7 +122,7 @@ flowchart TD
 
     Home --> Error[Retryable Error States]
     AgeGate --> Block[Age Policy Block]
-    Block --> Support[Exit / Support Path]
+    Block --> Exit[Exit Path]
 ```
 
 ## Interaction Standards
@@ -154,7 +154,7 @@ flowchart TD
 - Recording start and stop should show a visible state change within 100 ms.
 - Timers should update once per second during active practice.
 - Comparison playback should allow users to switch modes without leaving the screen.
-- Audio interstitial ads should use a distinct container and return to the learner flow automatically when done.
+- Interstitial ads should use a distinct full-screen container and return to the learner flow automatically when done.
 
 ## Screen-by-Screen Prototype Specifications
 
@@ -220,7 +220,7 @@ Component interactions:
 | ----------------------- | ---------------------- | ---------- | ----- | ---- |
 | Age input / affirmation | Selects or fills value | None       | None  | None |
 | Continue                | Validates and advances | None       | None  | None |
-| Exit / Support          | Leaves flow            | None       | None  | None |
+| Exit                    | Leaves flow            | None       | None  | None |
 
 State transitions:
 
@@ -253,7 +253,7 @@ Platform notes:
 
 #### 1.3 Age Policy Block
 
-Purpose: Stop underage onboarding and route to support.
+Purpose: Stop underage onboarding and end the flow safely.
 
 Visual reference:
 
@@ -265,13 +265,12 @@ Component interactions:
 | Element | Tap                | Long-press | Swipe | Drag |
 | ------- | ------------------ | ---------- | ----- | ---- |
 | Exit    | Ends flow          | None       | None  | None |
-| Support | Opens support path | None       | None  | None |
 
 State transitions:
 
 | From             | To                  | Trigger                | Transition          | Duration   | Easing   | Overlay |
 | ---------------- | ------------------- | ---------------------- | ------------------- | ---------- | -------- | ------- |
-| Age Policy Block | Exit / Support Path | User taps exit/support | Instant or fade out | 150-200 ms | ease-out | No      |
+| Age Policy Block | Exit Path           | User taps exit         | Instant or fade out | 150-200 ms | ease-out | No      |
 
 Navigation connections:
 
@@ -735,7 +734,7 @@ State transitions:
 | Practice | Recording       | Start recording                   | Control state change | 100 ms   | ease-out    | No      |
 | Practice | Comparison      | Finish after completion threshold | Push                 | 300 ms   | ease-in-out | No      |
 | Practice | Error           | Load failure                      | In-place error       | 220 ms   | ease-out    | No      |
-| Practice | Ad interstitial | Session boundary reached          | Modal slide up       | 350 ms   | ease-in-out | Yes     |
+| Practice | Ad interstitial | Session boundary reached          | Full-screen present  | 350 ms   | ease-in-out | Yes     |
 
 Navigation connections:
 
@@ -760,7 +759,39 @@ Platform notes:
 
 - Preserve the same core layout on both platforms.
 
-### 2.5 Recording Comparison
+### 2.5 Practice Session State Variants
+
+Purpose: Represent loading, error, and offline states within the practice session.
+
+Visual reference:
+
+- Wireframe: [2.5 Practice Session State Variants](03-Wireframe-Document.md#25-practice-session-state-variants)
+- UI spec: [2.5 Practice Session State Variants](04-UI-Design-Specification.md#25-practice-session-state-variants)
+
+Component interactions:
+
+| Element       | Tap                    | Long-press | Swipe | Drag |
+| ------------- | ---------------------- | ---------- | ----- | ---- |
+| Retry         | Reloads current lesson | None       | None  | None |
+| Continue      | Continues offline      | None       | None  | None |
+| Return action | Returns to catalog     | None       | None  | None |
+
+State transitions:
+
+| From     | To       | Trigger             | Transition        | Duration | Easing      | Overlay |
+| -------- | -------- | ------------------- | ----------------- | -------- | ----------- | ------- |
+| Practice | Loading  | Lesson audio starts | In-place skeleton | 200 ms   | ease-out    | No      |
+| Loading  | Practice | Audio ready         | Cross-dissolve    | 220 ms   | ease-in-out | No      |
+| Loading  | Error    | Load failure        | In-place error    | 220 ms   | ease-out    | No      |
+| Practice | Offline  | Network unavailable | Badge fade in     | 180 ms   | ease-out    | No      |
+
+Navigation connections:
+
+- Retry returns to the current Practice Session when successful.
+- Return action goes back to Lesson Catalog.
+- Offline continue stays in Practice Session.
+
+### 2.6 Recording Comparison
 
 Purpose: Compare the learner recording with reference audio.
 
@@ -807,7 +838,7 @@ Platform notes:
 
 - Keep the skip action visible and easy to access.
 
-### 2.6 Progress View
+### 2.7 Progress View
 
 Purpose: Show streak and history.
 
@@ -1338,7 +1369,7 @@ Practice loop behavior:
 
 - Home recommendation leads to lesson detail in one tap.
 - Practice uses the same audio control model for play, pause, resume, and record.
-- Session boundary triggers an audio interstitial only after completion.
+- Session boundary triggers an interstitial ad only after completion.
 - Comparison is optional and should not block return to Home.
 
 ## Offline Flow Prototype
@@ -1369,6 +1400,7 @@ Prototype the following errors as full-screen or in-place recovery states:
 - storage full
 - network loss
 - recording unavailable
+- unknown / generic fallback error
 
 ### Permission Recovery
 
@@ -1388,26 +1420,26 @@ Prototype the following errors as full-screen or in-place recovery states:
 
 ## Ad Interstitial Prototype
 
-Ad behavior should be modeled as a non-blocking overlay at a session boundary.
+Ad behavior should be modeled as a full-screen interstitial at a session boundary.
 
 Rules:
 
 - Trigger only after a lesson completes or at the approved boundary.
 - Do not interrupt recording or playback mid-session.
-- Show a distinct ad container with a short playback state.
+- Show a distinct full-screen ad container with a short progress, countdown, playback, or completion state appropriate to the allowed ad format.
 - Allow the learner to continue immediately if the ad fails or is unavailable.
 
 Interaction sequence:
 
 1. Practice reaches completion boundary.
-2. Ad overlay appears with a compact container.
-3. Ad plays or skips due to no fill / offline / cap.
+2. Full-screen ad interstitial appears.
+3. Allowed ad creative plays, displays, or skips due to no fill / offline / cap.
 4. Overlay closes automatically.
 5. Learner continues to Home, Comparison, or Next Lesson.
 
 Timing:
 
-- Overlay slide-up: 350-400 ms, ease-in-out
+- Full-screen presentation: 350-400 ms, ease-in-out
 - Close / return: 200 ms, ease-out
 
 ## Animation and Transition Specs
@@ -1420,7 +1452,7 @@ Timing:
 | Continue onboarding | Reminder / Permissions | Home                                 | Push                   | 300 ms     | ease-in-out | Same                                    |
 | Open lesson         | Home / Catalog         | Lesson Detail                        | Push from right        | 300 ms     | ease-in-out | Same                                    |
 | Start practice      | Lesson Detail          | Practice Session                     | Push from right        | 300 ms     | ease-in-out | Same                                    |
-| Session boundary ad | Practice               | Ad Interstitial                      | Modal slide up         | 350-400 ms | ease-in-out | Android may feel more bottom-sheet-like |
+| Session boundary ad | Practice               | Ad Interstitial                      | Full-screen present    | 350-400 ms | ease-in-out | Same                                    |
 | Ad completes        | Ad Interstitial        | Practice / Comparison                | Cross-dissolve or push | 200 ms     | ease-out    | Same                                    |
 | Finish session      | Practice               | Comparison                           | Push                   | 300 ms     | ease-in-out | Same                                    |
 | Skip comparison     | Comparison             | Home                                 | Push                   | 300 ms     | ease-in-out | Same                                    |
@@ -1475,4 +1507,4 @@ Timing:
 | Recording Library                    | 4.6                 | 4.6               | Recording Library                    |
 | Account Management                   | 4.7                 | 4.7               | Account Management                   |
 | Retryable Error States               | 5.1                 | 5.1               | Retryable Error States               |
-| Exit / Support Path                  | 5.2                 | 5.2               | Exit / Support Path                  |
+| Exit Path                            | 5.2                 | 5.2               | Exit Path                            |

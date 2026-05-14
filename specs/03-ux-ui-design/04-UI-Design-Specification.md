@@ -272,7 +272,7 @@ Layout:
 - Back action in top bar
 - Short explanation and age input/attestation in the main body
 - Support/legal note below the input
-- Continue and support actions at the bottom
+- Continue and exit actions at the bottom
 
 Component inventory:
 
@@ -282,7 +282,7 @@ Component inventory:
 | Age control         | Mid screen       | Checkbox, date field, or age affirmation depending on implementation |
 | Helper copy         | Mid or lower     | Brief requirement explanation                                        |
 | Continue button     | Bottom primary   | Full-width                                                           |
-| Exit/Support button | Bottom secondary | Secondary action                                                     |
+| Exit button         | Bottom secondary | Secondary action                                                     |
 
 State specs:
 
@@ -312,13 +312,13 @@ Audio-first:
 
 #### 1.3 Age Policy Block
 
-Purpose: Stop underage onboarding and route to support.
+Purpose: Stop underage onboarding and end the flow safely.
 
 Layout:
 
 - Full-screen blocking state
 - Strong message in the center
-- Exit and support actions at the bottom
+- Exit action at the bottom
 
 Component inventory:
 
@@ -327,14 +327,13 @@ Component inventory:
 | Block title         | Center                      | Direct and plain      |
 | Explanation text    | Center below title          | Short, non-judgmental |
 | Exit button         | Bottom primary or secondary | Safe exit             |
-| Support link/button | Bottom secondary            | Optional              |
 
 State specs:
 
 | State        | Specification          |
 | ------------ | ---------------------- |
 | Default      | No route into core app |
-| Support path | Exit/support flow      |
+| Exit path | Safe exit flow          |
 
 Spacing / alignment:
 
@@ -981,7 +980,7 @@ Purpose: Show downloaded lessons and their offline readiness.
 
 Layout:
 
-- Storage summary at top
+- Title and offline status at top
 - Downloaded lesson cards in the main list
 - Manage downloads action at bottom
 
@@ -990,7 +989,7 @@ Component inventory:
 | Component               | Placement          | Notes                                |
 | ----------------------- | ------------------ | ------------------------------------ |
 | Title                   | Top bar            | Downloaded Lessons / Offline Library |
-| Storage summary         | Upper body         | Remaining space and quota            |
+| Offline status          | Upper body         | Local library readiness              |
 | Downloaded cards        | Main list          | Each with status badge               |
 | Open lesson button      | Per card or bottom | Primary on selection                 |
 | Manage downloads button | Bottom secondary   | Optional                             |
@@ -1352,7 +1351,7 @@ Color:
 
 - Delete action uses `color-error`.
 
-## 5. Recovery and Support
+## 5. Recovery and Safe Exit
 
 #### 5.1 Retryable Error States
 
@@ -1381,6 +1380,7 @@ State specs:
 | Auth expired       | Prompt sign in again             |
 | Storage full       | Free space and retry             |
 | Network loss       | Continue offline where supported |
+| Unknown error      | Generic fallback with retry path |
 
 Typography:
 
@@ -1391,23 +1391,24 @@ Color:
 
 - Use `color-error` for the title or accent, not the whole surface.
 
-#### 5.2 Exit / Support Path
+#### 5.2 Exit Path
 
 Purpose: End a blocked flow safely.
 
 Layout:
 
 - Short closing message
-- Support action and exit action
+- Self-service reassurance and exit action
 
 Component inventory:
 
-| Component      | Placement        | Notes             |
-| -------------- | ---------------- | ----------------- |
-| Title          | Center           | Exit / Support    |
-| Message        | Center below     | Brief and neutral |
-| Exit button    | Bottom primary   | End the flow      |
-| Support button | Bottom secondary | Optional          |
+| Component          | Placement        | Notes                         |
+| ------------------ | ---------------- | ----------------------------- |
+| Title              | Center           | Exit path                     |
+| Message            | Center below     | Brief and neutral             |
+| Safety note        | Center below     | Self-service reassurance only |
+| Exit button        | Bottom primary   | End the flow                  |
+| Return home button | Bottom secondary | Only where a home destination exists |
 
 State specs:
 
@@ -1417,23 +1418,23 @@ State specs:
 
 ## Ad Placement
 
-### Audio Interstitial Presentation
+### Full-Screen Ad Interstitial Presentation
 
-Ad placement occurs only at session boundaries and should feel like a short overlay, not a separate destination.
+Ad placement occurs only at session boundaries and should use a full-screen interstitial container. The container should be format-agnostic so it can present any allowed ad creative, including audio, video, display, or rich media, depending on the ad network response and platform policy.
 
 Visual treatment:
 
-- Use a compact bottom sheet or centered modal container
+- Use a full-screen interstitial surface with clear exit/continue rules
 - Keep the ad label visible and distinct from the learner controls
-- Add a short progress or playback status line
+- Add a short progress, countdown, or playback status line when required by the ad format
 - Only show continue/close after the ad completes or fails
 
 ```text
 +--------------------------------------------------+
-| Audio Interstitial Ad                             |
+| Ad Interstitial                                   |
 |--------------------------------------------------|
-| Ad label / playback status                        |
-| Ad content                                         |
+| Ad label / format status                          |
+| Allowed ad creative                               |
 |--------------------------------------------------|
 | Continue after completion                          |
 +--------------------------------------------------+
@@ -1560,8 +1561,8 @@ Accessibility rules:
 | Recording Library                    | 4.6                 | Settings and Control              | Settings and Account Management Path      |
 | Account Management                   | 4.7                 | Settings and Control              | Settings and Account Management Path      |
 | Retryable Error States               | 5.1                 | Recovery and Support              | Cross-Cutting Error and Edge-Case Flows   |
-| Exit / Support Path                  | 5.2                 | Recovery and Support              | Cross-Cutting Error and Edge-Case Flows   |
-| Audio Interstitial Ad                | Ad Placement        | Ad Placement                      | Ad Interstitial Flow                      |
+| Exit Path                            | 5.2                 | Recovery and Safe Exit            | Cross-Cutting Error and Edge-Case Flows   |
+| Full-Screen Ad Interstitial          | Ad Placement        | Ad Placement                      | Ad Interstitial Flow                      |
 
 ## Revision History
 

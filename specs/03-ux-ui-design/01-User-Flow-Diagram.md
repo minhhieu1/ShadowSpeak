@@ -70,7 +70,7 @@ flowchart TD
     Ad --> Home
     Ad --> Compare
     Ad --> NextLesson[Next Lesson]
-    Blocked --> Exit([Exit / Support Path])
+    Blocked --> Exit([Exit Path])
 ```
 
 ## 1. First-Time Onboarding Flow
@@ -561,7 +561,7 @@ flowchart TD
 
 **Trigger:** Permission denial, audio failure, storage pressure, network loss, or age-gate block.  
 **Entry Point:** Any flow where the failure occurs.  
-**Exit Points:** Recovery path, retry, Settings, Home, or Exit / Support Path.  
+**Exit Points:** Recovery path, retry, Settings, Home, or Exit Path.  
 **Primary Actor:** Learner.  
 **Supporting Actors:** Mobile OS, Authentication Provider, Content Service, Progress Service.
 
@@ -574,7 +574,7 @@ flowchart TD
     B -->|Storage full| F[Storage guidance]
     B -->|Network loss| G[Offline / queued state]
     B -->|Auth expired| H[Re-authentication prompt]
-    C --> Z[Exit / Support Path]
+    C --> Z[Exit Path]
     D --> I[Settings]
     E --> J[Retry current lesson or return to catalog]
     F --> K[Free space, then retry]

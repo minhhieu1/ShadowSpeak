@@ -102,12 +102,12 @@ The current source set supports browse, filter, recommendation, and download flo
 | Profile Settings   | Learner profile and preference fields.                           | Update user profile data           |
 | Recording Library  | Saved recordings and deletion actions.                           | Manage local and synced recordings |
 
-### 5. Recovery and Support
+### 5. Recovery and Safe Exit
 
 | Screen                 | Description                                                              | Primary Function                  |
 | ---------------------- | ------------------------------------------------------------------------ | --------------------------------- |
 | Retryable Error States | Contextual error surfaces for audio, auth, storage, or network failures. | Preserve state and offer recovery |
-| Exit / Support Path    | Final blocked path for underage or non-recoverable onboarding outcomes.  | Exit or direct to support         |
+| Exit Path              | Final blocked path for underage or non-recoverable onboarding outcomes.  | Exit safely without support dependency |
 
 ## Navigation Architecture
 
@@ -333,7 +333,7 @@ flowchart TD
     Recordings --> Home
 
     Notification[Local Reminder Notification] --> Home
-    Blocked[Age Policy Block / Exit] --> Support[Exit / Support Path]
+    Blocked[Age Policy Block / Exit] --> Exit[Exit Path]
 ```
 
 ## Traceability
