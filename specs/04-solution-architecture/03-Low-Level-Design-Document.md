@@ -29,7 +29,7 @@ This LLD is derived from:
 
 ### In Scope
 
-- Detailed TypeScript class, interface, and type design for backend modules
+- Detailed Python class, Pydantic model, and type design for backend modules
 - Backend handler logic, validation, and error handling
 - DynamoDB access patterns, item models, and query strategies
 - Mobile client component structure and local storage design
@@ -74,7 +74,7 @@ The MVP uses:
 
 - one React Native mobile client
 - one API Gateway entry point
-- one modular AWS Lambda backend in Node.js/TypeScript
+- one modular Python FastAPI backend
 - three logical backend modules
 - one client-side ad integration
 - one local encrypted offline store
@@ -84,7 +84,7 @@ The MVP uses:
 | Layer | Stack |
 |-------|-------|
 | Mobile | React Native + TypeScript |
-| Backend | AWS Lambda + Node.js/TypeScript |
+| Backend | Python 3.12 + FastAPI on AWS Lambda |
 | Auth | Amazon Cognito |
 | API | Amazon API Gateway, REST JSON over HTTPS |
 | Data | Amazon DynamoDB |
@@ -98,101 +98,112 @@ The MVP uses:
 
 ### 1.1 Common Enums and Utility Types
 
-```ts
-export type Id = string;
-export type IsoDateTime = string;
-export type UserId = string;
-export type LessonId = string;
-export type SessionId = string;
-export type ClientMutationId = string;
+> The model sketches in this document are expressed in a compact schema-style notation. In Python, they map to Pydantic models and `typing` aliases.
 
-export type ApiResult<T> = {
-  ok: true;
-  data: T;
-  requestId: string;
-} | {
-  ok: false;
-  error: ApiErrorPayload;
-  requestId: string;
-};
+```python
+from typing import Any, Generic, Literal, Optional, Protocol, TypeVar
 
-export type ApiErrorPayload = {
-  code: string;
-  message: string;
-  details?: Record<string, unknown>;
-};
+from pydantic import BaseModel
+
+
+Id = str
+IsoDateTime = str
+UserId = str
+LessonId = str
+SessionId = str
+ClientMutationId = str
+
+T = TypeVar("T")
+
+
+class ApiErrorPayload(BaseModel):
+    code: str
+    message: str
+    details: Optional[dict[str, Any]] = None
+
+
+class ApiResult(BaseModel, Generic[T]):
+    ok: bool
+    requestId: str
+    data: Optional[T] = None
+    error: Optional[ApiErrorPayload] = None
+
+
+JsonEnvelope = ApiResult
 ```
 
 ### 1.2 Core Domain Models
 
-```ts
-export type ConsentState = {
-  userId: UserId;
-  ageVerified: boolean;
-  privacyAccepted: boolean;
-  adConsent: "unknown" | "personalized" | "non_personalized";
-  consentUpdatedAt: IsoDateTime;
-  locale?: string;
-};
+```python
+from pydantic import BaseModel
 
-export type UserProfile = {
-  userId: UserId;
-  displayName?: string;
-  email?: string;
-  level?: "beginner" | "intermediate" | "advanced";
-  reminderTime?: string;
-  deletionRequestedAt?: IsoDateTime;
-  deletionStatus?: "active" | "deletion_requested" | "purged";
-  createdAt: IsoDateTime;
-  updatedAt: IsoDateTime;
-};
 
-export type Lesson = {
-  lessonId: LessonId;
-  title: string;
-  level: "beginner" | "intermediate" | "advanced";
-  topic: string;
-  durationSeconds: number;
-  language: string;
-  isPublished: boolean;
-  audioAssetKey: string;
-  scriptAssetKey: string;
-  updatedAt: IsoDateTime;
-};
+class ConsentState(BaseModel):
+    userId: UserId
+    ageVerified: bool
+    privacyAccepted: bool
+    adConsent: Literal["unknown", "personalized", "non_personalized"]
+    consentUpdatedAt: IsoDateTime
+    locale: Optional[str] = None
 
-export type PracticeSession = {
-  sessionId: SessionId;
-  userId: UserId;
-  lessonId: LessonId;
-  status: "created" | "active" | "paused" | "completed" | "synced";
-  startedAt: IsoDateTime;
-  expiresAt?: IsoDateTime; // DynamoDB TTL attribute; set to 2 years from session creation by default
-  completedAt?: IsoDateTime;
-  completionPercent?: number;
-  recordingLocalUri?: string;
-  clientMutationId?: ClientMutationId;
-};
 
-export type ProgressSnapshot = {
-  userId: UserId;
-  lessonId?: LessonId;
-  streakDays: number;
-  minutesPracticed: number;
-  lastPracticedAt?: IsoDateTime;
-  completedLessonCount: number;
-  updatedAt: IsoDateTime;
-};
+class UserProfile(BaseModel):
+    userId: UserId
+    displayName: Optional[str] = None
+    email: Optional[str] = None
+    level: Optional[Literal["beginner", "intermediate", "advanced"]] = None
+    reminderTime: Optional[str] = None
+    deletionRequestedAt: Optional[IsoDateTime] = None
+    deletionStatus: Optional[Literal["active", "deletion_requested", "purged"]] = None
+    createdAt: IsoDateTime
+    updatedAt: IsoDateTime
 
-export type SyncQueueItem = {
-  id: Id;
-  userId: UserId;
-  type: "session_complete" | "progress_update";
-  payload: unknown;
-  clientMutationId: ClientMutationId;
-  retryCount: number;
-  nextRetryAt?: IsoDateTime;
-  status: "pending" | "processing" | "failed" | "synced";
-};
+
+class Lesson(BaseModel):
+    lessonId: LessonId
+    title: str
+    level: Literal["beginner", "intermediate", "advanced"]
+    topic: str
+    durationSeconds: int
+    language: str
+    isPublished: bool
+    audioAssetKey: str
+    scriptAssetKey: str
+    updatedAt: IsoDateTime
+
+
+class PracticeSession(BaseModel):
+    sessionId: SessionId
+    userId: UserId
+    lessonId: LessonId
+    status: Literal["created", "active", "paused", "completed", "synced"]
+    startedAt: IsoDateTime
+    expiresAt: Optional[IsoDateTime] = None
+    completedAt: Optional[IsoDateTime] = None
+    completionPercent: Optional[int] = None
+    recordingLocalUri: Optional[str] = None
+    clientMutationId: Optional[ClientMutationId] = None
+
+
+class ProgressSnapshot(BaseModel):
+    userId: UserId
+    lessonId: Optional[LessonId] = None
+    streakDays: int = 0
+    minutesPracticed: int = 0
+    lastPracticedAt: Optional[IsoDateTime] = None
+    completedLessonCount: int = 0
+    updatedAt: IsoDateTime
+
+
+class SyncQueueItem(BaseModel):
+    id: Id
+    userId: UserId
+    type: Literal["session_complete", "progress_update"]
+    payload: Any
+    clientMutationId: ClientMutationId
+    retryCount: int
+    nextRetryAt: Optional[IsoDateTime] = None
+    status: Literal["pending", "processing", "failed", "synced"] = "pending"
 ```
 
 ### 1.3 MVP Data Notes
@@ -245,52 +256,57 @@ classDiagram
     ProfileService --> UserRepository
 ```
 
-#### TypeScript Interface Design
+#### Python Model Design
 
-```ts
-export type JwtClaims = {
-  sub: string;
-  email?: string;
-  "cognito:groups"?: string[];
-  exp: number;
-  iat: number;
-};
+```python
+from typing import Literal, Optional, Protocol, TypedDict
 
-export type RequestContext = {
-  requestId: string;
-  token?: string;
-  headers: Record<string, string | undefined>;
-  body?: unknown;
-};
+from pydantic import BaseModel
 
-export type AuthContext = {
-  userId: UserId;
-  claims: JwtClaims;
-  groups: string[];
-};
 
-export type UpdateConsentInput = {
-  ageVerified: boolean;
-  privacyAccepted: boolean;
-  adConsent: "unknown" | "personalized" | "non_personalized";
-};
+class JwtClaims(TypedDict, total=False):
+    sub: str
+    email: str
+    # Cognito exposes the raw JWT claim as "cognito:groups"; normalize it in code.
+    cognito_groups: list[str]
+    exp: int
+    iat: int
 
-export type UpdateProfileInput = {
-  displayName?: string;
-  level?: "beginner" | "intermediate" | "advanced";
-  reminderTime?: string;
-};
 
-export interface IConsentService {
-  getConsentState(userId: UserId): Promise<ConsentState>;
-  saveConsentState(userId: UserId, input: UpdateConsentInput): Promise<ConsentState>;
-}
+class RequestContext(BaseModel):
+    requestId: str
+    token: Optional[str]
+    headers: dict[str, Optional[str]]
+    body: object | None = None
 
-export interface IProfileService {
-  getProfile(userId: UserId): Promise<UserProfile>;
-  updateProfile(userId: UserId, input: UpdateProfileInput): Promise<UserProfile>;
-  deleteAccount(userId: UserId): Promise<DeleteAccountResult>;
-}
+
+class AuthContext(BaseModel):
+    userId: str
+    claims: JwtClaims
+    groups: list[str]
+
+
+class UpdateConsentInput(BaseModel):
+    ageVerified: bool
+    privacyAccepted: bool
+    adConsent: Literal["unknown", "personalized", "non_personalized"]
+
+
+class UpdateProfileInput(BaseModel):
+    displayName: Optional[str] = None
+    level: Optional[Literal["beginner", "intermediate", "advanced"]] = None
+    reminderTime: Optional[str] = None
+
+
+class ConsentServiceProtocol(Protocol):
+    async def get_consent_state(self, user_id: str) -> ConsentState: ...
+    async def save_consent_state(self, user_id: str, input_data: UpdateConsentInput) -> ConsentState: ...
+
+
+class ProfileServiceProtocol(Protocol):
+    async def get_profile(self, user_id: str) -> UserProfile: ...
+    async def update_profile(self, user_id: str, input_data: UpdateProfileInput) -> UserProfile: ...
+    async def delete_account(self, user_id: str) -> DeleteAccountResult: ...
 ```
 
 #### Business Logic
@@ -332,18 +348,22 @@ export interface IProfileService {
 - Deletion cascades in this order: user profile, consent record, session records, sync queue items, then local device data.
 - Local device purge is requested immediately and retried on the next foreground sync or device-unlock event until completed.
 
-```ts
-export type DeleteAccountResult = {
-  userId: UserId;
-  deletionRequestedAt: IsoDateTime;
-  purgeAfter: IsoDateTime;
-  status: "deletion_requested" | "purged";
-};
+```python
+from typing import Literal, Protocol
 
-export interface IUserRepository {
-  deleteAccount(userId: UserId): Promise<void>;
-  markDeletionRequested(userId: UserId, requestedAt: IsoDateTime): Promise<void>;
-}
+from pydantic import BaseModel
+
+
+class DeleteAccountResult(BaseModel):
+    userId: UserId
+    deletionRequestedAt: IsoDateTime
+    purgeAfter: IsoDateTime
+    status: Literal["deletion_requested", "purged"]
+
+
+class UserRepositoryProtocol(Protocol):
+    async def delete_account(self, user_id: str) -> None: ...
+    async def mark_deletion_requested(self, user_id: str, requested_at: str) -> None: ...
 ```
 
 ---
@@ -389,51 +409,58 @@ classDiagram
     AssetService --> LessonRepository
 ```
 
-#### TypeScript Interface Design
+#### Python Model Design
 
-```ts
-export type LessonFilter = {
-  level?: "beginner" | "intermediate" | "advanced";
-  topic?: string;
-  durationMin?: number;
-  durationMax?: number;
-  cursor?: string;
-  limit?: number;
-};
+```python
+from typing import Generic, Literal, Optional, TypeVar
 
-export type PagedResult<T> = {
-  items: T[];
-  nextCursor?: string;
-};
+from pydantic import BaseModel
 
-export type DownloadUrlResponse = {
-  url: string;
-  expiresAt: IsoDateTime;
-  sizeBytes: number;
-};
 
-export type DownloadGrant = {
-  userId: UserId;
-  lessonId: LessonId;
-  grantedAt: IsoDateTime;
-  expiresAt: IsoDateTime;
-  assetKey: string;
-};
+class LessonFilter(BaseModel):
+    level: Optional[Literal["beginner", "intermediate", "advanced"]] = None
+    topic: Optional[str] = None
+    durationMin: Optional[int] = None
+    durationMax: Optional[int] = None
+    cursor: Optional[str] = None
+    limit: Optional[int] = None
 
-export type LessonAsset = {
-  assetKey: string;
-  checksum: string;
-  version: string;
-  sizeBytes: number;
-  contentType: "audio" | "script";
-};
 
-export type VerificationResponse = {
-  lessonId: LessonId;
-  verified: boolean;
-  offlineAvailable: boolean;
-  expectedChecksum?: string;
-};
+T = TypeVar("T")
+
+
+class PagedResult(BaseModel, Generic[T]):
+    items: list[T]
+    nextCursor: Optional[str] = None
+
+
+class DownloadUrlResponse(BaseModel):
+    url: str
+    expiresAt: IsoDateTime
+    sizeBytes: int
+
+
+class DownloadGrant(BaseModel):
+    userId: UserId
+    lessonId: LessonId
+    grantedAt: IsoDateTime
+    expiresAt: IsoDateTime
+    assetKey: str
+
+
+class LessonAsset(BaseModel):
+    assetKey: str
+    checksum: str
+    version: str
+    sizeBytes: int
+    contentType: Literal["audio", "script"]
+
+
+class VerificationResponse(BaseModel):
+    lessonId: LessonId
+    verified: bool
+    offlineAvailable: bool
+    expectedChecksum: Optional[str] = None
 ```
 
 > `LessonAsset` records are resolved by `AssetService` using `Lesson.audioAssetKey` or `Lesson.scriptAssetKey` as the lookup key. Callers do not construct `LessonAsset` directly; they pass the asset key from the parent `Lesson` to `AssetService.createSignedUrl()` or `AssetService.verifyChecksum()`.
@@ -518,34 +545,38 @@ classDiagram
     SessionService --> SyncQueueRepository
 ```
 
-#### TypeScript Interface Design
+#### Python Model Design
 
-```ts
-export type StartSessionInput = {
-  lessonId: LessonId;
-};
+```python
+from typing import Literal, Optional
 
-export type UpdateSessionInput = {
-  status?: "active" | "paused";
-  completionPercent?: number;
-  recordingLocalUri?: string;
-};
+from pydantic import BaseModel
 
-export type CompleteSessionInput = {
-  completionPercent: number;
-  durationSeconds: number;
-  recordingLocalUri?: string;
-  clientMutationId: ClientMutationId;
-};
 
-export type SyncBatch = {
-  items: SyncQueueItem[];
-};
+class StartSessionInput(BaseModel):
+    lessonId: str
 
-export type SyncResult = {
-  synced: string[];
-  failed: string[];
-};
+
+class UpdateSessionInput(BaseModel):
+    status: Optional[Literal["active", "paused"]] = None
+    completionPercent: Optional[int] = None
+    recordingLocalUri: Optional[str] = None
+
+
+class CompleteSessionInput(BaseModel):
+    completionPercent: int
+    durationSeconds: int
+    recordingLocalUri: Optional[str] = None
+    clientMutationId: str
+
+
+class SyncBatch(BaseModel):
+    items: list[SyncQueueItem]
+
+
+class SyncResult(BaseModel):
+    synced: list[str]
+    failed: list[str]
 ```
 
 #### Practice Session State Machine
@@ -941,7 +972,7 @@ export interface AdIntegrationController {
 - `NFR-1` cold start `<=2.5s`: lazy-load non-critical feature modules, defer heavy native initialization, and hydrate Zustand stores after the first frame.
 - `NFR-3` API p95 `<=300ms`: cache lesson catalog reads with a short client TTL, and consider DynamoDB DAX or a read-through cache for hot catalog paths.
 - `NFR-4` resumable download: use HTTP `Range` requests for asset resume and verify checksum after the final chunk is written.
-- `NFR-9` 10k concurrent users: configure Lambda reserved concurrency per module entry point; use DynamoDB on-demand capacity to absorb burst reads; keep the lesson catalog response cacheable at the API Gateway layer with a short TTL to reduce Lambda invocations during traffic spikes.
+- `NFR-9` 10k concurrent users: configure Lambda reserved concurrency per module entry point when using the Lambda deployment shape; use DynamoDB on-demand capacity to absorb burst reads; keep the lesson catalog response cacheable at the API Gateway layer with a short TTL to reduce backend invocations during traffic spikes.
 - `NFR-14` WCAG 2.1 AA: all interactive components must declare `accessibilityLabel` and `accessibilityRole`; tap targets must be at least 44x44pt on iOS and 48x48dp on Android; text must support dynamic type scaling without truncation; test with iOS VoiceOver and Android TalkBack before each release.
 - `NFR-20` crash rate `<=0.5%`: add a global React Native error boundary and an unhandled promise rejection handler so the app degrades instead of terminating.
 
@@ -960,25 +991,40 @@ export interface AdIntegrationController {
 
 ### 4.2 Response Envelope
 
-```ts
-export type JsonEnvelope<T> = {
-  requestId: string;
-  ok: boolean;
-  data?: T;
-  error?: ApiErrorPayload;
-};
+```python
+from typing import Optional, TypeVar
+
+T = TypeVar("T")
+
+
+def success(data: T, requestId: str) -> JsonEnvelope[T]:
+    return JsonEnvelope(ok=True, data=data, requestId=requestId)
+
+
+def failure(error: ApiErrorPayload, requestId: str) -> JsonEnvelope[None]:
+    return JsonEnvelope(ok=False, error=error, requestId=requestId)
 ```
 
 ### 4.3 Example Handler Logic
 
-```ts
-export async function listLessonsHandler(event: ApiEvent): Promise<JsonEnvelope<PagedResult<Lesson>>> {
-  const ctx = await authMiddleware(event);
-  await consentGuard(ctx.userId);
-  const filter = validateLessonFilter(event.queryStringParameters);
-  const page = await contentController.listLessons(filter, filter.cursor);
-  return success(page);
-}
+```python
+from fastapi import APIRouter, Query, Request
+
+
+router = APIRouter()
+
+
+@router.get("/lessons", response_model=JsonEnvelope[PagedResult[Lesson]])
+async def list_lessons_handler(
+    request: Request,
+    cursor: Optional[str] = Query(default=None),
+    limit: Optional[int] = Query(default=None),
+) -> JsonEnvelope[PagedResult[Lesson]]:
+    ctx = await auth_middleware(request)
+    await consent_guard(ctx.userId)
+    lesson_filter = LessonFilter(cursor=cursor, limit=limit)
+    page = await content_controller.list_lessons(lesson_filter, cursor)
+    return success(page, requestId=ctx.requestId)
 ```
 
 ### 4.4 Pagination and Sorting
@@ -1073,16 +1119,18 @@ sequenceDiagram
 
 ### 7.1 JWT Validation Middleware
 
-```ts
-export async function authMiddleware(event: ApiEvent): Promise<AuthContext> {
-  const token = extractBearerToken(event.headers.Authorization);
-  const claims = await verifyCognitoJwt(token);
-  return {
-    userId: claims.sub,
-    claims,
-    groups: claims["cognito:groups"] ?? []
-  };
-}
+```python
+from fastapi import Request
+
+
+async def auth_middleware(request: Request) -> AuthContext:
+    token = extract_bearer_token(request.headers.get("Authorization"))
+    claims = await verify_cognito_jwt(token)
+    return AuthContext(
+        userId=claims["sub"],
+        claims=claims,
+        groups=claims.get("cognito:groups", claims.get("cognito_groups", [])),
+    )
 ```
 
 ### 7.2 Signed URL Generation
@@ -1100,16 +1148,20 @@ export async function authMiddleware(event: ApiEvent): Promise<AuthContext> {
 
 ### 7.4 Audit Logging
 
-```ts
-type ConsentAuditLog = {
-  eventType: "consent_update";
-  userId: UserId;
-  ageVerified: boolean;
-  privacyAccepted: boolean;
-  adConsent: string;
-  timestamp: IsoDateTime;
-  requestId: string;
-};
+```python
+from typing import Literal
+
+from pydantic import BaseModel
+
+
+class ConsentAuditLog(BaseModel):
+    eventType: Literal["consent_update"]
+    userId: UserId
+    ageVerified: bool
+    privacyAccepted: bool
+    adConsent: str
+    timestamp: IsoDateTime
+    requestId: str
 ```
 
 ## 8. Error Handling and Logging
@@ -1125,18 +1177,22 @@ type ConsentAuditLog = {
 
 ### 8.2 Log Format
 
-```ts
-type LogEntry = {
-  level: "debug" | "info" | "warn" | "error";
-  requestId: string;
-  module: string;
-  action: string;
-  userId?: string;
-  lessonId?: string;
-  sessionId?: string;
-  message: string;
-  context?: Record<string, unknown>;
-};
+```python
+from typing import Any, Literal, Optional
+
+from pydantic import BaseModel
+
+
+class LogEntry(BaseModel):
+    level: Literal["debug", "info", "warn", "error"]
+    requestId: str
+    module: str
+    action: str
+    userId: Optional[str] = None
+    lessonId: Optional[str] = None
+    sessionId: Optional[str] = None
+    message: str = ""
+    context: dict[str, Any] | None = None
 ```
 
 ### 8.3 Client Error Handling Pattern

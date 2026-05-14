@@ -29,12 +29,12 @@ This SAD is derived from:
 
 ShadowSpeak MVP is an audio-first English shadowing practice app for iOS and Android. The technical architecture must prioritize fast startup, low-latency audio playback, offline lesson access, local progress queuing, and ad-supported monetization without real-time AI.
 
-This SAD recommends a **single modular backend deployment on AWS** with a **single cross-platform mobile client**. The architecture uses managed identity, API Gateway, Lambda-backed domain modules, DynamoDB for operational data, S3 + CloudFront for audio content, and local-first synchronization for progress and offline playback.
+This SAD recommends a **single modular backend deployment on AWS** with a **single cross-platform mobile client**. The architecture uses managed identity, API Gateway, Python FastAPI-backed domain modules, DynamoDB for operational data, S3 + CloudFront for audio content, and local-first synchronization for progress and offline playback.
 
 Key architectural decisions:
 
 - **Mobile client**: React Native + TypeScript, with native audio modules for playback and recording
-- **Backend style**: One modular serverless backend with clear internal domain modules
+- **Backend style**: One modular Python FastAPI backend with clear internal domain modules
 - **Primary cloud**: AWS serverless
 - **Identity**: Amazon Cognito
 - **Operational data**: DynamoDB
@@ -232,7 +232,7 @@ Logical domain ownership does not require physical database separation during th
 |-------|---------|---------|
 | Mobile authentication | Amazon Cognito | OAuth2 / JWT authentication, refresh tokens |
 | API edge | Amazon API Gateway | Single public API entry point |
-| Compute | AWS Lambda | Modular backend deployment |
+| Compute | Python 3.12 + FastAPI on AWS Lambda | Modular backend deployment |
 | Catalog and progress data | Amazon DynamoDB | Low-latency operational data |
 | Asset storage | Amazon S3 | Audio, scripts, recording uploads |
 | Content delivery | Amazon CloudFront | Fast audio playback and download distribution |
@@ -257,7 +257,7 @@ flowchart TB
     end
 
     subgraph Services["Modular Backend App"]
-        BackendApp[Lambda application / API handlers]
+        BackendApp[FastAPI application / API handlers]
         Auth[Auth / Profile / Consent module]
         Content[Content / Downloads module]
         Session[Session / Progress module]
@@ -307,7 +307,7 @@ flowchart TB
 - Automated backend deploy on merge to main branch
 - Mobile builds through a CI system such as GitHub Actions, Bitrise, or Codemagic
 - Separate release channels for internal, beta, and production builds
-- Lambda aliases or staged deployments for safe backend rollouts if the backend later splits into multiple deployables
+- Staged deployments or versioned releases for safe backend rollouts if the backend later splits into multiple deployables
 
 ## Integration Patterns
 
@@ -319,7 +319,7 @@ Reasons:
 
 - Easy to document and test
 - Fits mobile network conditions well
-- Works cleanly with API Gateway + Lambda
+- Works cleanly with API Gateway + FastAPI
 - Keeps the MVP simple without needing a GraphQL layer
 
 ### Service Communication
@@ -356,7 +356,7 @@ Reasons:
 ### Security Principles
 
 - Authenticate every API request with short-lived JWTs.
-- Use least privilege IAM for every Lambda and data store.
+- Use least privilege IAM for every backend component and data store.
 - Encrypt all sensitive data in transit and at rest.
 - Minimize personal data collection.
 - Keep recordings encrypted and isolated from logs.
@@ -367,7 +367,7 @@ Reasons:
 | Control | Implementation |
 |---------|----------------|
 | Authentication | Cognito with OAuth2 / PKCE for mobile |
-| Authorization | JWT validation at API gateway or Lambda middleware |
+| Authorization | JWT validation at API gateway or FastAPI middleware |
 | Transport security | TLS 1.2+ only |
 | Data at rest | KMS-backed encryption in S3 and DynamoDB |
 | Local device security | Keychain / Keystore, encrypted local DB |
@@ -425,7 +425,7 @@ The SAD inherits the NFR targets:
 
 | Area | Strategy |
 |------|----------|
-| API traffic | One modular Lambda backend behind API Gateway with AWS-managed concurrency |
+| API traffic | One modular FastAPI backend behind API Gateway with AWS-managed concurrency |
 | Catalog reads | DynamoDB on-demand or provisioned with auto-scaling, plus CloudFront caching where applicable |
 | Audio assets | CloudFront for global edge delivery |
 | Progress writes | Small idempotent writes and local queuing on mobile |
@@ -458,7 +458,7 @@ The SAD inherits the NFR targets:
 
 ### Rollout Patterns
 
-- Use Lambda aliases or versioned functions for safe backend rollout if the backend later splits into multiple deployables.
+- Use versioned releases or deployment aliases for safe backend rollout if the backend later splits into multiple deployables.
 - Use staged mobile release channels.
 - Use feature flags for non-essential UI or analytics toggles.
 - Keep the MVP release path narrow; avoid partial feature branching unless necessary.

@@ -84,7 +84,7 @@ The design intentionally avoids premature service fragmentation:
 | Layer | Recommended Stack | Notes |
 |-------|-------------------|-------|
 | Mobile client | React Native + TypeScript | Single codebase for iOS and Android |
-| Backend runtime | AWS Lambda + Node.js/TypeScript | Chosen for alignment with the React Native TypeScript ecosystem, lightweight Lambda deployment characteristics, simplified serverless tooling, and lower operational friction during MVP development |
+| Backend runtime | Python 3.12 + FastAPI on AWS Lambda | Chosen for strong API ergonomics, lightweight serverless deployment characteristics, simplified request validation via Pydantic, and lower operational friction during MVP development |
 | API edge | Amazon API Gateway | REST JSON over HTTPS |
 | Authentication | Amazon Cognito | JWT-based sign-in and refresh |
 | Operational data | Amazon DynamoDB | Shared schema or small table set acceptable in MVP |
@@ -146,7 +146,7 @@ flowchart LR
 
 #### Technology Stack
 
-- AWS Lambda
+- Python 3.12 + FastAPI
 - API Gateway
 - Amazon Cognito
 - DynamoDB
@@ -168,7 +168,7 @@ flowchart LR
 | `/me` | `PUT` | Update profile and account preferences |
 | `/consent` | `GET` | Read current consent state |
 | `/consent` | `PUT` | Persist age gate and consent decisions |
-| `/account/delete` | `POST` | Request account deletion |
+| `/account` | `DELETE` | Request account deletion |
 
 #### Dependencies
 
@@ -206,7 +206,7 @@ AWS IAM isolation between logical backend modules is intentionally lightweight d
 
 #### Technology Stack
 
-- AWS Lambda
+- Python 3.12 + FastAPI
 - API Gateway
 - DynamoDB
 - Amazon S3
@@ -258,7 +258,7 @@ AWS IAM isolation between logical backend modules is intentionally lightweight d
 
 #### Technology Stack
 
-- AWS Lambda
+- Python 3.12 + FastAPI
 - API Gateway
 - DynamoDB
 - Local encrypted storage on the client
@@ -310,7 +310,7 @@ AWS IAM isolation between logical backend modules is intentionally lightweight d
 
 - AWS S3
 - DynamoDB
-- Lambda or manual admin tooling
+- Python scripts or manual admin tooling
 - Future: Step Functions if content volume grows
 
 #### MVP Position
