@@ -2,15 +2,15 @@
 
 ## Document Metadata
 
-| Field | Value |
-|-------|-------|
-| Project | ShadowSpeak |
-| Document Type | Low-Level Design Document |
-| Phase | 04 - Solution Architecture |
-| Date | 2026-05-14 |
-| Status | Draft |
-| Version | 1.10 |
-| Owner | Backend Developer |
+| Field         | Value                      |
+| ------------- | -------------------------- |
+| Project       | ShadowSpeak                |
+| Document Type | Low-Level Design Document  |
+| Phase         | 04 - Solution Architecture |
+| Date          | 2026-05-14                 |
+| Status        | Draft                      |
+| Version       | 1.10                       |
+| Owner         | Backend Developer          |
 
 ## Source Basis
 
@@ -81,18 +81,18 @@ The MVP uses:
 
 ## Technology Stack
 
-| Layer | Stack |
-|-------|-------|
-| Mobile | React Native + TypeScript |
-| Backend | Python 3.12 + FastAPI on AWS Lambda |
-| Auth | Amazon Cognito |
-| API | Amazon API Gateway, REST JSON over HTTPS |
-| Data | Amazon DynamoDB |
-| Audio assets | Amazon S3 + CloudFront |
-| Offline storage | SQLite or Realm with encryption |
-| Ads | AdMob SDK |
-| Logging | CloudWatch Logs, structured JSON |
-| Crash reporting | Crashlytics or Sentry |
+| Layer           | Stack                                    |
+| --------------- | ---------------------------------------- |
+| Mobile          | React Native + TypeScript                |
+| Backend         | Python 3.12 + FastAPI on AWS Lambda      |
+| Auth            | Amazon Cognito                           |
+| API             | Amazon API Gateway, REST JSON over HTTPS |
+| Data            | Amazon DynamoDB                          |
+| Audio assets    | Amazon S3 + CloudFront                   |
+| Offline storage | SQLite or Realm with encryption          |
+| Ads             | AdMob SDK                                |
+| Logging         | CloudWatch Logs, structured JSON         |
+| Crash reporting | Crashlytics or Sentry                    |
 
 ## 1. Shared Domain Types
 
@@ -167,6 +167,7 @@ class Lesson(BaseModel):
     durationSeconds: int
     language: str
     isPublished: bool
+    thumbnailUrl: str
     audioAssetKey: str
     scriptAssetKey: str
     updatedAt: IsoDateTime
@@ -207,6 +208,8 @@ class SyncQueueItem(BaseModel):
 ```
 
 ### 1.3 MVP Data Notes
+
+- `Lesson.thumbnailUrl` is a CDN URL (e.g. `https://cdn.shadowspeak.app/thumbnails/conversation.webp`). All lessons sharing the same `topic` return the same `thumbnailUrl`. The client caches downloaded thumbnail files by topic key in app data and reuses them across lessons.
 
 - Shared schema is preferred over many small DynamoDB tables if it reduces maintenance.
 - Recordings remain local-first and are not uploaded by default.
@@ -325,13 +328,13 @@ class ProfileServiceProtocol(Protocol):
 
 #### Error Handling
 
-| Code | Condition | Handling |
-|------|-----------|----------|
-| `AUTH_UNAUTHORIZED` | Missing or invalid JWT | Return 401 |
-| `CONSENT_REQUIRED` | Consent missing or age gate failed | Return 403 |
-| `VALIDATION_ERROR` | Bad payload | Return 422 |
-| `USER_NOT_FOUND` | Profile missing | Return 404 |
-| `SYSTEM_ERROR` | DynamoDB or runtime failure | Return 500 |
+| Code                | Condition                          | Handling   |
+| ------------------- | ---------------------------------- | ---------- |
+| `AUTH_UNAUTHORIZED` | Missing or invalid JWT             | Return 401 |
+| `CONSENT_REQUIRED`  | Consent missing or age gate failed | Return 403 |
+| `VALIDATION_ERROR`  | Bad payload                        | Return 422 |
+| `USER_NOT_FOUND`    | Profile missing                    | Return 404 |
+| `SYSTEM_ERROR`      | DynamoDB or runtime failure        | Return 500 |
 
 #### Access Pattern Notes
 
@@ -482,13 +485,13 @@ class VerificationResponse(BaseModel):
 
 #### Error Handling
 
-| Code | Condition | Handling |
-|------|-----------|----------|
-| `LESSON_NOT_FOUND` | Lesson missing | Return 404 |
-| `LESSON_NOT_PUBLISHED` | Hidden content | Return 403 or 404 depending on policy |
-| `DOWNLOAD_DENIED` | No grant or expired grant | Return 403 |
-| `VALIDATION_ERROR` | Bad filter or input | Return 422 |
-| `SYSTEM_ERROR` | DB/S3 failure | Return 500 |
+| Code                   | Condition                 | Handling                              |
+| ---------------------- | ------------------------- | ------------------------------------- |
+| `LESSON_NOT_FOUND`     | Lesson missing            | Return 404                            |
+| `LESSON_NOT_PUBLISHED` | Hidden content            | Return 403 or 404 depending on policy |
+| `DOWNLOAD_DENIED`      | No grant or expired grant | Return 403                            |
+| `VALIDATION_ERROR`     | Bad filter or input       | Return 422                            |
+| `SYSTEM_ERROR`         | DB/S3 failure             | Return 500                            |
 
 #### Access Pattern Notes
 
@@ -609,13 +612,13 @@ stateDiagram-v2
 
 #### Error Handling
 
-| Code | Condition | Handling |
-|------|-----------|----------|
-| `SESSION_NOT_FOUND` | Missing session | Return 404 |
-| `SESSION_STATE_INVALID` | Wrong state transition | Return 409 |
-| `SYNC_CONFLICT` | Duplicate or conflicting mutation | Return 409 and reconcile |
-| `VALIDATION_ERROR` | Invalid payload | Return 422 |
-| `SYSTEM_ERROR` | DB failure | Return 500 |
+| Code                    | Condition                         | Handling                 |
+| ----------------------- | --------------------------------- | ------------------------ |
+| `SESSION_NOT_FOUND`     | Missing session                   | Return 404               |
+| `SESSION_STATE_INVALID` | Wrong state transition            | Return 409               |
+| `SYNC_CONFLICT`         | Duplicate or conflicting mutation | Return 409 and reconcile |
+| `VALIDATION_ERROR`      | Invalid payload                   | Return 422               |
+| `SYSTEM_ERROR`          | DB failure                        | Return 500               |
 
 #### Access Pattern Notes
 
@@ -742,7 +745,11 @@ stateDiagram-v2
 #### Native Module Interfaces
 
 ```ts
-export type AudioRoute = "speaker" | "wired_headphones" | "bluetooth_a2dp" | "bluetooth_sco";
+export type AudioRoute =
+  | "speaker"
+  | "wired_headphones"
+  | "bluetooth_a2dp"
+  | "bluetooth_sco";
 
 export type PlaybackMode = "solo_native" | "solo_user" | "simultaneous";
 
@@ -776,7 +783,10 @@ export interface AndroidPlaybackModule {
 }
 
 export interface RecordingComparisonModule {
-  prepareDualTrackPlayback(nativeAudioUri: string, recordingUri: string): Promise<void>;
+  prepareDualTrackPlayback(
+    nativeAudioUri: string,
+    recordingUri: string,
+  ): Promise<void>;
   setPlaybackMode(mode: PlaybackMode): Promise<void>;
   syncPlayback(offsetMs: number): Promise<void>;
   getCurrentRoute(): Promise<AudioRoute>;
@@ -788,8 +798,16 @@ export interface RecordingComparisonModule {
 #### Zustand Store Shape
 
 ```ts
-export type NotificationPermissionStatus = "unknown" | "granted" | "denied" | "blocked";
-export type NotificationRecoveryState = "idle" | "denied" | "recovery_prompt" | "settings_redirect";
+export type NotificationPermissionStatus =
+  | "unknown"
+  | "granted"
+  | "denied"
+  | "blocked";
+export type NotificationRecoveryState =
+  | "idle"
+  | "denied"
+  | "recovery_prompt"
+  | "settings_redirect";
 
 export type NotificationPreferencesState = {
   reminderEnabled: boolean;
@@ -821,12 +839,25 @@ export type CachedLessonRow = {
   title: string;
   level: string;
   topic: string;
+  thumbnailUrl: string;
   durationSeconds: number;
   audioAssetPath: string;
   scriptAssetPath: string;
-  audioChecksum: string;   // verified against LessonAsset.checksum after download
-  scriptChecksum: string;  // verified against LessonAsset.checksum after download
-  sizeBytes: number;       // used by StorageQuotaManager for accurate quota accounting
+  audioChecksum: string; // verified against LessonAsset.checksum after download
+  scriptChecksum: string; // verified against LessonAsset.checksum after download
+  sizeBytes: number; // used by StorageQuotaManager for accurate quota accounting
+  downloadedAt: IsoDateTime;
+};
+
+/**
+ * Thumbnails are cached in app data under `thumbnails/<topic>.webp`.
+ * The path is derived from `Lesson.thumbnailUrl` when downloaded.
+ * All lessons sharing the same topic reuse the same cached file.
+ */
+export type ThumbnailCacheRow = {
+  topic: string; // cache key, matches Lesson.topic
+  localPath: string; // e.g. "thumbnails/conversation.webp"
+  sourceUrl: string; // the CDN URL it was fetched from
   downloadedAt: IsoDateTime;
 };
 
@@ -953,7 +984,13 @@ stateDiagram-v2
 - Failed ad requests can be retried on the next eligible boundary, subject to the daily cap.
 
 ```ts
-export type AdLifecycleState = "idle" | "loading" | "loaded" | "showing" | "completed" | "failed";
+export type AdLifecycleState =
+  | "idle"
+  | "loading"
+  | "loaded"
+  | "showing"
+  | "completed"
+  | "failed";
 
 export type AdConsentMode = "personalized" | "non_personalized";
 
@@ -1047,15 +1084,15 @@ MVP may use a shared schema or a few tables. A practical split is:
 
 ### 5.2 Access Patterns
 
-| Access Pattern | Table | Key Pattern |
-|----------------|-------|-------------|
-| Get user profile | Users | `PK=user#{userId}` |
-| Get consent state | Users | `PK=user#{userId}` |
-| List lessons by level/topic | Lessons | `GSI1PK=level#{level}` / `GSI1SK=topic#{topic}#publishedAt` |
-| Get lesson detail | Lessons | `PK=lesson#{lessonId}` |
-| Start session | Sessions | `PK=user#{userId}`, `SK=session#{sessionId}` |
-| List recent history | Sessions | `GSI1PK=user#{userId}` / `GSI1SK=completedAt` |
-| Sync offline batch | SyncQueue | `PK=user#{userId}`, `SK=mutation#{clientMutationId}` |
+| Access Pattern              | Table     | Key Pattern                                                 |
+| --------------------------- | --------- | ----------------------------------------------------------- |
+| Get user profile            | Users     | `PK=user#{userId}`                                          |
+| Get consent state           | Users     | `PK=user#{userId}`                                          |
+| List lessons by level/topic | Lessons   | `GSI1PK=level#{level}` / `GSI1SK=topic#{topic}#publishedAt` |
+| Get lesson detail           | Lessons   | `PK=lesson#{lessonId}`                                      |
+| Start session               | Sessions  | `PK=user#{userId}`, `SK=session#{sessionId}`                |
+| List recent history         | Sessions  | `GSI1PK=user#{userId}` / `GSI1SK=completedAt`               |
+| Sync offline batch          | SyncQueue | `PK=user#{userId}`, `SK=mutation#{clientMutationId}`        |
 
 ### 5.3 TTL and Capacity Notes
 
@@ -1074,14 +1111,14 @@ MVP may use a shared schema or a few tables. A practical split is:
   - `ShadowSpeakSessions`: `expiresAt` set to 2 years by default, or accelerated to the deletion grace window when account deletion is requested.
   - `ShadowSpeakSyncQueue`: short post-reconciliation TTL, plus forced purge during account deletion.
 
-| Data Type | Retention Period | Purge Mechanism |
-|-----------|------------------|------------------|
-| User profile | Until account deletion or active use | `deleteAccount` tombstone, then hard delete or TTL purge |
-| Consent record | Until account deletion or active use | Cascade delete from profile lifecycle |
-| Session record | 2 years | DynamoDB `expiresAt` TTL, with early purge on account deletion |
-| Sync queue item | Until reconciliation or short post-sync window | TTL after successful reconciliation |
-| Local device cache | Until user signs out or deletes account | Client-side storage clear |
-| Downloaded lesson cache | Until user removes lesson or quota eviction | LRU eviction plus optional user purge |
+| Data Type               | Retention Period                               | Purge Mechanism                                                |
+| ----------------------- | ---------------------------------------------- | -------------------------------------------------------------- |
+| User profile            | Until account deletion or active use           | `deleteAccount` tombstone, then hard delete or TTL purge       |
+| Consent record          | Until account deletion or active use           | Cascade delete from profile lifecycle                          |
+| Session record          | 2 years                                        | DynamoDB `expiresAt` TTL, with early purge on account deletion |
+| Sync queue item         | Until reconciliation or short post-sync window | TTL after successful reconciliation                            |
+| Local device cache      | Until user signs out or deletes account        | Client-side storage clear                                      |
+| Downloaded lesson cache | Until user removes lesson or quota eviction    | LRU eviction plus optional user purge                          |
 
 ## 6. Offline Sync Design
 
@@ -1168,12 +1205,12 @@ class ConsentAuditLog(BaseModel):
 
 ### 8.1 Error Classification
 
-| Category | Example |
-|----------|---------|
-| Validation | invalid filter, malformed payload |
-| Auth | missing token, expired token |
-| Business | lesson unpublished, consent denied, invalid state transition |
-| System | DynamoDB error, S3 error, unexpected exception |
+| Category   | Example                                                      |
+| ---------- | ------------------------------------------------------------ |
+| Validation | invalid filter, malformed payload                            |
+| Auth       | missing token, expired token                                 |
+| Business   | lesson unpublished, consent denied, invalid state transition |
+| System     | DynamoDB error, S3 error, unexpected exception               |
 
 ### 8.2 Log Format
 
@@ -1388,19 +1425,19 @@ sequenceDiagram
 
 ## 11. Traceability Matrix
 
-| LLD Component | HLD Component | Functional Requirements | Use Cases | UI / Flow References |
-|---------------|---------------|-------------------------|----------|----------------------|
-| Auth / Profile / Consent | Auth / Profile / Consent Module | FR-1, FR-8, FR-9 | UC-01, UC-10, UC-11 | Age Gate, Privacy and Ad Consent, Sign In, Settings |
-| Content / Downloads | Content / Downloads Module | FR-2, FR-7 | UC-02, UC-06 | Home, Lesson Catalog, Lesson Detail, Downloaded Lessons |
-| Session / Progress | Session / Progress Module | FR-3, FR-4, FR-5 | UC-03, UC-04, UC-05, UC-08 | Practice Session, Recording Comparison, Progress View |
-| Mobile client | Client app architecture | FR-1 through FR-9 | UC-01 through UC-11 | All mobile screens |
-| Offline sync | Session / Progress Module + local store | FR-3, FR-4, FR-5, FR-7 | UC-03, UC-04, UC-06 | Offline Practice Session |
-| Monetization | AdMob SDK integration | FR-6 | UC-09 | Session boundary ad interstitial |
-| Account Deletion | Auth / Profile / Consent Module | FR-8 | UC-10 | Settings -> Delete Account |
-| Reminder Notifications | Mobile Client (Notification Module) | FR-8 | UC-07 | Settings -> Reminder Preferences |
+| LLD Component            | HLD Component                           | Functional Requirements | Use Cases                  | UI / Flow References                                    |
+| ------------------------ | --------------------------------------- | ----------------------- | -------------------------- | ------------------------------------------------------- |
+| Auth / Profile / Consent | Auth / Profile / Consent Module         | FR-1, FR-8, FR-9        | UC-01, UC-10, UC-11        | Age Gate, Privacy and Ad Consent, Sign In, Settings     |
+| Content / Downloads      | Content / Downloads Module              | FR-2, FR-7              | UC-02, UC-06               | Home, Lesson Catalog, Lesson Detail, Downloaded Lessons |
+| Session / Progress       | Session / Progress Module               | FR-3, FR-4, FR-5        | UC-03, UC-04, UC-05, UC-08 | Practice Session, Recording Comparison, Progress View   |
+| Mobile client            | Client app architecture                 | FR-1 through FR-9       | UC-01 through UC-11        | All mobile screens                                      |
+| Offline sync             | Session / Progress Module + local store | FR-3, FR-4, FR-5, FR-7  | UC-03, UC-04, UC-06        | Offline Practice Session                                |
+| Monetization             | AdMob SDK integration                   | FR-6                    | UC-09                      | Session boundary ad interstitial                        |
+| Account Deletion         | Auth / Profile / Consent Module         | FR-8                    | UC-10                      | Settings -> Delete Account                              |
+| Reminder Notifications   | Mobile Client (Notification Module)     | FR-8                    | UC-07                      | Settings -> Reminder Preferences                        |
 
 ## 12. Revision History
 
-| Version | Date | Author | Description |
-|---------|------|--------|-------------|
-| 1.10 | 2026-05-14 | Backend Developer | Initial LLD draft for MVP modular backend and mobile client |
+| Version | Date       | Author            | Description                                                 |
+| ------- | ---------- | ----------------- | ----------------------------------------------------------- |
+| 1.10    | 2026-05-14 | Backend Developer | Initial LLD draft for MVP modular backend and mobile client |

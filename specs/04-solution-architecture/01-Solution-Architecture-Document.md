@@ -2,15 +2,15 @@
 
 ## Document Metadata
 
-| Field | Value |
-|-------|-------|
-| Project | ShadowSpeak |
+| Field         | Value                          |
+| ------------- | ------------------------------ |
+| Project       | ShadowSpeak                    |
 | Document Type | Solution Architecture Document |
-| Phase | 04 - Solution Architecture |
-| Date | 2026-05-14 |
-| Status | Draft |
-| Version | 1.3 |
-| Owner | Solution Architecture |
+| Phase         | 04 - Solution Architecture     |
+| Date          | 2026-05-14                     |
+| Status        | Draft                          |
+| Version       | 1.3                            |
+| Owner         | Solution Architecture          |
 
 ## Source Basis
 
@@ -157,13 +157,13 @@ sequenceDiagram
 
 The MVP uses **one modular backend deployment**, not a fleet of independently deployed microservices. Each module owns one cohesive business capability and its own logical data shape, but the runtime is kept together to reduce operational friction.
 
-| Module | Responsibility | Data Store | Notes |
-|--------|----------------|-----------|-------|
-| Identity (managed) | Authentication, token issuance, refresh flows | Cognito user pool | Managed service, not part of the backend deployment |
-| Auth / Profile / Consent | Profile data, age gate, privacy consent, ad consent, settings persistence | DynamoDB | Owns user preferences and legal state |
-| Content / Downloads | Lesson metadata, recommendation surfaces, availability, filters, signed URLs | DynamoDB + S3 + CloudFront | Handles browse and offline asset access |
-| Session / Progress | Session start/complete, completion threshold, local sync acceptance, streaks, practice minutes | DynamoDB | No real-time AI or scoring |
-| Offline Content Pipeline | Admin / batch ingestion of lessons, scripts, TTS assets, checksums | Manual or semi-manual during MVP; automation later | Kept outside the runtime MVP path where possible |
+| Module                   | Responsibility                                                                                 | Data Store                                         | Notes                                               |
+| ------------------------ | ---------------------------------------------------------------------------------------------- | -------------------------------------------------- | --------------------------------------------------- |
+| Identity (managed)       | Authentication, token issuance, refresh flows                                                  | Cognito user pool                                  | Managed service, not part of the backend deployment |
+| Auth / Profile / Consent | Profile data, age gate, privacy consent, ad consent, settings persistence                      | DynamoDB                                           | Owns user preferences and legal state               |
+| Content / Downloads      | Lesson metadata, recommendation surfaces, availability, filters, signed URLs                   | DynamoDB + S3 + CloudFront                         | Handles browse and offline asset access             |
+| Session / Progress       | Session start/complete, completion threshold, local sync acceptance, streaks, practice minutes | DynamoDB                                           | No real-time AI or scoring                          |
+| Offline Content Pipeline | Admin / batch ingestion of lessons, scripts, TTS assets, checksums                             | Manual or semi-manual during MVP; automation later | Kept outside the runtime MVP path where possible    |
 
 ### Baseline MVP Runtime
 
@@ -188,26 +188,26 @@ This keeps ownership clear while avoiding premature fragmentation.
 
 ### Core Data Domains
 
-| Domain | Key Entities | Primary Characteristics |
-|--------|--------------|-------------------------|
-| Identity and consent | User, age status, privacy consent, ad consent | Sensitive, strongly audited, low write volume |
-| Content catalog | Lesson metadata, recommendation rank, availability, level, topic, duration | Read-heavy, cache-friendly |
-| Asset delivery | Lesson package, audio file, script, checksum, version | Large binary objects, CDN-backed |
-| Practice session | Session start, timing, completion threshold, recording reference | Event-like writes, idempotent |
-| Progress | Streak, practice minutes, completion history, sync queue state | Small records, high read frequency |
-| Offline queue | Pending session metrics, upload status, retry count | Device-local first, server reconciled later |
-| Telemetry | App events, ad events, playback events, error events | Append-only / analytical |
+| Domain               | Key Entities                                                               | Primary Characteristics                       |
+| -------------------- | -------------------------------------------------------------------------- | --------------------------------------------- |
+| Identity and consent | User, age status, privacy consent, ad consent                              | Sensitive, strongly audited, low write volume |
+| Content catalog      | Lesson metadata, recommendation rank, availability, level, topic, duration | Read-heavy, cache-friendly                    |
+| Asset delivery       | Lesson package, audio file, script, thumbnail, checksum, version           | Large binary objects, CDN-backed              |
+| Practice session     | Session start, timing, completion threshold, recording reference           | Event-like writes, idempotent                 |
+| Progress             | Streak, practice minutes, completion history, sync queue state             | Small records, high read frequency            |
+| Offline queue        | Pending session metrics, upload status, retry count                        | Device-local first, server reconciled later   |
+| Telemetry            | App events, ad events, playback events, error events                       | Append-only / analytical                      |
 
 ### Storage Recommendations
 
-| Data Type | Storage | Rationale |
-|-----------|---------|-----------|
-| User profile, consent, progress state | DynamoDB | Low-latency, serverless, flexible schema |
-| Lesson metadata | DynamoDB | Fast filter and recommendation queries |
-| Audio assets and lesson scripts | S3 | Durable binary store with lifecycle policies |
-| CDN delivery | CloudFront | Low-latency asset delivery worldwide |
-| Event archive | S3 | Cheap append-only analytics storage |
-| Mobile offline DB | SQLite / Realm + encrypted file store | Local-first queue and playback metadata |
+| Data Type                             | Storage                               | Rationale                                    |
+| ------------------------------------- | ------------------------------------- | -------------------------------------------- |
+| User profile, consent, progress state | DynamoDB                              | Low-latency, serverless, flexible schema     |
+| Lesson metadata                       | DynamoDB                              | Fast filter and recommendation queries       |
+| Audio assets and lesson scripts       | S3                                    | Durable binary store with lifecycle policies |
+| CDN delivery                          | CloudFront                            | Low-latency asset delivery worldwide         |
+| Event archive                         | S3                                    | Cheap append-only analytics storage          |
+| Mobile offline DB                     | SQLite / Realm + encrypted file store | Local-first queue and playback metadata      |
 
 Logical domain ownership does not require physical database separation during the MVP stage. The backend can use a shared DynamoDB schema or a small number of tables if that reduces development and operational overhead.
 
@@ -228,18 +228,18 @@ Logical domain ownership does not require physical database separation during th
 
 ### AWS Baseline
 
-| Layer | Service | Purpose |
-|-------|---------|---------|
-| Mobile authentication | Amazon Cognito | OAuth2 / JWT authentication, refresh tokens |
-| API edge | Amazon API Gateway | Single public API entry point |
-| Compute | Python 3.12 + FastAPI on AWS Lambda | Modular backend deployment |
-| Catalog and progress data | Amazon DynamoDB | Low-latency operational data |
-| Asset storage | Amazon S3 | Audio, scripts, recording uploads |
-| Content delivery | Amazon CloudFront | Fast audio playback and download distribution |
-| Secrets | AWS Secrets Manager / Parameter Store | Service credentials and config |
-| Encryption | AWS KMS | Encryption keys for storage and envelopes |
-| Observability | CloudWatch Logs, alarms | Logs and basic operational alerts |
-| Security perimeter | IAM, rate limits | API protection and least privilege |
+| Layer                     | Service                               | Purpose                                       |
+| ------------------------- | ------------------------------------- | --------------------------------------------- |
+| Mobile authentication     | Amazon Cognito                        | OAuth2 / JWT authentication, refresh tokens   |
+| API edge                  | Amazon API Gateway                    | Single public API entry point                 |
+| Compute                   | Python 3.12 + FastAPI on AWS Lambda   | Modular backend deployment                    |
+| Catalog and progress data | Amazon DynamoDB                       | Low-latency operational data                  |
+| Asset storage             | Amazon S3                             | Audio, scripts, recording uploads             |
+| Content delivery          | Amazon CloudFront                     | Fast audio playback and download distribution |
+| Secrets                   | AWS Secrets Manager / Parameter Store | Service credentials and config                |
+| Encryption                | AWS KMS                               | Encryption keys for storage and envelopes     |
+| Observability             | CloudWatch Logs, alarms               | Logs and basic operational alerts             |
+| Security perimeter        | IAM, rate limits                      | API protection and least privilege            |
 
 ### Deployment Topology
 
@@ -295,11 +295,11 @@ flowchart TB
 
 ### Environment Strategy
 
-| Environment | Purpose | Notes |
-|-------------|---------|-------|
-| Dev | Local feature development | Separate sandbox data and test users |
-| Staging | Integration and QA validation | Approximates production behavior where practical, while staying operationally lightweight |
-| Prod | Customer-facing MVP | Locked-down IAM and alarms |
+| Environment | Purpose                       | Notes                                                                                     |
+| ----------- | ----------------------------- | ----------------------------------------------------------------------------------------- |
+| Dev         | Local feature development     | Separate sandbox data and test users                                                      |
+| Staging     | Integration and QA validation | Approximates production behavior where practical, while staying operationally lightweight |
+| Prod        | Customer-facing MVP           | Locked-down IAM and alarms                                                                |
 
 ### CI/CD Strategy
 
@@ -324,31 +324,31 @@ Reasons:
 
 ### Service Communication
 
-| Pattern | Use Case | Notes |
-|---------|----------|-------|
-| Synchronous REST | Profile reads, lesson catalog, session start, download URLs | Primary pattern for user-facing operations |
-| Presigned URLs | Audio asset download and upload | Short-lived and secure |
-| Local queue with later retry | Offline recording/progress sync | Critical for MVP reliability |
-| Deferred background jobs | Content publishing or analytics later | Not part of the MVP runtime path |
+| Pattern                      | Use Case                                                    | Notes                                      |
+| ---------------------------- | ----------------------------------------------------------- | ------------------------------------------ |
+| Synchronous REST             | Profile reads, lesson catalog, session start, download URLs | Primary pattern for user-facing operations |
+| Presigned URLs               | Audio asset download and upload                             | Short-lived and secure                     |
+| Local queue with later retry | Offline recording/progress sync                             | Critical for MVP reliability               |
+| Deferred background jobs     | Content publishing or analytics later                       | Not part of the MVP runtime path           |
 
 ### Suggested API Surface
 
-| Service | Example Endpoints | Purpose |
-|---------|-------------------|---------|
-| Profile & Consent | `GET /me`, `PUT /me`, `GET /consent`, `PUT /consent` | User profile and legal state |
-| Content Catalog | `GET /lessons`, `GET /lessons/{id}`, `GET /home/recommendation` | Lesson browsing and discovery |
-| Practice Session | `POST /sessions`, `PATCH /sessions/{id}`, `POST /sessions/{id}/complete` | Session lifecycle |
-| Progress & Sync | `GET /progress`, `POST /progress/sync`, `GET /progress/history` | Streaks and sync reconciliation |
-| Download Delivery | `POST /downloads/{lessonId}/url`, `POST /downloads/{lessonId}/verify` | Download entitlement and verification |
-| Telemetry | `POST /events` | Optional future event intake, not required for MVP runtime |
+| Service           | Example Endpoints                                                        | Purpose                                                    |
+| ----------------- | ------------------------------------------------------------------------ | ---------------------------------------------------------- |
+| Profile & Consent | `GET /me`, `PUT /me`, `GET /consent`, `PUT /consent`                     | User profile and legal state                               |
+| Content Catalog   | `GET /lessons`, `GET /lessons/{id}`, `GET /home/recommendation`          | Lesson browsing and discovery                              |
+| Practice Session  | `POST /sessions`, `PATCH /sessions/{id}`, `POST /sessions/{id}/complete` | Session lifecycle                                          |
+| Progress & Sync   | `GET /progress`, `POST /progress/sync`, `GET /progress/history`          | Streaks and sync reconciliation                            |
+| Download Delivery | `POST /downloads/{lessonId}/url`, `POST /downloads/{lessonId}/verify`    | Download entitlement and verification                      |
+| Telemetry         | `POST /events`                                                           | Optional future event intake, not required for MVP runtime |
 
 ### External Integrations
 
-| Integration | Direction | Role |
-|-------------|-----------|------|
-| Cognito | Inbound auth | Token issuance and identity |
-| AdMob SDK | Client-side outbound | Audio interstitial delivery |
-| Push / local notifications | Device-native only | Reminder scheduling on device |
+| Integration                            | Direction                        | Role                                                      |
+| -------------------------------------- | -------------------------------- | --------------------------------------------------------- |
+| Cognito                                | Inbound auth                     | Token issuance and identity                               |
+| AdMob SDK                              | Client-side outbound             | Audio interstitial delivery                               |
+| Push / local notifications             | Device-native only               | Reminder scheduling on device                             |
 | CloudWatch Logs / alarms / Crashlytics | Backend and mobile observability | Logging, alerts, crash reporting; X-Ray optional post-MVP |
 
 ## Security Architecture
@@ -364,17 +364,17 @@ Reasons:
 
 ### Security Controls
 
-| Control | Implementation |
-|---------|----------------|
-| Authentication | Cognito with OAuth2 / PKCE for mobile |
-| Authorization | JWT validation at API gateway or FastAPI middleware |
-| Transport security | TLS 1.2+ only |
-| Data at rest | KMS-backed encryption in S3 and DynamoDB |
-| Local device security | Keychain / Keystore, encrypted local DB |
-| Upload security | Presigned URLs, short TTL, checksum verification |
-| API protection | API Gateway throttling, rate limits |
-| Secrets | Secrets Manager / Parameter Store |
-| Auditability | CloudTrail, structured logs, consent event records |
+| Control               | Implementation                                      |
+| --------------------- | --------------------------------------------------- |
+| Authentication        | Cognito with OAuth2 / PKCE for mobile               |
+| Authorization         | JWT validation at API gateway or FastAPI middleware |
+| Transport security    | TLS 1.2+ only                                       |
+| Data at rest          | KMS-backed encryption in S3 and DynamoDB            |
+| Local device security | Keychain / Keystore, encrypted local DB             |
+| Upload security       | Presigned URLs, short TTL, checksum verification    |
+| API protection        | API Gateway throttling, rate limits                 |
+| Secrets               | Secrets Manager / Parameter Store                   |
+| Auditability          | CloudTrail, structured logs, consent event records  |
 
 ### Observability Strategy
 
@@ -423,13 +423,13 @@ The SAD inherits the NFR targets:
 
 ### Scaling Strategy
 
-| Area | Strategy |
-|------|----------|
-| API traffic | One modular FastAPI backend behind API Gateway with AWS-managed concurrency |
-| Catalog reads | DynamoDB on-demand or provisioned with auto-scaling, plus CloudFront caching where applicable |
-| Audio assets | CloudFront for global edge delivery |
-| Progress writes | Small idempotent writes and local queuing on mobile |
-| Telemetry | Keep lightweight in MVP; expand later if event volume justifies it |
+| Area            | Strategy                                                                                      |
+| --------------- | --------------------------------------------------------------------------------------------- |
+| API traffic     | One modular FastAPI backend behind API Gateway with AWS-managed concurrency                   |
+| Catalog reads   | DynamoDB on-demand or provisioned with auto-scaling, plus CloudFront caching where applicable |
+| Audio assets    | CloudFront for global edge delivery                                                           |
+| Progress writes | Small idempotent writes and local queuing on mobile                                           |
+| Telemetry       | Keep lightweight in MVP; expand later if event volume justifies it                            |
 
 ### Performance Tactics
 
@@ -465,14 +465,14 @@ The SAD inherits the NFR targets:
 
 ### Operational Readiness
 
-| Item | Approach |
-|------|----------|
-| Monitoring | CloudWatch alarms for API errors, latency, and failures |
-| Logging | JSON logs with correlation IDs |
-| Tracing | Optional after MVP if needed for diagnostics |
-| Mobile crashes | Crashlytics or Sentry |
-| Alerts | Slack/email/pager for critical backend failures |
-| Runbooks | Basic incident response for auth, content delivery, and sync failures |
+| Item           | Approach                                                              |
+| -------------- | --------------------------------------------------------------------- |
+| Monitoring     | CloudWatch alarms for API errors, latency, and failures               |
+| Logging        | JSON logs with correlation IDs                                        |
+| Tracing        | Optional after MVP if needed for diagnostics                          |
+| Mobile crashes | Crashlytics or Sentry                                                 |
+| Alerts         | Slack/email/pager for critical backend failures                       |
+| Runbooks       | Basic incident response for auth, content delivery, and sync failures |
 
 ## Firebase Simplification Option
 
@@ -511,15 +511,15 @@ This is a valid MVP simplification, but the baseline architecture in this SAD re
 
 ## Traceability Matrix
 
-| Architecture Element | Functional Requirements | Use Cases | UI / Flow References |
-|---------------------|-------------------------|----------|----------------------|
-| Cognito auth | FR-1, FR-9 | UC-01, UC-11 | Onboarding / Sign In |
-| Modular backend app | FR-2, FR-3, FR-4, FR-5, FR-7, FR-8, FR-9 | UC-01, UC-02, UC-03, UC-04, UC-05, UC-06, UC-08, UC-10, UC-11 | Home / Catalog / Practice / Progress / Settings |
-| Content delivery layer | FR-2, FR-7 | UC-02, UC-06 | Home / Catalog / Downloads |
-| AdMob client integration | FR-6 | UC-09 | Session boundary ad interstitial |
-| Offline local storage | FR-3, FR-4, FR-5, FR-7 | UC-03, UC-04, UC-06 | Offline practice and queued sync |
-| Observability stack | NFR-1 through NFR-20 | All relevant flows | All screens / runtime |
-| Content publishing pipeline | FR-2, FR-7 | UC-02, UC-06 | Admin content prep and publishing |
+| Architecture Element        | Functional Requirements                  | Use Cases                                                     | UI / Flow References                            |
+| --------------------------- | ---------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------- |
+| Cognito auth                | FR-1, FR-9                               | UC-01, UC-11                                                  | Onboarding / Sign In                            |
+| Modular backend app         | FR-2, FR-3, FR-4, FR-5, FR-7, FR-8, FR-9 | UC-01, UC-02, UC-03, UC-04, UC-05, UC-06, UC-08, UC-10, UC-11 | Home / Catalog / Practice / Progress / Settings |
+| Content delivery layer      | FR-2, FR-7                               | UC-02, UC-06                                                  | Home / Catalog / Downloads                      |
+| AdMob client integration    | FR-6                                     | UC-09                                                         | Session boundary ad interstitial                |
+| Offline local storage       | FR-3, FR-4, FR-5, FR-7                   | UC-03, UC-04, UC-06                                           | Offline practice and queued sync                |
+| Observability stack         | NFR-1 through NFR-20                     | All relevant flows                                            | All screens / runtime                           |
+| Content publishing pipeline | FR-2, FR-7                               | UC-02, UC-06                                                  | Admin content prep and publishing               |
 
 ## Open Assumptions
 

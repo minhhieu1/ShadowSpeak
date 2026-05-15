@@ -2,15 +2,15 @@
 
 ## Document Metadata
 
-| Field | Value |
-|-------|-------|
-| Project | ShadowSpeak |
-| Document Type | Database Design Document |
-| Phase | 04 - Solution Architecture |
-| Date | 2026-05-14 |
-| Status | Draft |
-| Version | 1.0 |
-| Owner | Database Designer |
+| Field         | Value                      |
+| ------------- | -------------------------- |
+| Project       | ShadowSpeak                |
+| Document Type | Database Design Document   |
+| Phase         | 04 - Solution Architecture |
+| Date          | 2026-05-14                 |
+| Status        | Draft                      |
+| Version       | 1.0                        |
+| Owner         | Database Designer          |
 
 ## Source Basis
 
@@ -24,9 +24,9 @@ The LLD is the primary source for the data models, naming, and access patterns. 
 
 ## Revision History
 
-| Version | Date | Author | Description |
-|---------|------|--------|-------------|
-| 1.0 | 2026-05-14 | Database Designer | Initial DynamoDB design for the ShadowSpeak MVP |
+| Version | Date       | Author            | Description                                     |
+| ------- | ---------- | ----------------- | ----------------------------------------------- |
+| 1.0     | 2026-05-14 | Database Designer | Initial DynamoDB design for the ShadowSpeak MVP |
 
 ## 1. Design Summary
 
@@ -44,17 +44,17 @@ This document explicitly supersedes the LLD's earlier four-table sketch in Secti
 
 ### Table Choice
 
-| Option | Decision | Reason |
-|--------|----------|--------|
-| Single-table | Yes | Minimizes operational complexity and keeps user-scoped reads/writes in one partitioning strategy |
-| Minimal-table | Not chosen | Two or more tables would split related state without adding meaningful MVP value |
+| Option        | Decision   | Reason                                                                                           |
+| ------------- | ---------- | ------------------------------------------------------------------------------------------------ |
+| Single-table  | Yes        | Minimizes operational complexity and keeps user-scoped reads/writes in one partitioning strategy |
+| Minimal-table | Not chosen | Two or more tables would split related state without adding meaningful MVP value                 |
 
 ## 2. DynamoDB Table Design
 
 ### 2.1 Primary Table
 
-| Table Name | Purpose |
-|------------|---------|
+| Table Name        | Purpose                                                                                                                         |
+| ----------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `ShadowSpeakMain` | Stores user profile, consent, sessions, progress, sync queue items, lesson metadata, lesson access records, and download grants |
 
 ### 2.2 Key Conventions
@@ -76,26 +76,26 @@ This document uses uppercase prefixes for readability and to keep the item keys 
 
 The table stores multiple logical entity types in the same physical table. Each item is identified by `PK` and `SK`.
 
-| Attribute | Meaning |
-|----------|---------|
-| `PK` | Primary partition key |
-| `SK` | Primary sort key |
-| `entityType` | Logical item type discriminator |
-| `ttlEpoch` | Internal DynamoDB TTL attribute, used only where noted |
+| Attribute    | Meaning                                                |
+| ------------ | ------------------------------------------------------ |
+| `PK`         | Primary partition key                                  |
+| `SK`         | Primary sort key                                       |
+| `entityType` | Logical item type discriminator                        |
+| `ttlEpoch`   | Internal DynamoDB TTL attribute, used only where noted |
 
 ## 3. Entity-to-DynamoDB Mapping
 
-| Entity | PK Pattern | SK Pattern | Attribute List | Notes |
-|--------|------------|------------|----------------|-------|
-| `UserProfile` | `USER#<userId>` | `PROFILE` | `userId`, `displayName`, `email`, `level`, `reminderTime`, `deletionRequestedAt`, `deletionStatus`, `createdAt`, `updatedAt`, `entityType` | Single profile row per user |
-| `ConsentState` | `USER#<userId>` | `CONSENT` | `userId`, `ageVerified`, `privacyAccepted`, `adConsent`, `consentUpdatedAt`, `locale`, `entityType` | Durable consent row after Cognito sign-in |
-| `ConsentState` bootstrap | `DEVICE#<deviceId>` | `CONSENT` | `userId?`, `ageVerified`, `privacyAccepted`, `adConsent`, `consentUpdatedAt`, `locale`, `entityType`, `ttlEpoch` | Transient pre-auth consent row, re-keyed to `USER#<userId>` after sign-in |
-| `Lesson` | `LESSON#<lessonId>` | `METADATA` | `lessonId`, `title`, `level`, `topic`, `durationSeconds`, `language`, `isPublished`, `audioAssetKey`, `scriptAssetKey`, `updatedAt`, `entityType`, `gsi2pk`, `gsi2sk` | Lesson detail and catalog metadata |
-| `PracticeSession` | `SESSION#<sessionId>` | `METADATA` | `sessionId`, `userId`, `lessonId`, `status`, `startedAt`, `expiresAt`, `completedAt`, `completionPercent`, `recordingLocalUri`, `clientMutationId`, `entityType`, `gsi1pk`, `gsi1sk`, `ttlEpoch` | Direct lookup by sessionId |
-| `ProgressSnapshot` current | `USER#<userId>` | `PROGRESS#CURRENT` | `userId`, `lessonId?`, `streakDays`, `minutesPracticed`, `lastPracticedAt`, `completedLessonCount`, `updatedAt`, `entityType` | Aggregate snapshot, one current item per user |
-| `ProgressSnapshot` history | `USER#<userId>` | `PROGRESS#HISTORY#<completedAt>#<lessonId>#<sessionId>` | `userId`, `lessonId`, `streakDays`, `minutesPracticed`, `lastPracticedAt`, `completedLessonCount`, `updatedAt`, `entityType` | Append-only history rows, `lessonId` always populated |
-| `SyncQueueItem` | `USER#<userId>` | `MUTATION#<clientMutationId>` | `id`, `userId`, `type`, `payload`, `clientMutationId`, `retryCount`, `nextRetryAt`, `status`, `entityType`, `ttlEpoch?` | Queue state stays user-scoped and keyed by immutable mutation token |
-| `DownloadGrant` | `USER#<userId>` | `DOWNLOAD#<lessonId>#<assetType>` | `userId`, `lessonId`, `grantedAt`, `expiresAt`, `assetKey`, `entityType`, `ttlEpoch` | Short-lived grant for signed URL and verification |
+| Entity                     | PK Pattern            | SK Pattern                                              | Attribute List                                                                                                                                                                                   | Notes                                                                     |
+| -------------------------- | --------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| `UserProfile`              | `USER#<userId>`       | `PROFILE`                                               | `userId`, `displayName`, `email`, `level`, `reminderTime`, `deletionRequestedAt`, `deletionStatus`, `createdAt`, `updatedAt`, `entityType`                                                       | Single profile row per user                                               |
+| `ConsentState`             | `USER#<userId>`       | `CONSENT`                                               | `userId`, `ageVerified`, `privacyAccepted`, `adConsent`, `consentUpdatedAt`, `locale`, `entityType`                                                                                              | Durable consent row after Cognito sign-in                                 |
+| `ConsentState` bootstrap   | `DEVICE#<deviceId>`   | `CONSENT`                                               | `userId?`, `ageVerified`, `privacyAccepted`, `adConsent`, `consentUpdatedAt`, `locale`, `entityType`, `ttlEpoch`                                                                                 | Transient pre-auth consent row, re-keyed to `USER#<userId>` after sign-in |
+| `Lesson`                   | `LESSON#<lessonId>`   | `METADATA`                                              | `lessonId`, `title`, `level`, `topic`, `durationSeconds`, `language`, `isPublished`, `thumbnailUrl`, `audioAssetKey`, `scriptAssetKey`, `updatedAt`, `entityType`, `gsi2pk`, `gsi2sk`            | Lesson detail and catalog metadata                                        |
+| `PracticeSession`          | `SESSION#<sessionId>` | `METADATA`                                              | `sessionId`, `userId`, `lessonId`, `status`, `startedAt`, `expiresAt`, `completedAt`, `completionPercent`, `recordingLocalUri`, `clientMutationId`, `entityType`, `gsi1pk`, `gsi1sk`, `ttlEpoch` | Direct lookup by sessionId                                                |
+| `ProgressSnapshot` current | `USER#<userId>`       | `PROGRESS#CURRENT`                                      | `userId`, `lessonId?`, `streakDays`, `minutesPracticed`, `lastPracticedAt`, `completedLessonCount`, `updatedAt`, `entityType`                                                                    | Aggregate snapshot, one current item per user                             |
+| `ProgressSnapshot` history | `USER#<userId>`       | `PROGRESS#HISTORY#<completedAt>#<lessonId>#<sessionId>` | `userId`, `lessonId`, `streakDays`, `minutesPracticed`, `lastPracticedAt`, `completedLessonCount`, `updatedAt`, `entityType`                                                                     | Append-only history rows, `lessonId` always populated                     |
+| `SyncQueueItem`            | `USER#<userId>`       | `MUTATION#<clientMutationId>`                           | `id`, `userId`, `type`, `payload`, `clientMutationId`, `retryCount`, `nextRetryAt`, `status`, `entityType`, `ttlEpoch?`                                                                          | Queue state stays user-scoped and keyed by immutable mutation token       |
+| `DownloadGrant`            | `USER#<userId>`       | `DOWNLOAD#<lessonId>#<assetType>`                       | `userId`, `lessonId`, `grantedAt`, `expiresAt`, `assetKey`, `entityType`, `ttlEpoch`                                                                                                             | Short-lived grant for signed URL and verification                         |
 
 ### 3.1 Lesson Asset Note
 
@@ -111,10 +111,10 @@ The HLD's `OfflineLessonFlag` concept is subsumed by `DownloadGrant` on the back
 
 ### 4.1 GSI Definitions
 
-| Index Name | PK Pattern | SK Pattern | Projection | Supported Access Pattern |
-|-----------|------------|------------|------------|--------------------------|
-| `GSI1_UserSessionTimeline` | `USER#<userId>` | `SESSION#<startedAt>#<sessionId>` | `INCLUDE` | Query sessions by `userId` |
-| `GSI2_LessonCatalog` | `LESSONCAT#<level>#PUBLISHED` | `UPDATED#<updatedAt>#LESSON#<lessonId>` | `INCLUDE` | Browse lessons by level and publication state, plus recommendation |
+| Index Name                 | PK Pattern                    | SK Pattern                              | Projection | Supported Access Pattern                                           |
+| -------------------------- | ----------------------------- | --------------------------------------- | ---------- | ------------------------------------------------------------------ |
+| `GSI1_UserSessionTimeline` | `USER#<userId>`               | `SESSION#<startedAt>#<sessionId>`       | `INCLUDE`  | Query sessions by `userId`                                         |
+| `GSI2_LessonCatalog`       | `LESSONCAT#<level>#PUBLISHED` | `UPDATED#<updatedAt>#LESSON#<lessonId>` | `INCLUDE`  | Browse lessons by level and publication state, plus recommendation |
 
 ### 4.2 LSI Definitions
 
@@ -128,10 +128,10 @@ Reason:
 
 ### 4.3 Projected Attributes
 
-| Index | Projected Attributes |
-|-------|----------------------|
-| `GSI1_UserSessionTimeline` | `sessionId`, `userId`, `lessonId`, `status`, `startedAt`, `completedAt`, `completionPercent`, `expiresAt`, `clientMutationId` |
-| `GSI2_LessonCatalog` | `lessonId`, `title`, `level`, `topic`, `durationSeconds`, `language`, `isPublished`, `audioAssetKey`, `scriptAssetKey`, `updatedAt` |
+| Index                      | Projected Attributes                                                                                                                                |
+| -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `GSI1_UserSessionTimeline` | `sessionId`, `userId`, `lessonId`, `status`, `startedAt`, `completedAt`, `completionPercent`, `expiresAt`, `clientMutationId`                       |
+| `GSI2_LessonCatalog`       | `lessonId`, `title`, `level`, `topic`, `durationSeconds`, `language`, `isPublished`, `thumbnailUrl`, `audioAssetKey`, `scriptAssetKey`, `updatedAt` |
 
 Notes:
 
@@ -142,28 +142,28 @@ Notes:
 
 ## 5. Access Pattern Matrix
 
-| Operation | Table / Index | Key Condition | Filter / Sort | Notes |
-|-----------|---------------|---------------|---------------|-------|
-| Get profile by `userId` | `ShadowSpeakMain` | `PK = USER#<userId>`, `SK = PROFILE` | None | Direct `GetItem` |
-| Get consent by `userId` | `ShadowSpeakMain` | `PK = USER#<userId>`, `SK = CONSENT` | None | Direct `GetItem` |
-| Save consent changes | `ShadowSpeakMain` | `PK = USER#<userId>`, `SK = CONSENT` | Conditional update | Idempotent `UpdateItem` |
-| Pre-auth consent bootstrap | `ShadowSpeakMain` | `PK = DEVICE#<deviceId>`, `SK = CONSENT` | None | Transient item before sign-in, then re-key to `USER#<userId>` |
-| Create or refresh `DownloadGrant` | `ShadowSpeakMain` | `PK = USER#<userId>`, `SK = DOWNLOAD#<lessonId>#<assetType>` | Condition on expiry/state | Short-lived grant, TTL-backed |
-| Read `DownloadGrant` for verification | `ShadowSpeakMain` | `PK = USER#<userId>`, `SK = DOWNLOAD#<lessonId>#<assetType>` | Application-layer check after `GetItem`: verify `expiresAt > now()` | Verifies the signed URL request before returning checksum metadata |
-| Get lesson detail by `lessonId` | `ShadowSpeakMain` | `PK = LESSON#<lessonId>`, `SK = METADATA` | None | Direct `GetItem` |
-| Browse lessons by `level` and `topic` | `GSI2_LessonCatalog` | `GSI2PK = LESSONCAT#<level>#PUBLISHED` | Filter on `topic` and optional `durationSeconds` | Used by lesson catalog and recommendation surfaces; unpublished lessons are excluded by sparse indexing |
-| Get daily recommendation | `GSI2_LessonCatalog` | `GSI2PK = LESSONCAT#<level>#PUBLISHED` | `ScanIndexForward = false`, `Limit = 1` and optional topic filter | Reuses the catalog index; unpublished lessons are excluded by sparse indexing |
-| Get session detail by `sessionId` | `ShadowSpeakMain` | `PK = SESSION#<sessionId>`, `SK = METADATA` | None | Direct `GetItem` |
-| Query sessions by `userId` | `GSI1_UserSessionTimeline` | `GSI1PK = USER#<userId>` | Sort by `startedAt` descending | Power session history/listing |
-| Update active session state | `ShadowSpeakMain` | `PK = SESSION#<sessionId>`, `SK = METADATA` | Condition on current status | Use `clientMutationId` when the mutation can be retried |
-| Complete session | `ShadowSpeakMain` | `PK = SESSION#<sessionId>`, `SK = METADATA` | Condition on `status` and `clientMutationId` | Idempotent completion write |
-| Mark session synced | `ShadowSpeakMain` | `PK = SESSION#<sessionId>`, `SK = METADATA` | Condition on `status = completed` and matching `clientMutationId` | Terminal server acknowledgement after offline reconciliation; no key change |
-| Fetch current progress snapshot | `ShadowSpeakMain` | `PK = USER#<userId>`, `SK = PROGRESS#CURRENT` | None | One row per user |
-| Append progress history | `ShadowSpeakMain` | `PK = USER#<userId>`, `SK = PROGRESS#HISTORY#<completedAt>#<lessonId>#<sessionId>` | None | Append-only audit/history |
-| Query progress history | `ShadowSpeakMain` | `PK = USER#<userId>`, `SK begins_with PROGRESS#HISTORY#` | Sort reverse-chronologically by sort key | History rows always include `lessonId` |
-| Upsert sync queue item | `ShadowSpeakMain` | `PK = USER#<userId>`, `SK = MUTATION#<clientMutationId>` | Condition on `clientMutationId` uniqueness | Client owns `id` and `clientMutationId`; `id` is the local queue-row identifier and `clientMutationId` is the DynamoDB dedupe key |
-| Query sync queue items by status | `ShadowSpeakMain` | `PK = USER#<userId>` | FilterExpression `status = :status` and optional `nextRetryAt` range | No GSI needed; queue volume is small in MVP |
-| Delete all user-owned state | `ShadowSpeakMain` | `PK = USER#<userId>` plus session GSI lookup | Query and batch delete | Used by account purge workflow |
+| Operation                             | Table / Index              | Key Condition                                                                      | Filter / Sort                                                        | Notes                                                                                                                             |
+| ------------------------------------- | -------------------------- | ---------------------------------------------------------------------------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Get profile by `userId`               | `ShadowSpeakMain`          | `PK = USER#<userId>`, `SK = PROFILE`                                               | None                                                                 | Direct `GetItem`                                                                                                                  |
+| Get consent by `userId`               | `ShadowSpeakMain`          | `PK = USER#<userId>`, `SK = CONSENT`                                               | None                                                                 | Direct `GetItem`                                                                                                                  |
+| Save consent changes                  | `ShadowSpeakMain`          | `PK = USER#<userId>`, `SK = CONSENT`                                               | Conditional update                                                   | Idempotent `UpdateItem`                                                                                                           |
+| Pre-auth consent bootstrap            | `ShadowSpeakMain`          | `PK = DEVICE#<deviceId>`, `SK = CONSENT`                                           | None                                                                 | Transient item before sign-in, then re-key to `USER#<userId>`                                                                     |
+| Create or refresh `DownloadGrant`     | `ShadowSpeakMain`          | `PK = USER#<userId>`, `SK = DOWNLOAD#<lessonId>#<assetType>`                       | Condition on expiry/state                                            | Short-lived grant, TTL-backed                                                                                                     |
+| Read `DownloadGrant` for verification | `ShadowSpeakMain`          | `PK = USER#<userId>`, `SK = DOWNLOAD#<lessonId>#<assetType>`                       | Application-layer check after `GetItem`: verify `expiresAt > now()`  | Verifies the signed URL request before returning checksum metadata                                                                |
+| Get lesson detail by `lessonId`       | `ShadowSpeakMain`          | `PK = LESSON#<lessonId>`, `SK = METADATA`                                          | None                                                                 | Direct `GetItem`                                                                                                                  |
+| Browse lessons by `level` and `topic` | `GSI2_LessonCatalog`       | `GSI2PK = LESSONCAT#<level>#PUBLISHED`                                             | Filter on `topic` and optional `durationSeconds`                     | Used by lesson catalog and recommendation surfaces; unpublished lessons are excluded by sparse indexing                           |
+| Get daily recommendation              | `GSI2_LessonCatalog`       | `GSI2PK = LESSONCAT#<level>#PUBLISHED`                                             | `ScanIndexForward = false`, `Limit = 1` and optional topic filter    | Reuses the catalog index; unpublished lessons are excluded by sparse indexing                                                     |
+| Get session detail by `sessionId`     | `ShadowSpeakMain`          | `PK = SESSION#<sessionId>`, `SK = METADATA`                                        | None                                                                 | Direct `GetItem`                                                                                                                  |
+| Query sessions by `userId`            | `GSI1_UserSessionTimeline` | `GSI1PK = USER#<userId>`                                                           | Sort by `startedAt` descending                                       | Power session history/listing                                                                                                     |
+| Update active session state           | `ShadowSpeakMain`          | `PK = SESSION#<sessionId>`, `SK = METADATA`                                        | Condition on current status                                          | Use `clientMutationId` when the mutation can be retried                                                                           |
+| Complete session                      | `ShadowSpeakMain`          | `PK = SESSION#<sessionId>`, `SK = METADATA`                                        | Condition on `status` and `clientMutationId`                         | Idempotent completion write                                                                                                       |
+| Mark session synced                   | `ShadowSpeakMain`          | `PK = SESSION#<sessionId>`, `SK = METADATA`                                        | Condition on `status = completed` and matching `clientMutationId`    | Terminal server acknowledgement after offline reconciliation; no key change                                                       |
+| Fetch current progress snapshot       | `ShadowSpeakMain`          | `PK = USER#<userId>`, `SK = PROGRESS#CURRENT`                                      | None                                                                 | One row per user                                                                                                                  |
+| Append progress history               | `ShadowSpeakMain`          | `PK = USER#<userId>`, `SK = PROGRESS#HISTORY#<completedAt>#<lessonId>#<sessionId>` | None                                                                 | Append-only audit/history                                                                                                         |
+| Query progress history                | `ShadowSpeakMain`          | `PK = USER#<userId>`, `SK begins_with PROGRESS#HISTORY#`                           | Sort reverse-chronologically by sort key                             | History rows always include `lessonId`                                                                                            |
+| Upsert sync queue item                | `ShadowSpeakMain`          | `PK = USER#<userId>`, `SK = MUTATION#<clientMutationId>`                           | Condition on `clientMutationId` uniqueness                           | Client owns `id` and `clientMutationId`; `id` is the local queue-row identifier and `clientMutationId` is the DynamoDB dedupe key |
+| Query sync queue items by status      | `ShadowSpeakMain`          | `PK = USER#<userId>`                                                               | FilterExpression `status = :status` and optional `nextRetryAt` range | No GSI needed; queue volume is small in MVP                                                                                       |
+| Delete all user-owned state           | `ShadowSpeakMain`          | `PK = USER#<userId>` plus session GSI lookup                                       | Query and batch delete                                               | Used by account purge workflow                                                                                                    |
 
 ## 6. Idempotency and Conditional Writes
 
@@ -218,13 +218,13 @@ Recommended pattern:
 
 ## 7. TTL Strategy
 
-| Entity | TTL Policy | Notes |
-|--------|------------|-------|
-| `SyncQueueItem` | TTL after a successful sync or permanent failure, typically 30 days after `ttlEpoch` is set | Keeps retry history short-lived |
-| `PracticeSession` | TTL set at creation for 2 years from `startedAt`, accelerated to the 30-day account-deletion grace window when needed | Matches the LLD retention policy and keeps session state available for replay and history |
-| `DownloadGrant` | TTL at `expiresAt` | Signed URL grants are short-lived by design |
-| `ConsentState` bootstrap | TTL 24 hours after creation or sooner after re-keying | Device-scoped consent bootstrap records are temporary only |
-| `UserProfile`, durable `ConsentState`, `ProgressSnapshot`, `Lesson` | No TTL in MVP | These records are core product state |
+| Entity                                                              | TTL Policy                                                                                                            | Notes                                                                                     |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| `SyncQueueItem`                                                     | TTL after a successful sync or permanent failure, typically 30 days after `ttlEpoch` is set                           | Keeps retry history short-lived                                                           |
+| `PracticeSession`                                                   | TTL set at creation for 2 years from `startedAt`, accelerated to the 30-day account-deletion grace window when needed | Matches the LLD retention policy and keeps session state available for replay and history |
+| `DownloadGrant`                                                     | TTL at `expiresAt`                                                                                                    | Signed URL grants are short-lived by design                                               |
+| `ConsentState` bootstrap                                            | TTL 24 hours after creation or sooner after re-keying                                                                 | Device-scoped consent bootstrap records are temporary only                                |
+| `UserProfile`, durable `ConsentState`, `ProgressSnapshot`, `Lesson` | No TTL in MVP                                                                                                         | These records are core product state                                                      |
 
 ## 8. Account Deletion Design
 
@@ -241,11 +241,11 @@ Account deletion follows this order:
 
 ### 8.2 Tombstone and Purge Fields
 
-| Field | Meaning |
-|-------|---------|
-| `deletionRequestedAt` | Tombstone timestamp on `UserProfile` |
-| `deletionStatus` | Lifecycle state: `active`, `deletion_requested`, `purged` |
-| `ttlEpoch` | Internal purge deadline used by DynamoDB TTL, not exposed in the API |
+| Field                 | Meaning                                                              |
+| --------------------- | -------------------------------------------------------------------- |
+| `deletionRequestedAt` | Tombstone timestamp on `UserProfile`                                 |
+| `deletionStatus`      | Lifecycle state: `active`, `deletion_requested`, `purged`            |
+| `ttlEpoch`            | Internal purge deadline used by DynamoDB TTL, not exposed in the API |
 
 ### 8.3 Purge Behavior
 
@@ -257,16 +257,16 @@ Account deletion follows this order:
 
 ## 9. Item Size and Cardinality Estimates
 
-| Entity | Estimated Item Size | Cardinality | Notes |
-|--------|---------------------|-------------|-------|
-| `UserProfile` | 0.5 KB - 2 KB | 1 per user | Small profile document |
-| `ConsentState` | 0.5 KB - 1 KB | 1 durable row per user, plus short-lived bootstrap row during onboarding | Bootstrap row is transient |
-| `Lesson` | 1 KB - 6 KB | Tens to a few hundred total lessons | Lesson metadata only, not large scripts |
-| `PracticeSession` | 1 KB - 3 KB | Several active rows and dozens to hundreds of historical rows per user | TTL controls stale growth |
-| `ProgressSnapshot` current | 0.5 KB - 1 KB | 1 per user | Aggregate snapshot |
-| `ProgressSnapshot` history | 0.5 KB - 2 KB | 1 per completed lesson session | History can grow with use |
-| `SyncQueueItem` | 1 KB - 4 KB | Usually 0 - 50 per user | Payload size drives variance |
-| `DownloadGrant` | < 1 KB | Usually 0 - 2 live grants per user per lesson | Very short-lived |
+| Entity                     | Estimated Item Size | Cardinality                                                              | Notes                                   |
+| -------------------------- | ------------------- | ------------------------------------------------------------------------ | --------------------------------------- |
+| `UserProfile`              | 0.5 KB - 2 KB       | 1 per user                                                               | Small profile document                  |
+| `ConsentState`             | 0.5 KB - 1 KB       | 1 durable row per user, plus short-lived bootstrap row during onboarding | Bootstrap row is transient              |
+| `Lesson`                   | 1 KB - 6 KB         | Tens to a few hundred total lessons                                      | Lesson metadata only, not large scripts |
+| `PracticeSession`          | 1 KB - 3 KB         | Several active rows and dozens to hundreds of historical rows per user   | TTL controls stale growth               |
+| `ProgressSnapshot` current | 0.5 KB - 1 KB       | 1 per user                                                               | Aggregate snapshot                      |
+| `ProgressSnapshot` history | 0.5 KB - 2 KB       | 1 per completed lesson session                                           | History can grow with use               |
+| `SyncQueueItem`            | 1 KB - 4 KB         | Usually 0 - 50 per user                                                  | Payload size drives variance            |
+| `DownloadGrant`            | < 1 KB              | Usually 0 - 2 live grants per user per lesson                            | Very short-lived                        |
 
 ### Capacity Note
 
@@ -347,14 +347,14 @@ CREATE INDEX idx_sync_queue_items_user_status_retry
 
 ## 11. Indexing Strategy Summary
 
-| Index | Why It Exists |
-|-------|---------------|
-| `GSI1_UserSessionTimeline` | Supports listing a user's sessions by `userId` without scanning the base table |
-| `GSI2_LessonCatalog` | Supports lesson catalog browsing and the recommendation surface by lesson level and publication state |
-| Base table user partitions | Support direct profile, consent, progress, sync queue, and deletion workflows |
-| Base table session items | Support direct `GetItem` by `sessionId` |
-| Base table lesson items | Support direct lesson detail lookups by `lessonId` |
-| SQLite user/status indexes | Keep offline session, progress, and sync queue reads responsive on device |
+| Index                      | Why It Exists                                                                                         |
+| -------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `GSI1_UserSessionTimeline` | Supports listing a user's sessions by `userId` without scanning the base table                        |
+| `GSI2_LessonCatalog`       | Supports lesson catalog browsing and the recommendation surface by lesson level and publication state |
+| Base table user partitions | Support direct profile, consent, progress, sync queue, and deletion workflows                         |
+| Base table session items   | Support direct `GetItem` by `sessionId`                                                               |
+| Base table lesson items    | Support direct lesson detail lookups by `lessonId`                                                    |
+| SQLite user/status indexes | Keep offline session, progress, and sync queue reads responsive on device                             |
 
 ## 12. Design Notes and Constraints
 

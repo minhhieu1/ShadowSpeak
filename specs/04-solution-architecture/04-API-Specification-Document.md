@@ -2,14 +2,14 @@
 
 ## Document Metadata
 
-| Field | Value |
-|-------|-------|
-| Project | ShadowSpeak |
+| Field         | Value                      |
+| ------------- | -------------------------- |
+| Project       | ShadowSpeak                |
 | Document Type | API Specification Document |
-| Phase | 04 - Solution Architecture |
-| Date | 2026-05-14 |
-| Version | 1.0 |
-| Owner | API Designer |
+| Phase         | 04 - Solution Architecture |
+| Date          | 2026-05-14                 |
+| Version       | 1.0                        |
+| Owner         | API Designer               |
 
 ## Source Basis
 
@@ -25,9 +25,9 @@ The LLD is the primary source for exact schema/model names, field names, and err
 
 ## Revision History
 
-| Version | Date | Author | Description |
-|---------|------|--------|-------------|
-| 1.0 | 2026-05-14 | API Designer | Initial API specification for the ShadowSpeak MVP backend modules |
+| Version | Date       | Author       | Description                                                       |
+| ------- | ---------- | ------------ | ----------------------------------------------------------------- |
+| 1.0     | 2026-05-14 | API Designer | Initial API specification for the ShadowSpeak MVP backend modules |
 
 ## 1. Scope
 
@@ -85,20 +85,20 @@ The `/v1` prefix is the logical API version for this MVP contract.
 
 All endpoints return a `JsonEnvelope<T>` shape.
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `requestId` | `string` | Correlates the request and response |
-| `ok` | `boolean` | `true` for success, `false` for failure |
-| `data` | `T` | Present on success |
-| `error` | `ApiErrorPayload` | Present on failure |
+| Field       | Type              | Notes                                   |
+| ----------- | ----------------- | --------------------------------------- |
+| `requestId` | `string`          | Correlates the request and response     |
+| `ok`        | `boolean`         | `true` for success, `false` for failure |
+| `data`      | `T`               | Present on success                      |
+| `error`     | `ApiErrorPayload` | Present on failure                      |
 
 `ApiErrorPayload` uses the LLD fields:
 
-| Field | Type | Notes |
-|-------|------|-------|
-| `code` | `string` | Canonical application error code |
-| `message` | `string` | User-safe message |
-| `details` | `Record<string, unknown>` | Optional structured diagnostics |
+| Field     | Type                      | Notes                            |
+| --------- | ------------------------- | -------------------------------- |
+| `code`    | `string`                  | Canonical application error code |
+| `message` | `string`                  | User-safe message                |
+| `details` | `Record<string, unknown>` | Optional structured diagnostics  |
 
 ### 2.6 Pagination
 
@@ -126,19 +126,19 @@ All endpoints return a `JsonEnvelope<T>` shape.
 
 This section consolidates the exact error codes defined in the LLD so the endpoint tables can reference them consistently.
 
-| Error Code | HTTP Status | Source LLD Module | Meaning |
-|------------|-------------|-------------------|---------|
-| `AUTH_UNAUTHORIZED` | 401 | Auth / Profile / Consent | Missing or invalid JWT |
-| `CONSENT_REQUIRED` | 403 | Auth / Profile / Consent | Consent missing or age gate failed |
-| `VALIDATION_ERROR` | 422 | All modules | Bad payload, query, or state input |
-| `USER_NOT_FOUND` | 404 | Auth / Profile / Consent | User profile missing |
-| `LESSON_NOT_FOUND` | 404 | Content / Downloads | Lesson missing |
-| `LESSON_NOT_PUBLISHED` | 404 | Content / Downloads | Hidden or unpublished content; the spec resolves the LLD's 403/404 ambiguity to 404 for MVP |
-| `DOWNLOAD_DENIED` | 403 | Content / Downloads | No grant or expired grant |
-| `SESSION_NOT_FOUND` | 404 | Session / Progress | Missing session |
-| `SESSION_STATE_INVALID` | 409 | Session / Progress | Wrong state transition |
-| `SYNC_CONFLICT` | 409 | Session / Progress | Duplicate or conflicting mutation |
-| `SYSTEM_ERROR` | 500 | All modules | Database, S3, runtime, or integration failure |
+| Error Code              | HTTP Status | Source LLD Module        | Meaning                                                                                     |
+| ----------------------- | ----------- | ------------------------ | ------------------------------------------------------------------------------------------- |
+| `AUTH_UNAUTHORIZED`     | 401         | Auth / Profile / Consent | Missing or invalid JWT                                                                      |
+| `CONSENT_REQUIRED`      | 403         | Auth / Profile / Consent | Consent missing or age gate failed                                                          |
+| `VALIDATION_ERROR`      | 422         | All modules              | Bad payload, query, or state input                                                          |
+| `USER_NOT_FOUND`        | 404         | Auth / Profile / Consent | User profile missing                                                                        |
+| `LESSON_NOT_FOUND`      | 404         | Content / Downloads      | Lesson missing                                                                              |
+| `LESSON_NOT_PUBLISHED`  | 404         | Content / Downloads      | Hidden or unpublished content; the spec resolves the LLD's 403/404 ambiguity to 404 for MVP |
+| `DOWNLOAD_DENIED`       | 403         | Content / Downloads      | No grant or expired grant                                                                   |
+| `SESSION_NOT_FOUND`     | 404         | Session / Progress       | Missing session                                                                             |
+| `SESSION_STATE_INVALID` | 409         | Session / Progress       | Wrong state transition                                                                      |
+| `SYNC_CONFLICT`         | 409         | Session / Progress       | Duplicate or conflicting mutation                                                           |
+| `SYSTEM_ERROR`          | 500         | All modules              | Database, S3, runtime, or integration failure                                               |
 
 ## 4. Shared Type Schemas
 
@@ -146,13 +146,13 @@ The following schemas reuse exact schema/model names from the LLD.
 
 ### 4.1 Auth / Profile / Consent Schemas
 
-| Type | Fields |
-|------|--------|
-| `ConsentState` | `userId`, `ageVerified`, `privacyAccepted`, `adConsent`, `consentUpdatedAt`, `locale?` |
-| `UserProfile` | `userId`, `displayName?`, `email?`, `level?`, `reminderTime?`, `deletionRequestedAt?`, `deletionStatus?`, `createdAt`, `updatedAt` |
-| `UpdateConsentInput` | `ageVerified`, `privacyAccepted`, `adConsent` |
-| `UpdateProfileInput` | `displayName?`, `level?`, `reminderTime?` |
-| `DeleteAccountResult` | `userId`, `deletionRequestedAt`, `purgeAfter`, `status` |
+| Type                  | Fields                                                                                                                             |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `ConsentState`        | `userId`, `ageVerified`, `privacyAccepted`, `adConsent`, `consentUpdatedAt`, `locale?`                                             |
+| `UserProfile`         | `userId`, `displayName?`, `email?`, `level?`, `reminderTime?`, `deletionRequestedAt?`, `deletionStatus?`, `createdAt`, `updatedAt` |
+| `UpdateConsentInput`  | `ageVerified`, `privacyAccepted`, `adConsent`                                                                                      |
+| `UpdateProfileInput`  | `displayName?`, `level?`, `reminderTime?`                                                                                          |
+| `DeleteAccountResult` | `userId`, `deletionRequestedAt`, `purgeAfter`, `status`                                                                            |
 
 Notes:
 
@@ -160,35 +160,36 @@ Notes:
 
 ### 4.2 Content / Downloads Schemas
 
-| Type | Fields |
-|------|--------|
-| `Lesson` | `lessonId`, `title`, `level`, `topic`, `durationSeconds`, `language`, `isPublished`, `audioAssetKey`, `scriptAssetKey`, `updatedAt` |
-| `LessonFilter` | `level?`, `topic?`, `durationMin?`, `durationMax?`, `cursor?`, `limit?` |
-| `PagedResult<T>` | `items`, `nextCursor?` |
-| `DownloadUrlRequest` | `assetType: "audio" | "script"` |
-| `DownloadUrlResponse` | `url`, `expiresAt`, `sizeBytes` |
-| `DownloadGrant` | `userId`, `lessonId`, `grantedAt`, `expiresAt`, `assetKey` |
-| `LessonAsset` | `assetKey`, `checksum`, `version`, `sizeBytes`, `contentType` |
-| `VerificationResponse` | `lessonId`, `verified`, `offlineAvailable`, `expectedChecksum?` |
-| `VerifyRequest` | `assetType: "audio" | "script"` |
+| Type                   | Fields                                                                                                                                              |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `Lesson`               | `lessonId`, `title`, `level`, `topic`, `durationSeconds`, `language`, `isPublished`, `thumbnailUrl`, `audioAssetKey`, `scriptAssetKey`, `updatedAt` |
+| `LessonFilter`         | `level?`, `topic?`, `durationMin?`, `durationMax?`, `cursor?`, `limit?`                                                                             |
+| `PagedResult<T>`       | `items`, `nextCursor?`                                                                                                                              |
+| `DownloadUrlRequest`   | `assetType: "audio"                                                                                                                                 | "script"` |
+| `DownloadUrlResponse`  | `url`, `expiresAt`, `sizeBytes`                                                                                                                     |
+| `DownloadGrant`        | `userId`, `lessonId`, `grantedAt`, `expiresAt`, `assetKey`                                                                                          |
+| `LessonAsset`          | `assetKey`, `checksum`, `version`, `sizeBytes`, `contentType`                                                                                       |
+| `VerificationResponse` | `lessonId`, `verified`, `offlineAvailable`, `expectedChecksum?`                                                                                     |
+| `VerifyRequest`        | `assetType: "audio"                                                                                                                                 | "script"` |
 
 Notes:
 
 - `DownloadUrlRequest` and `VerifyRequest` are intentionally separate request types even though they share the same current shape. Keeping them distinct preserves independent evolution for the download and verification endpoints without forcing a shared contract name.
+- `Lesson.thumbnailUrl` is a CDN-backed URL keyed by `topic`. All lessons with the same `topic` (e.g. `"conversation"`) share the same `thumbnailUrl`. The client should cache downloaded thumbnails in app data using the topic name as key and reuse them across lessons. When a lesson returns a `topic` whose thumbnail is not yet cached, the client downloads it from `thumbnailUrl` once and stores it locally.
 
 ### 4.3 Session / Progress Schemas
 
-| Type | Fields |
-|------|--------|
-| `PracticeSession` | `sessionId`, `userId`, `lessonId`, `status`, `startedAt`, `expiresAt?`, `completedAt?`, `completionPercent?`, `recordingLocalUri?`, `clientMutationId?` |
-| `ProgressSnapshot` | `userId`, `lessonId?`, `streakDays`, `minutesPracticed`, `lastPracticedAt?`, `completedLessonCount`, `updatedAt` |
-| `SyncQueueItem` | `id`, `userId`, `type`, `payload`, `clientMutationId`, `retryCount`, `nextRetryAt?`, `status` |
-| `SyncQueueItemInput` | `id`, `type`, `payload`, `clientMutationId` |
-| `StartSessionInput` | `lessonId` |
-| `UpdateSessionInput` | `status?`, `completionPercent?`, `recordingLocalUri?` |
-| `CompleteSessionInput` | `completionPercent`, `durationSeconds`, `recordingLocalUri?`, `clientMutationId` |
-| `SyncBatch` | `items: list[SyncQueueItemInput]` |
-| `SyncResult` | `synced`, `failed` |
+| Type                   | Fields                                                                                                                                                  |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `PracticeSession`      | `sessionId`, `userId`, `lessonId`, `status`, `startedAt`, `expiresAt?`, `completedAt?`, `completionPercent?`, `recordingLocalUri?`, `clientMutationId?` |
+| `ProgressSnapshot`     | `userId`, `lessonId?`, `streakDays`, `minutesPracticed`, `lastPracticedAt?`, `completedLessonCount`, `updatedAt`                                        |
+| `SyncQueueItem`        | `id`, `userId`, `type`, `payload`, `clientMutationId`, `retryCount`, `nextRetryAt?`, `status`                                                           |
+| `SyncQueueItemInput`   | `id`, `type`, `payload`, `clientMutationId`                                                                                                             |
+| `StartSessionInput`    | `lessonId`                                                                                                                                              |
+| `UpdateSessionInput`   | `status?`, `completionPercent?`, `recordingLocalUri?`                                                                                                   |
+| `CompleteSessionInput` | `completionPercent`, `durationSeconds`, `recordingLocalUri?`, `clientMutationId`                                                                        |
+| `SyncBatch`            | `items: list[SyncQueueItemInput]`                                                                                                                       |
+| `SyncResult`           | `synced`, `failed`                                                                                                                                      |
 
 Notes:
 
@@ -200,19 +201,19 @@ Notes:
 
 ### 5.1 GET /me
 
-| Item | Details |
-|------|---------|
-| Method | `GET` |
-| Path | `/me` |
-| Description | Fetch the current authenticated user profile and settings |
-| Authentication | Required |
-| Request headers | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended |
-| Path parameters | None |
-| Query parameters | None |
-| Request body | None |
-| Response body | `JsonEnvelope<UserProfile>` |
-| Success status codes | `200 OK` |
-| Error codes | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `USER_NOT_FOUND`, `SYSTEM_ERROR` |
+| Item                 | Details                                                                   |
+| -------------------- | ------------------------------------------------------------------------- |
+| Method               | `GET`                                                                     |
+| Path                 | `/me`                                                                     |
+| Description          | Fetch the current authenticated user profile and settings                 |
+| Authentication       | Required                                                                  |
+| Request headers      | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended                 |
+| Path parameters      | None                                                                      |
+| Query parameters     | None                                                                      |
+| Request body         | None                                                                      |
+| Response body        | `JsonEnvelope<UserProfile>`                                               |
+| Success status codes | `200 OK`                                                                  |
+| Error codes          | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `USER_NOT_FOUND`, `SYSTEM_ERROR` |
 
 Notes:
 
@@ -221,19 +222,19 @@ Notes:
 
 ### 5.2 PUT /me
 
-| Item | Details |
-|------|---------|
-| Method | `PUT` |
-| Path | `/me` |
-| Description | Update profile and account preference fields |
-| Authentication | Required |
-| Request headers | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended |
-| Path parameters | None |
-| Query parameters | None |
-| Request body | `UpdateProfileInput` |
-| Response body | `JsonEnvelope<UserProfile>` |
-| Success status codes | `200 OK` |
-| Error codes | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `VALIDATION_ERROR`, `USER_NOT_FOUND`, `SYSTEM_ERROR` |
+| Item                 | Details                                                                                       |
+| -------------------- | --------------------------------------------------------------------------------------------- |
+| Method               | `PUT`                                                                                         |
+| Path                 | `/me`                                                                                         |
+| Description          | Update profile and account preference fields                                                  |
+| Authentication       | Required                                                                                      |
+| Request headers      | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended   |
+| Path parameters      | None                                                                                          |
+| Query parameters     | None                                                                                          |
+| Request body         | `UpdateProfileInput`                                                                          |
+| Response body        | `JsonEnvelope<UserProfile>`                                                                   |
+| Success status codes | `200 OK`                                                                                      |
+| Error codes          | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `VALIDATION_ERROR`, `USER_NOT_FOUND`, `SYSTEM_ERROR` |
 
 Notes:
 
@@ -244,19 +245,19 @@ Notes:
 
 ### 5.3 GET /consent
 
-| Item | Details |
-|------|---------|
-| Method | `GET` |
-| Path | `/consent` |
-| Description | Read the current consent state for the onboarding or authenticated user flow |
-| Authentication | Not required for onboarding; JWT accepted if already available |
-| Request headers | `X-Device-Id` required for pre-auth consent flows, `X-Request-Id` recommended |
-| Path parameters | None |
-| Query parameters | None |
-| Request body | None |
-| Response body | `JsonEnvelope<ConsentState>` |
-| Success status codes | `200 OK` |
-| Error codes | `VALIDATION_ERROR`, `SYSTEM_ERROR` |
+| Item                 | Details                                                                       |
+| -------------------- | ----------------------------------------------------------------------------- |
+| Method               | `GET`                                                                         |
+| Path                 | `/consent`                                                                    |
+| Description          | Read the current consent state for the onboarding or authenticated user flow  |
+| Authentication       | Not required for onboarding; JWT accepted if already available                |
+| Request headers      | `X-Device-Id` required for pre-auth consent flows, `X-Request-Id` recommended |
+| Path parameters      | None                                                                          |
+| Query parameters     | None                                                                          |
+| Request body         | None                                                                          |
+| Response body        | `JsonEnvelope<ConsentState>`                                                  |
+| Success status codes | `200 OK`                                                                      |
+| Error codes          | `VALIDATION_ERROR`, `SYSTEM_ERROR`                                            |
 
 Notes:
 
@@ -267,19 +268,19 @@ Notes:
 
 ### 5.4 PUT /consent
 
-| Item | Details |
-|------|---------|
-| Method | `PUT` |
-| Path | `/consent` |
-| Description | Save age gate and consent decisions |
-| Authentication | Not required for onboarding; JWT accepted if already available |
-| Request headers | `Content-Type: application/json`, `X-Device-Id` required for pre-auth consent flows, `X-Request-Id` recommended |
-| Path parameters | None |
-| Query parameters | None |
-| Request body | `UpdateConsentInput` |
-| Response body | `JsonEnvelope<ConsentState>` |
-| Success status codes | `200 OK` |
-| Error codes | `VALIDATION_ERROR`, `SYSTEM_ERROR` |
+| Item                 | Details                                                                                                         |
+| -------------------- | --------------------------------------------------------------------------------------------------------------- |
+| Method               | `PUT`                                                                                                           |
+| Path                 | `/consent`                                                                                                      |
+| Description          | Save age gate and consent decisions                                                                             |
+| Authentication       | Not required for onboarding; JWT accepted if already available                                                  |
+| Request headers      | `Content-Type: application/json`, `X-Device-Id` required for pre-auth consent flows, `X-Request-Id` recommended |
+| Path parameters      | None                                                                                                            |
+| Query parameters     | None                                                                                                            |
+| Request body         | `UpdateConsentInput`                                                                                            |
+| Response body        | `JsonEnvelope<ConsentState>`                                                                                    |
+| Success status codes | `200 OK`                                                                                                        |
+| Error codes          | `VALIDATION_ERROR`, `SYSTEM_ERROR`                                                                              |
 
 Notes:
 
@@ -293,19 +294,19 @@ Notes:
 
 ### 5.5 DELETE /account
 
-| Item | Details |
-|------|---------|
-| Method | `DELETE` |
-| Path | `/account` |
-| Description | Request account deletion using the MVP soft-delete lifecycle |
-| Authentication | Required |
-| Request headers | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended |
-| Path parameters | None |
-| Query parameters | None |
-| Request body | None |
-| Response body | `JsonEnvelope<DeleteAccountResult>` |
-| Success status codes | `202 Accepted` |
-| Error codes | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `USER_NOT_FOUND`, `SYSTEM_ERROR` |
+| Item                 | Details                                                                   |
+| -------------------- | ------------------------------------------------------------------------- |
+| Method               | `DELETE`                                                                  |
+| Path                 | `/account`                                                                |
+| Description          | Request account deletion using the MVP soft-delete lifecycle              |
+| Authentication       | Required                                                                  |
+| Request headers      | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended                 |
+| Path parameters      | None                                                                      |
+| Query parameters     | None                                                                      |
+| Request body         | None                                                                      |
+| Response body        | `JsonEnvelope<DeleteAccountResult>`                                       |
+| Success status codes | `202 Accepted`                                                            |
+| Error codes          | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `USER_NOT_FOUND`, `SYSTEM_ERROR` |
 
 Notes:
 
@@ -319,19 +320,19 @@ Notes:
 
 ### 6.1 GET /lessons
 
-| Item | Details |
-|------|---------|
-| Method | `GET` |
-| Path | `/lessons` |
-| Description | Fetch a paginated lesson catalog with filters |
-| Authentication | Required |
-| Request headers | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended |
-| Path parameters | None |
-| Query parameters | `level`, `topic`, `durationMin`, `durationMax`, `cursor`, `limit` |
-| Request body | None |
-| Response body | `JsonEnvelope<PagedResult<Lesson>>` |
-| Success status codes | `200 OK` |
-| Error codes | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `VALIDATION_ERROR`, `SYSTEM_ERROR` |
+| Item                 | Details                                                                     |
+| -------------------- | --------------------------------------------------------------------------- |
+| Method               | `GET`                                                                       |
+| Path                 | `/lessons`                                                                  |
+| Description          | Fetch a paginated lesson catalog with filters                               |
+| Authentication       | Required                                                                    |
+| Request headers      | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended                   |
+| Path parameters      | None                                                                        |
+| Query parameters     | `level`, `topic`, `durationMin`, `durationMax`, `cursor`, `limit`           |
+| Request body         | None                                                                        |
+| Response body        | `JsonEnvelope<PagedResult<Lesson>>`                                         |
+| Success status codes | `200 OK`                                                                    |
+| Error codes          | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `VALIDATION_ERROR`, `SYSTEM_ERROR` |
 
 Notes:
 
@@ -342,19 +343,19 @@ Notes:
 
 ### 6.2 GET /lessons/{id}
 
-| Item | Details |
-|------|---------|
-| Method | `GET` |
-| Path | `/lessons/{id}` |
-| Description | Fetch a single lesson detail record |
-| Authentication | Required |
-| Request headers | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended |
-| Path parameters | `id` |
-| Query parameters | None |
-| Request body | None |
-| Response body | `JsonEnvelope<Lesson>` |
-| Success status codes | `200 OK` |
-| Error codes | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `LESSON_NOT_FOUND`, `LESSON_NOT_PUBLISHED`, `SYSTEM_ERROR` |
+| Item                 | Details                                                                                             |
+| -------------------- | --------------------------------------------------------------------------------------------------- |
+| Method               | `GET`                                                                                               |
+| Path                 | `/lessons/{id}`                                                                                     |
+| Description          | Fetch a single lesson detail record                                                                 |
+| Authentication       | Required                                                                                            |
+| Request headers      | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended                                           |
+| Path parameters      | `id`                                                                                                |
+| Query parameters     | None                                                                                                |
+| Request body         | None                                                                                                |
+| Response body        | `JsonEnvelope<Lesson>`                                                                              |
+| Success status codes | `200 OK`                                                                                            |
+| Error codes          | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `LESSON_NOT_FOUND`, `LESSON_NOT_PUBLISHED`, `SYSTEM_ERROR` |
 
 Notes:
 
@@ -363,19 +364,19 @@ Notes:
 
 ### 6.3 GET /home/recommendation
 
-| Item | Details |
-|------|---------|
-| Method | `GET` |
-| Path | `/home/recommendation` |
-| Description | Fetch the daily recommended lesson for the home surface |
-| Authentication | Required |
-| Request headers | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended |
-| Path parameters | None |
-| Query parameters | None |
-| Request body | None |
-| Response body | `JsonEnvelope<Lesson>` |
-| Success status codes | `200 OK` |
-| Error codes | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `LESSON_NOT_FOUND`, `SYSTEM_ERROR` |
+| Item                 | Details                                                                     |
+| -------------------- | --------------------------------------------------------------------------- |
+| Method               | `GET`                                                                       |
+| Path                 | `/home/recommendation`                                                      |
+| Description          | Fetch the daily recommended lesson for the home surface                     |
+| Authentication       | Required                                                                    |
+| Request headers      | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended                   |
+| Path parameters      | None                                                                        |
+| Query parameters     | None                                                                        |
+| Request body         | None                                                                        |
+| Response body        | `JsonEnvelope<Lesson>`                                                      |
+| Success status codes | `200 OK`                                                                    |
+| Error codes          | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `LESSON_NOT_FOUND`, `SYSTEM_ERROR` |
 
 Notes:
 
@@ -385,19 +386,19 @@ Notes:
 
 ### 6.4 POST /downloads/{lessonId}/url
 
-| Item | Details |
-|------|---------|
-| Method | `POST` |
-| Path | `/downloads/{lessonId}/url` |
-| Description | Generate a signed asset URL for lesson download or playback |
-| Authentication | Required |
-| Request headers | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended |
-| Path parameters | `lessonId` |
-| Query parameters | None |
-| Request body | `DownloadUrlRequest` |
-| Response body | `JsonEnvelope<DownloadUrlResponse>` |
-| Success status codes | `200 OK` |
-| Error codes | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `LESSON_NOT_FOUND`, `LESSON_NOT_PUBLISHED`, `DOWNLOAD_DENIED`, `SYSTEM_ERROR` |
+| Item                 | Details                                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Method               | `POST`                                                                                                                 |
+| Path                 | `/downloads/{lessonId}/url`                                                                                            |
+| Description          | Generate a signed asset URL for lesson download or playback                                                            |
+| Authentication       | Required                                                                                                               |
+| Request headers      | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended                            |
+| Path parameters      | `lessonId`                                                                                                             |
+| Query parameters     | None                                                                                                                   |
+| Request body         | `DownloadUrlRequest`                                                                                                   |
+| Response body        | `JsonEnvelope<DownloadUrlResponse>`                                                                                    |
+| Success status codes | `200 OK`                                                                                                               |
+| Error codes          | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `LESSON_NOT_FOUND`, `LESSON_NOT_PUBLISHED`, `DOWNLOAD_DENIED`, `SYSTEM_ERROR` |
 
 Notes:
 
@@ -409,19 +410,19 @@ Notes:
 
 ### 6.5 POST /downloads/{lessonId}/verify
 
-| Item | Details |
-|------|---------|
-| Method | `POST` |
-| Path | `/downloads/{lessonId}/verify` |
-| Description | Confirm download integrity and offline availability for the lesson |
-| Authentication | Required |
-| Request headers | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended |
-| Path parameters | `lessonId` |
-| Query parameters | None |
-| Request body | `VerifyRequest` |
-| Response body | `JsonEnvelope<VerificationResponse>` |
-| Success status codes | `200 OK` |
-| Error codes | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `LESSON_NOT_FOUND`, `LESSON_NOT_PUBLISHED`, `DOWNLOAD_DENIED`, `SYSTEM_ERROR` |
+| Item                 | Details                                                                                                                |
+| -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Method               | `POST`                                                                                                                 |
+| Path                 | `/downloads/{lessonId}/verify`                                                                                         |
+| Description          | Confirm download integrity and offline availability for the lesson                                                     |
+| Authentication       | Required                                                                                                               |
+| Request headers      | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended                            |
+| Path parameters      | `lessonId`                                                                                                             |
+| Query parameters     | None                                                                                                                   |
+| Request body         | `VerifyRequest`                                                                                                        |
+| Response body        | `JsonEnvelope<VerificationResponse>`                                                                                   |
+| Success status codes | `200 OK`                                                                                                               |
+| Error codes          | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `LESSON_NOT_FOUND`, `LESSON_NOT_PUBLISHED`, `DOWNLOAD_DENIED`, `SYSTEM_ERROR` |
 
 Notes:
 
@@ -434,19 +435,19 @@ Notes:
 
 ### 7.1 GET /sessions/{id}
 
-| Item | Details |
-|------|---------|
-| Method | `GET` |
-| Path | `/sessions/{id}` |
-| Description | Fetch the current state of a practice session |
-| Authentication | Required |
-| Request headers | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended |
-| Path parameters | `id` |
-| Query parameters | None |
-| Request body | None |
-| Response body | `JsonEnvelope<PracticeSession>` |
-| Success status codes | `200 OK` |
-| Error codes | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `SESSION_NOT_FOUND`, `SYSTEM_ERROR` |
+| Item                 | Details                                                                      |
+| -------------------- | ---------------------------------------------------------------------------- |
+| Method               | `GET`                                                                        |
+| Path                 | `/sessions/{id}`                                                             |
+| Description          | Fetch the current state of a practice session                                |
+| Authentication       | Required                                                                     |
+| Request headers      | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended                    |
+| Path parameters      | `id`                                                                         |
+| Query parameters     | None                                                                         |
+| Request body         | None                                                                         |
+| Response body        | `JsonEnvelope<PracticeSession>`                                              |
+| Success status codes | `200 OK`                                                                     |
+| Error codes          | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `SESSION_NOT_FOUND`, `SYSTEM_ERROR` |
 
 Notes:
 
@@ -455,19 +456,19 @@ Notes:
 
 ### 7.2 POST /sessions
 
-| Item | Details |
-|------|---------|
-| Method | `POST` |
-| Path | `/sessions` |
-| Description | Start a new practice session |
-| Authentication | Required |
-| Request headers | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended |
-| Path parameters | None |
-| Query parameters | None |
-| Request body | `StartSessionInput` |
-| Response body | `JsonEnvelope<PracticeSession>` |
-| Success status codes | `201 Created` |
-| Error codes | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `VALIDATION_ERROR`, `SYSTEM_ERROR` |
+| Item                 | Details                                                                                     |
+| -------------------- | ------------------------------------------------------------------------------------------- |
+| Method               | `POST`                                                                                      |
+| Path                 | `/sessions`                                                                                 |
+| Description          | Start a new practice session                                                                |
+| Authentication       | Required                                                                                    |
+| Request headers      | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended |
+| Path parameters      | None                                                                                        |
+| Query parameters     | None                                                                                        |
+| Request body         | `StartSessionInput`                                                                         |
+| Response body        | `JsonEnvelope<PracticeSession>`                                                             |
+| Success status codes | `201 Created`                                                                               |
+| Error codes          | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `VALIDATION_ERROR`, `SYSTEM_ERROR`                 |
 
 Notes:
 
@@ -478,19 +479,19 @@ Notes:
 
 ### 7.3 PATCH /sessions/{id}
 
-| Item | Details |
-|------|---------|
-| Method | `PATCH` |
-| Path | `/sessions/{id}` |
-| Description | Update an active session state |
-| Authentication | Required |
-| Request headers | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended |
-| Path parameters | `id` |
-| Query parameters | None |
-| Request body | `UpdateSessionInput` |
-| Response body | `JsonEnvelope<PracticeSession>` |
-| Success status codes | `200 OK` |
-| Error codes | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `SESSION_NOT_FOUND`, `SESSION_STATE_INVALID`, `VALIDATION_ERROR`, `SYSTEM_ERROR` |
+| Item                 | Details                                                                                                                   |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Method               | `PATCH`                                                                                                                   |
+| Path                 | `/sessions/{id}`                                                                                                          |
+| Description          | Update an active session state                                                                                            |
+| Authentication       | Required                                                                                                                  |
+| Request headers      | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended                               |
+| Path parameters      | `id`                                                                                                                      |
+| Query parameters     | None                                                                                                                      |
+| Request body         | `UpdateSessionInput`                                                                                                      |
+| Response body        | `JsonEnvelope<PracticeSession>`                                                                                           |
+| Success status codes | `200 OK`                                                                                                                  |
+| Error codes          | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `SESSION_NOT_FOUND`, `SESSION_STATE_INVALID`, `VALIDATION_ERROR`, `SYSTEM_ERROR` |
 
 Notes:
 
@@ -501,19 +502,19 @@ Notes:
 
 ### 7.4 POST /sessions/{id}/complete
 
-| Item | Details |
-|------|---------|
-| Method | `POST` |
-| Path | `/sessions/{id}/complete` |
-| Description | Finalize a completed lesson and persist the completion payload |
-| Authentication | Required |
-| Request headers | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended |
-| Path parameters | `id` |
-| Query parameters | None |
-| Request body | `CompleteSessionInput` |
-| Response body | `JsonEnvelope<PracticeSession>` |
-| Success status codes | `200 OK` |
-| Error codes | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `SESSION_NOT_FOUND`, `SESSION_STATE_INVALID`, `VALIDATION_ERROR`, `SYNC_CONFLICT`, `SYSTEM_ERROR` |
+| Item                 | Details                                                                                                                                    |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Method               | `POST`                                                                                                                                     |
+| Path                 | `/sessions/{id}/complete`                                                                                                                  |
+| Description          | Finalize a completed lesson and persist the completion payload                                                                             |
+| Authentication       | Required                                                                                                                                   |
+| Request headers      | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended                                                |
+| Path parameters      | `id`                                                                                                                                       |
+| Query parameters     | None                                                                                                                                       |
+| Request body         | `CompleteSessionInput`                                                                                                                     |
+| Response body        | `JsonEnvelope<PracticeSession>`                                                                                                            |
+| Success status codes | `200 OK`                                                                                                                                   |
+| Error codes          | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `SESSION_NOT_FOUND`, `SESSION_STATE_INVALID`, `VALIDATION_ERROR`, `SYNC_CONFLICT`, `SYSTEM_ERROR` |
 
 Notes:
 
@@ -525,19 +526,19 @@ Notes:
 
 ### 7.5 GET /progress
 
-| Item | Details |
-|------|---------|
-| Method | `GET` |
-| Path | `/progress` |
-| Description | Fetch the current progress summary |
-| Authentication | Required |
-| Request headers | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended |
-| Path parameters | None |
-| Query parameters | None |
-| Request body | None |
-| Response body | `JsonEnvelope<ProgressSnapshot>` |
-| Success status codes | `200 OK` |
-| Error codes | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `SYSTEM_ERROR` |
+| Item                 | Details                                                   |
+| -------------------- | --------------------------------------------------------- |
+| Method               | `GET`                                                     |
+| Path                 | `/progress`                                               |
+| Description          | Fetch the current progress summary                        |
+| Authentication       | Required                                                  |
+| Request headers      | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended |
+| Path parameters      | None                                                      |
+| Query parameters     | None                                                      |
+| Request body         | None                                                      |
+| Response body        | `JsonEnvelope<ProgressSnapshot>`                          |
+| Success status codes | `200 OK`                                                  |
+| Error codes          | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `SYSTEM_ERROR`   |
 
 Notes:
 
@@ -546,19 +547,19 @@ Notes:
 
 ### 7.6 GET /progress/history
 
-| Item | Details |
-|------|---------|
-| Method | `GET` |
-| Path | `/progress/history` |
-| Description | Fetch paginated practice history |
-| Authentication | Required |
-| Request headers | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended |
-| Path parameters | None |
-| Query parameters | `cursor`, `limit` |
-| Request body | None |
-| Response body | `JsonEnvelope<PagedResult<ProgressSnapshot>>` |
-| Success status codes | `200 OK` |
-| Error codes | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `SYSTEM_ERROR` |
+| Item                 | Details                                                   |
+| -------------------- | --------------------------------------------------------- |
+| Method               | `GET`                                                     |
+| Path                 | `/progress/history`                                       |
+| Description          | Fetch paginated practice history                          |
+| Authentication       | Required                                                  |
+| Request headers      | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended |
+| Path parameters      | None                                                      |
+| Query parameters     | `cursor`, `limit`                                         |
+| Request body         | None                                                      |
+| Response body        | `JsonEnvelope<PagedResult<ProgressSnapshot>>`             |
+| Success status codes | `200 OK`                                                  |
+| Error codes          | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `SYSTEM_ERROR`   |
 
 Notes:
 
@@ -568,19 +569,19 @@ Notes:
 
 ### 7.7 POST /progress/sync
 
-| Item | Details |
-|------|---------|
-| Method | `POST` |
-| Path | `/progress/sync` |
-| Description | Sync an offline progress batch after reconnect |
-| Authentication | Required |
-| Request headers | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended |
-| Path parameters | None |
-| Query parameters | None |
-| Request body | `SyncBatch` |
-| Response body | `JsonEnvelope<SyncResult>` |
-| Success status codes | `200 OK` |
-| Error codes | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `SYNC_CONFLICT`, `VALIDATION_ERROR`, `SYSTEM_ERROR` |
+| Item                 | Details                                                                                      |
+| -------------------- | -------------------------------------------------------------------------------------------- |
+| Method               | `POST`                                                                                       |
+| Path                 | `/progress/sync`                                                                             |
+| Description          | Sync an offline progress batch after reconnect                                               |
+| Authentication       | Required                                                                                     |
+| Request headers      | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended  |
+| Path parameters      | None                                                                                         |
+| Query parameters     | None                                                                                         |
+| Request body         | `SyncBatch`                                                                                  |
+| Response body        | `JsonEnvelope<SyncResult>`                                                                   |
+| Success status codes | `200 OK`                                                                                     |
+| Error codes          | `AUTH_UNAUTHORIZED`, `CONSENT_REQUIRED`, `SYNC_CONFLICT`, `VALIDATION_ERROR`, `SYSTEM_ERROR` |
 
 Notes:
 
@@ -593,25 +594,25 @@ Notes:
 
 This module summary shows the API surface at a glance.
 
-| Module | Endpoint | Method | Auth | Response Type |
-|--------|----------|--------|------|---------------|
-| Auth / Profile / Consent | `/me` | `GET` | Required | `JsonEnvelope<UserProfile>` |
-| Auth / Profile / Consent | `/me` | `PUT` | Required | `JsonEnvelope<UserProfile>` |
-| Auth / Profile / Consent | `/consent` | `GET` | Pre-auth allowed | `JsonEnvelope<ConsentState>` |
-| Auth / Profile / Consent | `/consent` | `PUT` | Pre-auth allowed | `JsonEnvelope<ConsentState>` |
-| Auth / Profile / Consent | `/account` | `DELETE` | Required | `JsonEnvelope<DeleteAccountResult>` |
-| Content / Downloads | `/lessons` | `GET` | Required | `JsonEnvelope<PagedResult<Lesson>>` |
-| Content / Downloads | `/lessons/{id}` | `GET` | Required | `JsonEnvelope<Lesson>` |
-| Content / Downloads | `/home/recommendation` | `GET` | Required | `JsonEnvelope<Lesson>` |
-| Content / Downloads | `/downloads/{lessonId}/url` | `POST` | Required | `JsonEnvelope<DownloadUrlResponse>` |
-| Content / Downloads | `/downloads/{lessonId}/verify` | `POST` | Required | `JsonEnvelope<VerificationResponse>` |
-| Session / Progress | `/sessions/{id}` | `GET` | Required | `JsonEnvelope<PracticeSession>` |
-| Session / Progress | `/sessions` | `POST` | Required | `JsonEnvelope<PracticeSession>` |
-| Session / Progress | `/sessions/{id}` | `PATCH` | Required | `JsonEnvelope<PracticeSession>` |
-| Session / Progress | `/sessions/{id}/complete` | `POST` | Required | `JsonEnvelope<PracticeSession>` |
-| Session / Progress | `/progress` | `GET` | Required | `JsonEnvelope<ProgressSnapshot>` |
-| Session / Progress | `/progress/history` | `GET` | Required | `JsonEnvelope<PagedResult<ProgressSnapshot>>` |
-| Session / Progress | `/progress/sync` | `POST` | Required | `JsonEnvelope<SyncResult>` |
+| Module                   | Endpoint                       | Method   | Auth             | Response Type                                 |
+| ------------------------ | ------------------------------ | -------- | ---------------- | --------------------------------------------- |
+| Auth / Profile / Consent | `/me`                          | `GET`    | Required         | `JsonEnvelope<UserProfile>`                   |
+| Auth / Profile / Consent | `/me`                          | `PUT`    | Required         | `JsonEnvelope<UserProfile>`                   |
+| Auth / Profile / Consent | `/consent`                     | `GET`    | Pre-auth allowed | `JsonEnvelope<ConsentState>`                  |
+| Auth / Profile / Consent | `/consent`                     | `PUT`    | Pre-auth allowed | `JsonEnvelope<ConsentState>`                  |
+| Auth / Profile / Consent | `/account`                     | `DELETE` | Required         | `JsonEnvelope<DeleteAccountResult>`           |
+| Content / Downloads      | `/lessons`                     | `GET`    | Required         | `JsonEnvelope<PagedResult<Lesson>>`           |
+| Content / Downloads      | `/lessons/{id}`                | `GET`    | Required         | `JsonEnvelope<Lesson>`                        |
+| Content / Downloads      | `/home/recommendation`         | `GET`    | Required         | `JsonEnvelope<Lesson>`                        |
+| Content / Downloads      | `/downloads/{lessonId}/url`    | `POST`   | Required         | `JsonEnvelope<DownloadUrlResponse>`           |
+| Content / Downloads      | `/downloads/{lessonId}/verify` | `POST`   | Required         | `JsonEnvelope<VerificationResponse>`          |
+| Session / Progress       | `/sessions/{id}`               | `GET`    | Required         | `JsonEnvelope<PracticeSession>`               |
+| Session / Progress       | `/sessions`                    | `POST`   | Required         | `JsonEnvelope<PracticeSession>`               |
+| Session / Progress       | `/sessions/{id}`               | `PATCH`  | Required         | `JsonEnvelope<PracticeSession>`               |
+| Session / Progress       | `/sessions/{id}/complete`      | `POST`   | Required         | `JsonEnvelope<PracticeSession>`               |
+| Session / Progress       | `/progress`                    | `GET`    | Required         | `JsonEnvelope<ProgressSnapshot>`              |
+| Session / Progress       | `/progress/history`            | `GET`    | Required         | `JsonEnvelope<PagedResult<ProgressSnapshot>>` |
+| Session / Progress       | `/progress/sync`               | `POST`   | Required         | `JsonEnvelope<SyncResult>`                    |
 
 ## 9. Rate Limiting Notes
 
@@ -624,25 +625,25 @@ This module summary shows the API surface at a glance.
 
 ## 10. Traceability Matrix
 
-| Endpoint | Functional Requirement(s) | Use Case(s) | LLD Component |
-|----------|---------------------------|-------------|---------------|
-| `GET /me` | FR-8 | UC-10 | Auth / Profile / Consent |
-| `PUT /me` | FR-8 | UC-07, UC-10 | Auth / Profile / Consent |
-| `GET /consent` | FR-9 | UC-11 | Auth / Profile / Consent |
-| `PUT /consent` | FR-9 | UC-01, UC-11 | Auth / Profile / Consent |
-| `DELETE /account` | FR-8 | UC-10 | Auth / Profile / Consent |
-| `GET /lessons` | FR-2 | UC-02, UC-05 | Content / Downloads |
-| `GET /lessons/{id}` | FR-2 | UC-02 | Content / Downloads |
-| `GET /home/recommendation` | FR-2 | UC-02, UC-05 | Content / Downloads |
-| `POST /downloads/{lessonId}/url` | FR-7 | UC-06 | Content / Downloads |
-| `POST /downloads/{lessonId}/verify` | FR-7 | UC-06 | Content / Downloads |
-| `GET /sessions/{id}` | FR-5 | UC-08 | Session / Progress |
-| `POST /sessions` | FR-3 | UC-03 | Session / Progress |
-| `PATCH /sessions/{id}` | FR-3 | UC-03 | Session / Progress |
-| `POST /sessions/{id}/complete` | FR-3, FR-4, FR-5 | UC-03, UC-08 | Session / Progress |
-| `GET /progress` | FR-5 | UC-08 | Session / Progress |
-| `GET /progress/history` | FR-5 | UC-08 | Session / Progress |
-| `POST /progress/sync` | FR-5 | UC-08 | Session / Progress |
+| Endpoint                            | Functional Requirement(s) | Use Case(s)  | LLD Component            |
+| ----------------------------------- | ------------------------- | ------------ | ------------------------ |
+| `GET /me`                           | FR-8                      | UC-10        | Auth / Profile / Consent |
+| `PUT /me`                           | FR-8                      | UC-07, UC-10 | Auth / Profile / Consent |
+| `GET /consent`                      | FR-9                      | UC-11        | Auth / Profile / Consent |
+| `PUT /consent`                      | FR-9                      | UC-01, UC-11 | Auth / Profile / Consent |
+| `DELETE /account`                   | FR-8                      | UC-10        | Auth / Profile / Consent |
+| `GET /lessons`                      | FR-2                      | UC-02, UC-05 | Content / Downloads      |
+| `GET /lessons/{id}`                 | FR-2                      | UC-02        | Content / Downloads      |
+| `GET /home/recommendation`          | FR-2                      | UC-02, UC-05 | Content / Downloads      |
+| `POST /downloads/{lessonId}/url`    | FR-7                      | UC-06        | Content / Downloads      |
+| `POST /downloads/{lessonId}/verify` | FR-7                      | UC-06        | Content / Downloads      |
+| `GET /sessions/{id}`                | FR-5                      | UC-08        | Session / Progress       |
+| `POST /sessions`                    | FR-3                      | UC-03        | Session / Progress       |
+| `PATCH /sessions/{id}`              | FR-3                      | UC-03        | Session / Progress       |
+| `POST /sessions/{id}/complete`      | FR-3, FR-4, FR-5          | UC-03, UC-08 | Session / Progress       |
+| `GET /progress`                     | FR-5                      | UC-08        | Session / Progress       |
+| `GET /progress/history`             | FR-5                      | UC-08        | Session / Progress       |
+| `POST /progress/sync`               | FR-5                      | UC-08        | Session / Progress       |
 
 Excluded from backend REST traceability because they are client-side or managed-service concerns in the MVP:
 

@@ -15,6 +15,7 @@ X-Request-Id: req-mock-030
         "durationSeconds": 180,
         "language": "en-US",
         "isPublished": true,
+        "thumbnailUrl": "https://cdn.shadowspeak.app/thumbnails/conversation.webp",
         "audioAssetKey": "lessons/lesson-001/audio.mp3",
         "scriptAssetKey": "lessons/lesson-001/script.json",
         "updatedAt": "2026-05-01T12:00:00Z"
@@ -27,6 +28,7 @@ X-Request-Id: req-mock-030
         "durationSeconds": 240,
         "language": "en-US",
         "isPublished": true,
+        "thumbnailUrl": "https://cdn.shadowspeak.app/thumbnails/daily-life.webp",
         "audioAssetKey": "lessons/lesson-002/audio.mp3",
         "scriptAssetKey": "lessons/lesson-002/script.json",
         "updatedAt": "2026-05-02T12:00:00Z"
@@ -39,6 +41,7 @@ X-Request-Id: req-mock-030
         "durationSeconds": 300,
         "language": "en-US",
         "isPublished": true,
+        "thumbnailUrl": "https://cdn.shadowspeak.app/thumbnails/business.webp",
         "audioAssetKey": "lessons/lesson-003/audio.mp3",
         "scriptAssetKey": "lessons/lesson-003/script.json",
         "updatedAt": "2026-05-03T12:00:00Z"
@@ -51,6 +54,7 @@ X-Request-Id: req-mock-030
         "durationSeconds": 210,
         "language": "en-US",
         "isPublished": true,
+        "thumbnailUrl": "https://cdn.shadowspeak.app/thumbnails/conversation.webp",
         "audioAssetKey": "lessons/lesson-004/audio.mp3",
         "scriptAssetKey": "lessons/lesson-004/script.json",
         "updatedAt": "2026-05-04T12:00:00Z"
@@ -58,6 +62,34 @@ X-Request-Id: req-mock-030
       {
         "lessonId": "lesson-005",
         "title": "Giving a Presentation – Tone & Pacing",
+        "level": "advanced",
+        "topic": "business",
+        "durationSeconds": 420,
+        "language": "en-US",
+        "isPublished": true,
+        "thumbnailUrl": "https://cdn.shadowspeak.app/thumbnails/business.webp",
+        "audioAssetKey": "lessons/lesson-005/audio.mp3",
+        "scriptAssetKey": "lessons/lesson-005/script.json",
+        "updatedAt": "2026-05-05T12:00:00Z"
+      },
+      {
+        "lessonId": "lesson-006",
+        "title": "Navigating Airports & Flights",
+        "level": "beginner",
+        "topic": "daily-life",
+        "durationSeconds": 270,
+        "language": "en-US",
+        "isPublished": true,
+        "thumbnailUrl": "https://cdn.shadowspeak.app/thumbnails/daily-life.webp",
+        "audioAssetKey": "lessons/lesson-006/audio.mp3",
+        "scriptAssetKey": "lessons/lesson-006/script.json",
+        "updatedAt": "2026-05-06T12:00:00Z"
+      }
+    ],
+    "nextCursor": null
+  },
+  "error": null
+}
         "level": "advanced",
         "topic": "business",
         "durationSeconds": 420,

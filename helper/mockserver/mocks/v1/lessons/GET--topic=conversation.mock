@@ -15,6 +15,7 @@ X-Request-Id: req-mock-034
         "durationSeconds": 180,
         "language": "en-US",
         "isPublished": true,
+        "thumbnailUrl": "https://cdn.shadowspeak.app/thumbnails/conversation.webp",
         "audioAssetKey": "lessons/lesson-001/audio.mp3",
         "scriptAssetKey": "lessons/lesson-001/script.json",
         "updatedAt": "2026-05-01T12:00:00Z"

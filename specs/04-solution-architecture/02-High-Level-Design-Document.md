@@ -2,15 +2,15 @@
 
 ## Document Metadata
 
-| Field | Value |
-|-------|-------|
-| Project | ShadowSpeak |
+| Field         | Value                      |
+| ------------- | -------------------------- |
+| Project       | ShadowSpeak                |
 | Document Type | High-Level Design Document |
-| Phase | 04 - Solution Architecture |
-| Date | 2026-05-14 |
-| Status | Draft |
-| Version | 1.3 |
-| Owner | Architecture |
+| Phase         | 04 - Solution Architecture |
+| Date          | 2026-05-14                 |
+| Status        | Draft                      |
+| Version       | 1.3                        |
+| Owner         | Architecture               |
 
 ## Source Basis
 
@@ -81,17 +81,17 @@ The design intentionally avoids premature service fragmentation:
 
 ## Technology Stack Overview
 
-| Layer | Recommended Stack | Notes |
-|-------|-------------------|-------|
-| Mobile client | React Native + TypeScript | Single codebase for iOS and Android |
-| Backend runtime | Python 3.12 + FastAPI on AWS Lambda | Chosen for strong API ergonomics, lightweight serverless deployment characteristics, simplified request validation via Pydantic, and lower operational friction during MVP development |
-| API edge | Amazon API Gateway | REST JSON over HTTPS |
-| Authentication | Amazon Cognito | JWT-based sign-in and refresh |
-| Operational data | Amazon DynamoDB | Shared schema or small table set acceptable in MVP |
-| Audio assets | Amazon S3 + CloudFront | Direct CDN-backed delivery |
-| Offline storage | Encrypted SQLite or Realm | Local-first queue and playback metadata |
-| Observability | CloudWatch Logs + alarms, Crashlytics or Sentry | X-Ray optional post-MVP |
-| CI/CD | AWS CDK or Terraform, GitHub Actions or similar | Keep deployment automation lightweight |
+| Layer            | Recommended Stack                               | Notes                                                                                                                                                                                  |
+| ---------------- | ----------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Mobile client    | React Native + TypeScript                       | Single codebase for iOS and Android                                                                                                                                                    |
+| Backend runtime  | Python 3.12 + FastAPI on AWS Lambda             | Chosen for strong API ergonomics, lightweight serverless deployment characteristics, simplified request validation via Pydantic, and lower operational friction during MVP development |
+| API edge         | Amazon API Gateway                              | REST JSON over HTTPS                                                                                                                                                                   |
+| Authentication   | Amazon Cognito                                  | JWT-based sign-in and refresh                                                                                                                                                          |
+| Operational data | Amazon DynamoDB                                 | Shared schema or small table set acceptable in MVP                                                                                                                                     |
+| Audio assets     | Amazon S3 + CloudFront                          | Direct CDN-backed delivery                                                                                                                                                             |
+| Offline storage  | Encrypted SQLite or Realm                       | Local-first queue and playback metadata                                                                                                                                                |
+| Observability    | CloudWatch Logs + alarms, Crashlytics or Sentry | X-Ray optional post-MVP                                                                                                                                                                |
+| CI/CD            | AWS CDK or Terraform, GitHub Actions or similar | Keep deployment automation lightweight                                                                                                                                                 |
 
 ### System Component Diagram
 
@@ -154,21 +154,21 @@ flowchart LR
 
 #### Key Data Structures
 
-| Entity | Purpose |
-|--------|---------|
-| UserProfile | Basic account profile and display preferences |
+| Entity       | Purpose                                           |
+| ------------ | ------------------------------------------------- |
+| UserProfile  | Basic account profile and display preferences     |
 | ConsentState | Age gate, privacy consent, ad consent, timestamps |
-| UserSettings | Playback, reminder, and account preferences |
+| UserSettings | Playback, reminder, and account preferences       |
 
 #### Core API Contracts
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/me` | `GET` | Fetch current profile and settings |
-| `/me` | `PUT` | Update profile and account preferences |
-| `/consent` | `GET` | Read current consent state |
-| `/consent` | `PUT` | Persist age gate and consent decisions |
-| `/account` | `DELETE` | Request account deletion |
+| Endpoint   | Method   | Purpose                                |
+| ---------- | -------- | -------------------------------------- |
+| `/me`      | `GET`    | Fetch current profile and settings     |
+| `/me`      | `PUT`    | Update profile and account preferences |
+| `/consent` | `GET`    | Read current consent state             |
+| `/consent` | `PUT`    | Persist age gate and consent decisions |
+| `/account` | `DELETE` | Request account deletion               |
 
 #### Dependencies
 
@@ -215,21 +215,21 @@ AWS IAM isolation between logical backend modules is intentionally lightweight d
 
 #### Key Data Structures
 
-| Entity | Purpose |
-|--------|---------|
-| Lesson | Lesson metadata, level, topic, duration, availability |
-| LessonAsset | Audio/script asset reference, checksum, version |
-| DownloadGrant | Signed download entitlement and expiry |
-| OfflineLessonFlag | Marks whether a lesson is available offline for the user |
+| Entity            | Purpose                                                             |
+| ----------------- | ------------------------------------------------------------------- |
+| Lesson            | Lesson metadata, level, topic, duration, availability, thumbnailUrl |
+| LessonAsset       | Audio/script asset reference, checksum, version                     |
+| DownloadGrant     | Signed download entitlement and expiry                              |
+| OfflineLessonFlag | Marks whether a lesson is available offline for the user            |
 
 #### Core API Contracts
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/lessons` | `GET` | Return lesson list with filters |
-| `/lessons/{id}` | `GET` | Return lesson detail |
-| `/home/recommendation` | `GET` | Return the recommended lesson or next action |
-| `/downloads/{lessonId}/url` | `POST` | Generate signed asset URL |
+| Endpoint                       | Method | Purpose                                               |
+| ------------------------------ | ------ | ----------------------------------------------------- |
+| `/lessons`                     | `GET`  | Return lesson list with filters                       |
+| `/lessons/{id}`                | `GET`  | Return lesson detail                                  |
+| `/home/recommendation`         | `GET`  | Return the recommended lesson or next action          |
+| `/downloads/{lessonId}/url`    | `POST` | Generate signed asset URL                             |
 | `/downloads/{lessonId}/verify` | `POST` | Confirm successful offline asset access or completion |
 
 #### Dependencies
@@ -265,23 +265,23 @@ AWS IAM isolation between logical backend modules is intentionally lightweight d
 
 #### Key Data Structures
 
-| Entity | Purpose |
-|--------|---------|
-| PracticeSession | Session lifecycle metadata and completion status |
-| ProgressSnapshot | Lesson completion, streak, minutes practiced |
-| SyncQueueItem | Locally queued offline item awaiting sync |
-| RecordingReference | Local or uploaded recording pointer |
+| Entity             | Purpose                                          |
+| ------------------ | ------------------------------------------------ |
+| PracticeSession    | Session lifecycle metadata and completion status |
+| ProgressSnapshot   | Lesson completion, streak, minutes practiced     |
+| SyncQueueItem      | Locally queued offline item awaiting sync        |
+| RecordingReference | Local or uploaded recording pointer              |
 
 #### Core API Contracts
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/sessions` | `POST` | Start a session |
-| `/sessions/{id}` | `PATCH` | Update active session state |
-| `/sessions/{id}/complete` | `POST` | Finalize a completed lesson |
-| `/progress` | `GET` | Fetch current progress summary |
-| `/progress/history` | `GET` | Fetch practice history |
-| `/progress/sync` | `POST` | Sync offline progress payloads |
+| Endpoint                  | Method  | Purpose                        |
+| ------------------------- | ------- | ------------------------------ |
+| `/sessions`               | `POST`  | Start a session                |
+| `/sessions/{id}`          | `PATCH` | Update active session state    |
+| `/sessions/{id}/complete` | `POST`  | Finalize a completed lesson    |
+| `/progress`               | `GET`   | Fetch current progress summary |
+| `/progress/history`       | `GET`   | Fetch practice history         |
+| `/progress/sync`          | `POST`  | Sync offline progress payloads |
 
 #### Dependencies
 
@@ -367,17 +367,17 @@ The MVP can use one shared DynamoDB schema or a small number of tables. Logical 
 
 ### Primary Data Entities
 
-| Entity | Description | Owned By |
-|--------|-------------|----------|
-| UserProfile | User account metadata and preferences | Auth / Profile / Consent |
-| ConsentState | Age gate, privacy consent, ad consent | Auth / Profile / Consent |
-| Lesson | Lesson metadata and browse fields | Content / Downloads |
-| LessonAsset | Audio and script asset references | Content / Downloads |
-| DownloadGrant | Temporary signed access state | Content / Downloads |
-| PracticeSession | Session lifecycle and completion summary | Session / Progress |
-| ProgressSnapshot | Lesson completion, streak, minutes practiced | Session / Progress |
-| SyncQueueItem | Offline payload waiting to be synced | Session / Progress |
-| RecordingReference | Local recording reference metadata | Session / Progress |
+| Entity             | Description                                  | Owned By                 |
+| ------------------ | -------------------------------------------- | ------------------------ |
+| UserProfile        | User account metadata and preferences        | Auth / Profile / Consent |
+| ConsentState       | Age gate, privacy consent, ad consent        | Auth / Profile / Consent |
+| Lesson             | Lesson metadata and browse fields            | Content / Downloads      |
+| LessonAsset        | Audio and script asset references            | Content / Downloads      |
+| DownloadGrant      | Temporary signed access state                | Content / Downloads      |
+| PracticeSession    | Session lifecycle and completion summary     | Session / Progress       |
+| ProgressSnapshot   | Lesson completion, streak, minutes practiced | Session / Progress       |
+| SyncQueueItem      | Offline payload waiting to be synced         | Session / Progress       |
+| RecordingReference | Local recording reference metadata           | Session / Progress       |
 
 ### Relationships
 
@@ -424,13 +424,13 @@ flowchart LR
 
 ### Frontend to Backend
 
-| Area | Request Pattern | Notes |
-|------|-----------------|-------|
-| Authentication | Cognito JWT + refresh token | The app obtains identity outside the backend modules |
-| Catalog | REST `GET` requests | Lightweight and cache-friendly |
-| Session lifecycle | REST `POST` / `PATCH` requests | Idempotent where possible |
-| Progress sync | REST `POST` requests | Accept offline batches |
-| Downloads | REST to fetch signed URLs | Asset bytes come from S3/CloudFront |
+| Area              | Request Pattern                | Notes                                                |
+| ----------------- | ------------------------------ | ---------------------------------------------------- |
+| Authentication    | Cognito JWT + refresh token    | The app obtains identity outside the backend modules |
+| Catalog           | REST `GET` requests            | Lightweight and cache-friendly                       |
+| Session lifecycle | REST `POST` / `PATCH` requests | Idempotent where possible                            |
+| Progress sync     | REST `POST` requests           | Accept offline batches                               |
+| Downloads         | REST to fetch signed URLs      | Asset bytes come from S3/CloudFront                  |
 
 ### Representative Contract Rules
 
@@ -442,14 +442,14 @@ flowchart LR
 
 ### Error Contract Summary
 
-| Error | Condition | User Outcome |
-|-------|-----------|--------------|
-| 401 | Missing or expired token | Prompt sign-in |
-| 403 | Age gate or consent denied | Block and guide to compliance state |
-| 404 | Lesson or session missing | Show not found state |
-| 409 | Duplicate or conflicting sync | Reconcile and retry |
-| 422 | Invalid input | Show validation error |
-| 500 | Unexpected server issue | Show retryable error state |
+| Error | Condition                     | User Outcome                        |
+| ----- | ----------------------------- | ----------------------------------- |
+| 401   | Missing or expired token      | Prompt sign-in                      |
+| 403   | Age gate or consent denied    | Block and guide to compliance state |
+| 404   | Lesson or session missing     | Show not found state                |
+| 409   | Duplicate or conflicting sync | Reconcile and retry                 |
+| 422   | Invalid input                 | Show validation error               |
+| 500   | Unexpected server issue       | Show retryable error state          |
 
 ## Security Considerations
 
@@ -473,15 +473,15 @@ AWS IAM isolation between logical backend modules is intentionally lightweight d
 
 ### Security Controls
 
-| Control | Design Choice |
-|---------|---------------|
-| Transport security | TLS 1.2+ end to end |
-| AuthN | Cognito OAuth2 / PKCE |
-| AuthZ | JWT-based authorization |
-| Storage encryption | KMS-backed S3 and DynamoDB encryption |
-| Local storage | Keychain / Keystore and encrypted local DB |
-| Asset access | Short-lived signed URLs |
-| Audit | CloudWatch Logs and structured consent records |
+| Control            | Design Choice                                  |
+| ------------------ | ---------------------------------------------- |
+| Transport security | TLS 1.2+ end to end                            |
+| AuthN              | Cognito OAuth2 / PKCE                          |
+| AuthZ              | JWT-based authorization                        |
+| Storage encryption | KMS-backed S3 and DynamoDB encryption          |
+| Local storage      | Keychain / Keystore and encrypted local DB     |
+| Asset access       | Short-lived signed URLs                        |
+| Audit              | CloudWatch Logs and structured consent records |
 
 ### Content Protection
 
@@ -506,13 +506,13 @@ AWS IAM isolation between logical backend modules is intentionally lightweight d
 
 ### Design Tactics
 
-| Area | Tactic |
-|------|--------|
-| Catalog | Keep browse payloads small and cacheable |
-| Audio delivery | Use CloudFront, not backend proxying |
-| Session writes | Use idempotent writes and small summaries |
-| Offline usage | Queue locally first, sync later |
-| Database | Keep the number of tables small and the schema simple |
+| Area           | Tactic                                                |
+| -------------- | ----------------------------------------------------- |
+| Catalog        | Keep browse payloads small and cacheable              |
+| Audio delivery | Use CloudFront, not backend proxying                  |
+| Session writes | Use idempotent writes and small summaries             |
+| Offline usage  | Queue locally first, sync later                       |
+| Database       | Keep the number of tables small and the schema simple |
 
 ### Scalability Position
 
@@ -522,27 +522,27 @@ AWS IAM isolation between logical backend modules is intentionally lightweight d
 
 ## External Integration Points
 
-| Integration | Purpose | Notes |
-|-------------|---------|-------|
-| Cognito | Authentication and token issuance | Managed identity layer |
-| AdMob SDK | Audio interstitial monetization | Client-side only |
-| S3 | Lesson assets and scripts | CDN-backed delivery |
-| CloudFront | Audio distribution | Low-latency playback/download |
-| CloudWatch Logs | Diagnostics | Required MVP observability |
-| Crashlytics or Sentry | Mobile crash reporting | Recommended MVP mobile observability |
-| Local notifications | Reminder scheduling | Device-native only |
+| Integration           | Purpose                           | Notes                                |
+| --------------------- | --------------------------------- | ------------------------------------ |
+| Cognito               | Authentication and token issuance | Managed identity layer               |
+| AdMob SDK             | Audio interstitial monetization   | Client-side only                     |
+| S3                    | Lesson assets and scripts         | CDN-backed delivery                  |
+| CloudFront            | Audio distribution                | Low-latency playback/download        |
+| CloudWatch Logs       | Diagnostics                       | Required MVP observability           |
+| Crashlytics or Sentry | Mobile crash reporting            | Recommended MVP mobile observability |
+| Local notifications   | Reminder scheduling               | Device-native only                   |
 
 ## Traceability Matrix
 
-| HLD Component | Functional Requirements | Use Cases | UI / Flow References |
-|---------------|-------------------------|----------|----------------------|
-| Auth / Profile / Consent | FR-1, FR-8, FR-9 | UC-01, UC-10, UC-11 | Age Gate, Privacy and Ad Consent, Sign In, Settings |
-| Content / Downloads | FR-2, FR-7 | UC-02, UC-06 | Home, Lesson Catalog, Lesson Detail, Downloaded Lessons |
-| Session / Progress | FR-3, FR-4, FR-5 | UC-03, UC-04, UC-05, UC-08 | Practice Session, Recording Comparison, Progress View |
-| Manual / Semi-Manual Content Publishing | FR-2, FR-7 | UC-02, UC-06 | Internal content prep and asset publishing |
-| AdMob Integration | FR-6 | UC-09 | Session boundary ad interstitial |
-| Offline Sync | FR-3, FR-4, FR-5, FR-7 | UC-03, UC-04, UC-06 | Offline Practice Session, Offline Library |
-| Observability | NFRs related to logging, monitoring, and recovery | All relevant flows | All screens and runtime behaviors |
+| HLD Component                           | Functional Requirements                           | Use Cases                  | UI / Flow References                                    |
+| --------------------------------------- | ------------------------------------------------- | -------------------------- | ------------------------------------------------------- |
+| Auth / Profile / Consent                | FR-1, FR-8, FR-9                                  | UC-01, UC-10, UC-11        | Age Gate, Privacy and Ad Consent, Sign In, Settings     |
+| Content / Downloads                     | FR-2, FR-7                                        | UC-02, UC-06               | Home, Lesson Catalog, Lesson Detail, Downloaded Lessons |
+| Session / Progress                      | FR-3, FR-4, FR-5                                  | UC-03, UC-04, UC-05, UC-08 | Practice Session, Recording Comparison, Progress View   |
+| Manual / Semi-Manual Content Publishing | FR-2, FR-7                                        | UC-02, UC-06               | Internal content prep and asset publishing              |
+| AdMob Integration                       | FR-6                                              | UC-09                      | Session boundary ad interstitial                        |
+| Offline Sync                            | FR-3, FR-4, FR-5, FR-7                            | UC-03, UC-04, UC-06        | Offline Practice Session, Offline Library               |
+| Observability                           | NFRs related to logging, monitoring, and recovery | All relevant flows         | All screens and runtime behaviors                       |
 
 ## MVP vs Post-MVP Notes
 
@@ -575,9 +575,9 @@ Introduce asynchronous or event-driven infrastructure only when:
 
 ## Revision History
 
-| Version | Date | Author | Description |
-|---------|------|--------|-------------|
-| 1.0 | 2026-05-14 | Architecture | Initial HLD draft for modular MVP backend |
-| 1.1 | 2026-05-14 | Architecture | Added explicit stack overview and tightened MVP boundaries |
-| 1.2 | 2026-05-14 | Architecture | Added MVP non-goals, access patterns, recording policy, and clearer boundary definitions |
-| 1.3 | 2026-05-14 | Architecture | Added authorization model, deferred infrastructure triggers, and renamed publishing workflow |
+| Version | Date       | Author       | Description                                                                                  |
+| ------- | ---------- | ------------ | -------------------------------------------------------------------------------------------- |
+| 1.0     | 2026-05-14 | Architecture | Initial HLD draft for modular MVP backend                                                    |
+| 1.1     | 2026-05-14 | Architecture | Added explicit stack overview and tightened MVP boundaries                                   |
+| 1.2     | 2026-05-14 | Architecture | Added MVP non-goals, access patterns, recording policy, and clearer boundary definitions     |
+| 1.3     | 2026-05-14 | Architecture | Added authorization model, deferred infrastructure triggers, and renamed publishing workflow |
