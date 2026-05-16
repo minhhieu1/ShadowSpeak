@@ -1,0 +1,7 @@
+interface:
+  display_name: "ShadowSpeak UI Assets"
+  short_description: "Export exact ShadowSpeak UI assets"
+  brand_color: "#0E5A6A"
+  default_prompt: "Use $shadowspeak-ui-assets to create or validate ShadowSpeak UI assets from the export plan."
+policy:
+  allow_implicit_invocation: true
