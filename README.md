@@ -200,7 +200,7 @@ specs/                          # Product & technical documentation
   02-analysis/                  AS-IS, TO-BE, FRS, NFR, use cases, user stories
   03-ux-ui-design/              Flows, IA, wireframes, UI spec, 40+ mockups
   04-solution-architecture/     SAD, HLD, LLD (backend + mobile), API spec, DB design, mobile storage
-  05-planning/                  Effort estimation
+  05-development/               MVP implementation plan (~254h, 5 epics)
 
 backend/                        Backend scaffold (FastAPI)
 front-end/                      Mobile client scaffold (React Native)
