@@ -21,7 +21,7 @@ This prototype specification is derived from:
 - [UI Design Specification](04-UI-Design-Specification.md)
 - [Use Case Specification](../02-analysis/05-Use-Case-Specification.md)
 - [Functional Requirements Specification](../02-analysis/03-Functional-Requirements-Specification.md)
-- [User Story Document](../02-analysis/06-User-Story-Document.md)
+- [User Story Documents](../02-analysis/06-user-story/)
 
 ## Prototype Overview
 
@@ -262,15 +262,15 @@ Visual reference:
 
 Component interactions:
 
-| Element | Tap                | Long-press | Swipe | Drag |
-| ------- | ------------------ | ---------- | ----- | ---- |
-| Exit    | Ends flow          | None       | None  | None |
+| Element | Tap       | Long-press | Swipe | Drag |
+| ------- | --------- | ---------- | ----- | ---- |
+| Exit    | Ends flow | None       | None  | None |
 
 State transitions:
 
-| From             | To                  | Trigger                | Transition          | Duration   | Easing   | Overlay |
-| ---------------- | ------------------- | ---------------------- | ------------------- | ---------- | -------- | ------- |
-| Age Policy Block | Exit Path           | User taps exit         | Instant or fade out | 150-200 ms | ease-out | No      |
+| From             | To        | Trigger        | Transition          | Duration   | Easing   | Overlay |
+| ---------------- | --------- | -------------- | ------------------- | ---------- | -------- | ------- |
+| Age Policy Block | Exit Path | User taps exit | Instant or fade out | 150-200 ms | ease-out | No      |
 
 Navigation connections:
 
@@ -582,20 +582,20 @@ Visual reference:
 
 Component interactions:
 
-| Element             | Tap                             | Long-press                | Swipe                       | Drag |
-| ------------------- | ------------------------------- | ------------------------- | --------------------------- | ---- |
-| Recommendation card | Opens lesson or resume flow     | Context options if needed | None                        | None |
-| Streak card         | Opens Progress                  | None                      | None                        | None |
-| Resume card         | Reopens practice or comparison  | None                      | None                        | None |
-| Bottom tabs         | Switches sections               | None                      | None                        | None |
+| Element             | Tap                            | Long-press                | Swipe | Drag |
+| ------------------- | ------------------------------ | ------------------------- | ----- | ---- |
+| Recommendation card | Opens lesson or resume flow    | Context options if needed | None  | None |
+| Streak card         | Opens Progress                 | None                      | None  | None |
+| Resume card         | Reopens practice or comparison | None                      | None  | None |
+| Bottom tabs         | Switches sections              | None                      | None  | None |
 
 State transitions:
 
-| From | To                             | Trigger             | Transition         | Duration   | Easing      | Overlay |
-| ---- | ------------------------------ | ------------------- | ------------------ | ---------- | ----------- | ------- |
-| Home | Lesson Detail                  | Tap recommendation  | Push               | 300 ms     | ease-in-out | No      |
-| Home | Progress                       | Tap streak          | Push               | 300 ms     | ease-in-out | No      |
-| Home | Settings / Downloads / Lessons | Tap bottom tab      | Tab switch         | 200-300 ms | ease-in-out | No      |
+| From | To                             | Trigger            | Transition | Duration   | Easing      | Overlay |
+| ---- | ------------------------------ | ------------------ | ---------- | ---------- | ----------- | ------- |
+| Home | Lesson Detail                  | Tap recommendation | Push       | 300 ms     | ease-in-out | No      |
+| Home | Progress                       | Tap streak         | Push       | 300 ms     | ease-in-out | No      |
+| Home | Settings / Downloads / Lessons | Tap bottom tab     | Tab switch | 200-300 ms | ease-in-out | No      |
 
 Navigation connections:
 
@@ -1444,22 +1444,22 @@ Timing:
 
 ## Animation and Transition Specs
 
-| Trigger             | From                   | To                                   | Transition Type        | Duration   | Easing      | Platform Parity Notes                   |
-| ------------------- | ---------------------- | ------------------------------------ | ---------------------- | ---------- | ----------- | --------------------------------------- |
-| App launch resolves | Launch                 | Age Gate / Home                      | Cross-dissolve         | 200 ms     | ease-in-out | Same on iOS and Android                 |
-| Valid age / consent | Age Gate / Consent     | Next onboarding step                 | Push                   | 300 ms     | ease-in-out | Same                                    |
-| Sign-in success     | Sign In                | Level Selection                      | Push                   | 300 ms     | ease-in-out | Same                                    |
-| Continue onboarding | Reminder / Permissions | Home                                 | Push                   | 300 ms     | ease-in-out | Same                                    |
-| Open lesson         | Home / Catalog         | Lesson Detail                        | Push from right        | 300 ms     | ease-in-out | Same                                    |
-| Start practice      | Lesson Detail          | Practice Session                     | Push from right        | 300 ms     | ease-in-out | Same                                    |
-| Session boundary ad | Practice               | Ad Interstitial                      | Full-screen present    | 350-400 ms | ease-in-out | Same                                    |
-| Ad completes        | Ad Interstitial        | Practice / Comparison                | Cross-dissolve or push | 200 ms     | ease-out    | Same                                    |
-| Finish session      | Practice               | Comparison                           | Push                   | 300 ms     | ease-in-out | Same                                    |
-| Skip comparison     | Comparison             | Home                                 | Push                   | 300 ms     | ease-in-out | Same                                    |
-| Open settings item  | Settings               | Settings subsection                  | Push                   | 300 ms     | ease-in-out | Same                                    |
-| Error appears       | Any screen             | Retryable Error                      | Fade in                | 220 ms     | ease-out    | Same                                    |
-| Error recovery      | Retryable Error        | Source screen or related destination | Push or instant        | 200-300 ms | ease-in-out | Same                                    |
-| Download completes  | Downloads              | Downloaded state                     | Cross-dissolve         | 250 ms     | ease-in-out | Same                                    |
+| Trigger             | From                   | To                                   | Transition Type        | Duration   | Easing      | Platform Parity Notes   |
+| ------------------- | ---------------------- | ------------------------------------ | ---------------------- | ---------- | ----------- | ----------------------- |
+| App launch resolves | Launch                 | Age Gate / Home                      | Cross-dissolve         | 200 ms     | ease-in-out | Same on iOS and Android |
+| Valid age / consent | Age Gate / Consent     | Next onboarding step                 | Push                   | 300 ms     | ease-in-out | Same                    |
+| Sign-in success     | Sign In                | Level Selection                      | Push                   | 300 ms     | ease-in-out | Same                    |
+| Continue onboarding | Reminder / Permissions | Home                                 | Push                   | 300 ms     | ease-in-out | Same                    |
+| Open lesson         | Home / Catalog         | Lesson Detail                        | Push from right        | 300 ms     | ease-in-out | Same                    |
+| Start practice      | Lesson Detail          | Practice Session                     | Push from right        | 300 ms     | ease-in-out | Same                    |
+| Session boundary ad | Practice               | Ad Interstitial                      | Full-screen present    | 350-400 ms | ease-in-out | Same                    |
+| Ad completes        | Ad Interstitial        | Practice / Comparison                | Cross-dissolve or push | 200 ms     | ease-out    | Same                    |
+| Finish session      | Practice               | Comparison                           | Push                   | 300 ms     | ease-in-out | Same                    |
+| Skip comparison     | Comparison             | Home                                 | Push                   | 300 ms     | ease-in-out | Same                    |
+| Open settings item  | Settings               | Settings subsection                  | Push                   | 300 ms     | ease-in-out | Same                    |
+| Error appears       | Any screen             | Retryable Error                      | Fade in                | 220 ms     | ease-out    | Same                    |
+| Error recovery      | Retryable Error        | Source screen or related destination | Push or instant        | 200-300 ms | ease-in-out | Same                    |
+| Download completes  | Downloads              | Downloaded state                     | Cross-dissolve         | 250 ms     | ease-in-out | Same                    |
 
 ## Prototype Testing Checklist
 

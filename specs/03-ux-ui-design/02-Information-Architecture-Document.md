@@ -18,7 +18,7 @@ This IA is derived from:
 - [User Flow Diagram](01-User-Flow-Diagram.md)
 - [Use Case Specification](../02-analysis/05-Use-Case-Specification.md)
 - [Functional Requirements Specification](../02-analysis/03-Functional-Requirements-Specification.md)
-- [User Story Document](../02-analysis/06-User-Story-Document.md)
+- [User Story Documents](../02-analysis/06-user-story/)
 
 ## Scope
 
@@ -104,9 +104,9 @@ The current source set supports browse, filter, recommendation, and download flo
 
 ### 5. Recovery and Safe Exit
 
-| Screen                 | Description                                                              | Primary Function                  |
-| ---------------------- | ------------------------------------------------------------------------ | --------------------------------- |
-| Retryable Error States | Contextual error surfaces for audio, auth, storage, or network failures. | Preserve state and offer recovery |
+| Screen                 | Description                                                              | Primary Function                       |
+| ---------------------- | ------------------------------------------------------------------------ | -------------------------------------- |
+| Retryable Error States | Contextual error surfaces for audio, auth, storage, or network failures. | Preserve state and offer recovery      |
 | Exit Path              | Final blocked path for underage or non-recoverable onboarding outcomes.  | Exit safely without support dependency |
 
 ## Navigation Architecture

@@ -15,7 +15,7 @@
 
 This diagram set is derived from:
 
-- [User Story Document](../02-analysis/06-User-Story-Document.md)
+- [User Story Documents](../02-analysis/06-user-story/)
 - [Use Case Specification](../02-analysis/05-Use-Case-Specification.md)
 - [Functional Requirements Specification](../02-analysis/03-Functional-Requirements-Specification.md)
 

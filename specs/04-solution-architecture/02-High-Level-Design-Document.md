@@ -19,7 +19,7 @@ This HLD is derived from:
 - [Solution Architecture Document](01-Solution-Architecture-Document.md)
 - [Functional Requirements Specification](../02-analysis/03-Functional-Requirements-Specification.md)
 - [Use Case Specification](../02-analysis/05-Use-Case-Specification.md)
-- [User Story Document](../02-analysis/06-User-Story-Document.md)
+- [User Story Documents](../02-analysis/06-user-story/)
 - [User Flow Diagram](../03-ux-ui-design/01-User-Flow-Diagram.md)
 - [Information Architecture Document](../03-ux-ui-design/02-Information-Architecture-Document.md)
 - [Wireframe Document](../03-ux-ui-design/03-Wireframe-Document.md)

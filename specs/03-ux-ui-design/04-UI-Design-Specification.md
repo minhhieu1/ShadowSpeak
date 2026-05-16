@@ -20,7 +20,7 @@ This UI specification is derived from:
 - [Wireframe Document](03-Wireframe-Document.md)
 - [Use Case Specification](../02-analysis/05-Use-Case-Specification.md)
 - [Functional Requirements Specification](../02-analysis/03-Functional-Requirements-Specification.md)
-- [User Story Document](../02-analysis/06-User-Story-Document.md)
+- [User Story Documents](../02-analysis/06-user-story/)
 
 ## Scope
 
@@ -276,13 +276,13 @@ Layout:
 
 Component inventory:
 
-| Component           | Placement        | Notes                                                                |
-| ------------------- | ---------------- | -------------------------------------------------------------------- |
-| Title               | Top bar          | Single-line                                                          |
-| Age control         | Mid screen       | Checkbox, date field, or age affirmation depending on implementation |
-| Helper copy         | Mid or lower     | Brief requirement explanation                                        |
-| Continue button     | Bottom primary   | Full-width                                                           |
-| Exit button         | Bottom secondary | Secondary action                                                     |
+| Component       | Placement        | Notes                                                                |
+| --------------- | ---------------- | -------------------------------------------------------------------- |
+| Title           | Top bar          | Single-line                                                          |
+| Age control     | Mid screen       | Checkbox, date field, or age affirmation depending on implementation |
+| Helper copy     | Mid or lower     | Brief requirement explanation                                        |
+| Continue button | Bottom primary   | Full-width                                                           |
+| Exit button     | Bottom secondary | Secondary action                                                     |
 
 State specs:
 
@@ -322,18 +322,18 @@ Layout:
 
 Component inventory:
 
-| Component           | Placement                   | Notes                 |
-| ------------------- | --------------------------- | --------------------- |
-| Block title         | Center                      | Direct and plain      |
-| Explanation text    | Center below title          | Short, non-judgmental |
-| Exit button         | Bottom primary or secondary | Safe exit             |
+| Component        | Placement                   | Notes                 |
+| ---------------- | --------------------------- | --------------------- |
+| Block title      | Center                      | Direct and plain      |
+| Explanation text | Center below title          | Short, non-judgmental |
+| Exit button      | Bottom primary or secondary | Safe exit             |
 
 State specs:
 
-| State        | Specification          |
-| ------------ | ---------------------- |
-| Default      | No route into core app |
-| Exit path | Safe exit flow          |
+| State     | Specification          |
+| --------- | ---------------------- |
+| Default   | No route into core app |
+| Exit path | Safe exit flow         |
 
 Spacing / alignment:
 
@@ -1402,12 +1402,12 @@ Layout:
 
 Component inventory:
 
-| Component          | Placement        | Notes                         |
-| ------------------ | ---------------- | ----------------------------- |
-| Title              | Center           | Exit path                     |
-| Message            | Center below     | Brief and neutral             |
-| Safety note        | Center below     | Self-service reassurance only |
-| Exit button        | Bottom primary   | End the flow                  |
+| Component          | Placement        | Notes                                |
+| ------------------ | ---------------- | ------------------------------------ |
+| Title              | Center           | Exit path                            |
+| Message            | Center below     | Brief and neutral                    |
+| Safety note        | Center below     | Self-service reassurance only        |
+| Exit button        | Bottom primary   | End the flow                         |
 | Return home button | Bottom secondary | Only where a home destination exists |
 
 State specs:

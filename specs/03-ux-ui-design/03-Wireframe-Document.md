@@ -19,7 +19,7 @@ This wireframe set is derived from:
 - [Information Architecture Document](02-Information-Architecture-Document.md)
 - [Use Case Specification](../02-analysis/05-Use-Case-Specification.md)
 - [Functional Requirements Specification](../02-analysis/03-Functional-Requirements-Specification.md)
-- [User Story Document](../02-analysis/06-User-Story-Document.md)
+- [User Story Documents](../02-analysis/06-user-story/)
 
 ## Scope
 
@@ -204,10 +204,10 @@ Purpose: Block onboarding for underage learners and end the flow safely.
 | Center    | Eligibility block message |
 | Bottom    | Exit action               |
 
-| State        | Behavior                               |
-| ------------ | -------------------------------------- |
-| Default      | Inform learner the app cannot continue |
-| Exit path    | Open safe exit flow                    |
+| State     | Behavior                               |
+| --------- | -------------------------------------- |
+| Default   | Inform learner the app cannot continue |
+| Exit path | Open safe exit flow                    |
 
 Audio-first note: this should be a dead-end state with no practice navigation.
 
@@ -664,11 +664,11 @@ Purpose: Provide access to lessons that have been downloaded for offline practic
 +--------------------------------------------------+
 ```
 
-| Placement | Component                 |
-| --------- | ------------------------- |
-| Top       | Title and offline status  |
-| Middle    | Downloaded lesson cards   |
-| Bottom    | Manage and open actions   |
+| Placement | Component                |
+| --------- | ------------------------ |
+| Top       | Title and offline status |
+| Middle    | Downloaded lesson cards  |
+| Bottom    | Manage and open actions  |
 
 | State   | Behavior                                     |
 | ------- | -------------------------------------------- |
@@ -985,7 +985,7 @@ Purpose: Preserve context and give the learner a clear recovery path for common 
 | Auth expired       | Sign in again                    |
 | Storage full       | Free space and retry             |
 | Network loss       | Continue offline where supported |
-| Unknown error      | Retry, then return home safely    |
+| Unknown error      | Retry, then return home safely   |
 
 Audio-first note: error states should keep the learner’s place whenever possible.
 
@@ -1005,9 +1005,9 @@ Purpose: Final safe exit for blocked onboarding or non-recoverable flows.
 +--------------------------------------------------+
 ```
 
-| Placement | Component                |
-| --------- | ------------------------ |
-| Center    | Blocked state message    |
+| Placement | Component                    |
+| --------- | ---------------------------- |
+| Center    | Blocked state message        |
 | Bottom    | Exit and safe return actions |
 
 | State   | Behavior            |
