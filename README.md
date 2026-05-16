@@ -199,7 +199,7 @@ specs/                          # Product & technical documentation
   01-initiation-discovery/      BRD, PDD, business requirements
   02-analysis/                  AS-IS, TO-BE, FRS, NFR, use cases, user stories
   03-ux-ui-design/              Flows, IA, wireframes, UI spec, 40+ mockups
-  04-solution-architecture/     SAD, HLD, LLD, API spec, database design
+  04-solution-architecture/     SAD, HLD, LLD (backend + mobile), API spec, DB design, mobile storage
   05-planning/                  Effort estimation
 
 backend/                        Backend scaffold (FastAPI)

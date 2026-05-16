@@ -17,11 +17,13 @@ This API specification is derived from:
 
 - [Solution Architecture Document](01-Solution-Architecture-Document.md)
 - [High-Level Design Document](02-High-Level-Design-Document.md)
-- [Low-Level Design Document](03-Low-Level-Design-Document.md)
+- [Low-Level-Design-Backend.md](03-Low-Level-Design-Backend.md)
 - [Functional Requirements Specification](../02-analysis/03-Functional-Requirements-Specification.md)
 - [Use Case Specification](../02-analysis/05-Use-Case-Specification.md)
 
 The LLD is the primary source for exact schema/model names, field names, and error codes. The HLD is the primary source for module-level API coverage and traceability.
+
+This document cross-references the [Backend LLD](03-Low-Level-Design-Backend.md) for model schemas and the [Database Design](06-Database-Design-Document.md) for data persistence patterns.
 
 ## Revision History
 

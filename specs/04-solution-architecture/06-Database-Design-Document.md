@@ -12,15 +12,17 @@
 | Version       | 1.0                        |
 | Owner         | Database Designer          |
 
+> This document covers the **server-side DynamoDB** database design. See [07-Mobile-Storage-Design.md](07-Mobile-Storage-Design.md) for the mobile client SQLite offline schema.
+
 ## Source Basis
 
 This document is derived from:
 
 - [Solution Architecture Document](01-Solution-Architecture-Document.md)
 - [High-Level Design Document](02-High-Level-Design-Document.md)
-- [Low-Level Design Document](03-Low-Level-Design-Document.md)
+- [Low-Level-Design-Backend.md](03-Low-Level-Design-Backend.md)
 
-The LLD is the primary source for the data models, naming, and access patterns. The SAD is the primary source for the overall AWS serverless architecture and the DynamoDB-first backend strategy.
+The backend LLD is the primary source for the data models, naming, and access patterns. The SAD is the primary source for the overall AWS serverless architecture and the DynamoDB-first backend strategy.
 
 ## Revision History
 
@@ -40,8 +42,6 @@ This is the simplest practical design for the MVP because:
 - the required cross-access patterns are covered by two focused GSIs
 - no Streams, DAX, or cross-region replication are needed in the MVP
 
-This document explicitly supersedes the LLD's earlier four-table sketch in Section 5.1. The single-table design keeps the same access patterns available while reducing operational overhead and cross-table coordination.
-
 ### Table Choice
 
 | Option        | Decision   | Reason                                                                                           |
@@ -53,8 +53,8 @@ This document explicitly supersedes the LLD's earlier four-table sketch in Secti
 
 ### 2.1 Primary Table
 
-| Table Name        | Purpose                                                                                                                         |
-| ----------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| Table Name      | Purpose                                                                                                                         |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------- |
 | `ShadowSpeakMain` | Stores user profile, consent, sessions, progress, sync queue items, lesson metadata, lesson access records, and download grants |
 
 ### 2.2 Key Conventions
@@ -97,15 +97,15 @@ The table stores multiple logical entity types in the same physical table. Each 
 | `SyncQueueItem`            | `USER#<userId>`       | `MUTATION#<clientMutationId>`                           | `id`, `userId`, `type`, `payload`, `clientMutationId`, `retryCount`, `nextRetryAt`, `status`, `entityType`, `ttlEpoch?`                                                                          | Queue state stays user-scoped and keyed by immutable mutation token       |
 | `DownloadGrant`            | `USER#<userId>`       | `DOWNLOAD#<lessonId>#<assetType>`                       | `userId`, `lessonId`, `grantedAt`, `expiresAt`, `assetKey`, `entityType`, `ttlEpoch`                                                                                                             | Short-lived grant for signed URL and verification                         |
 
-### 3.1 Lesson Asset Note
+### 3.1 Entity Consolidation Notes
 
-The `LessonAsset` model from the LLD is not stored as a separate DynamoDB entity in this MVP. Asset checksum, version, size, and content type are resolved from S3 object metadata by the asset service. DynamoDB only stores the lesson metadata and asset keys.
+- The `LessonAsset` model from the backend LLD is not stored as a separate DynamoDB entity. Asset checksum, version, size, and content type are resolved from S3 object metadata by the asset service. DynamoDB only stores the lesson metadata and asset keys.
 
-The HLD's `OfflineLessonFlag` concept is subsumed by `DownloadGrant` on the backend and by local cached lesson state on device. No separate DynamoDB entity is used for that flag in the MVP.
+- The HLD's `OfflineLessonFlag` concept is subsumed by `DownloadGrant` on the backend and by local cached lesson state on device. No separate DynamoDB entity is used for that flag in the MVP.
 
-`RecordingReferenceRow` is device-local only. Recordings are local-first and are not uploaded by default in the MVP, so no DynamoDB entity is needed for recording references.
+- `RecordingReferenceRow` is device-local only. Recordings are local-first and are not uploaded by default in the MVP, so no DynamoDB entity is needed for recording references.
 
-`UserSettings` from the HLD is folded into `UserProfile` through the `level` and `reminderTime` fields, so it does not require a separate DynamoDB entity.
+- `UserSettings` from the HLD is folded into `UserProfile` through the `level` and `reminderTime` fields, so it does not require a separate DynamoDB entity.
 
 ## 4. Secondary Indexes
 
@@ -221,7 +221,7 @@ Recommended pattern:
 | Entity                                                              | TTL Policy                                                                                                            | Notes                                                                                     |
 | ------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | `SyncQueueItem`                                                     | TTL after a successful sync or permanent failure, typically 30 days after `ttlEpoch` is set                           | Keeps retry history short-lived                                                           |
-| `PracticeSession`                                                   | TTL set at creation for 2 years from `startedAt`, accelerated to the 30-day account-deletion grace window when needed | Matches the LLD retention policy and keeps session state available for replay and history |
+| `PracticeSession`                                                   | TTL set at creation for 2 years from `startedAt`, accelerated to the 30-day account-deletion grace window when needed | Matches the retention policy and keeps session state available for replay and history |
 | `DownloadGrant`                                                     | TTL at `expiresAt`                                                                                                    | Signed URL grants are short-lived by design                                               |
 | `ConsentState` bootstrap                                            | TTL 24 hours after creation or sooner after re-keying                                                                 | Device-scoped consent bootstrap records are temporary only                                |
 | `UserProfile`, durable `ConsentState`, `ProgressSnapshot`, `Lesson` | No TTL in MVP                                                                                                         | These records are core product state                                                      |
@@ -251,7 +251,6 @@ Account deletion follows this order:
 
 - The initial delete request sets `deletionRequestedAt` and `deletionStatus = deletion_requested`
 - A follow-up purge job performs batch deletes against the user partition and session GSI lookups
-- This cascade extends the LLD's shorter summary by making the progress snapshot and download-grant cleanup steps explicit
 - No Streams are required for the MVP
 - The purge job can be a scheduled Lambda or operational cleanup task
 
@@ -259,93 +258,20 @@ Account deletion follows this order:
 
 | Entity                     | Estimated Item Size | Cardinality                                                              | Notes                                   |
 | -------------------------- | ------------------- | ------------------------------------------------------------------------ | --------------------------------------- |
-| `UserProfile`              | 0.5 KB - 2 KB       | 1 per user                                                               | Small profile document                  |
-| `ConsentState`             | 0.5 KB - 1 KB       | 1 durable row per user, plus short-lived bootstrap row during onboarding | Bootstrap row is transient              |
-| `Lesson`                   | 1 KB - 6 KB         | Tens to a few hundred total lessons                                      | Lesson metadata only, not large scripts |
-| `PracticeSession`          | 1 KB - 3 KB         | Several active rows and dozens to hundreds of historical rows per user   | TTL controls stale growth               |
-| `ProgressSnapshot` current | 0.5 KB - 1 KB       | 1 per user                                                               | Aggregate snapshot                      |
-| `ProgressSnapshot` history | 0.5 KB - 2 KB       | 1 per completed lesson session                                           | History can grow with use               |
-| `SyncQueueItem`            | 1 KB - 4 KB         | Usually 0 - 50 per user                                                  | Payload size drives variance            |
-| `DownloadGrant`            | < 1 KB              | Usually 0 - 2 live grants per user per lesson                            | Very short-lived                        |
+| `UserProfile`              | 0.5 KB — 2 KB       | 1 per user                                                               | Small profile document                  |
+| `ConsentState`             | 0.5 KB — 1 KB       | 1 durable row per user, plus short-lived bootstrap row during onboarding | Bootstrap row is transient              |
+| `Lesson`                   | 1 KB — 6 KB         | Tens to a few hundred total lessons                                      | Lesson metadata only, not large scripts |
+| `PracticeSession`          | 1 KB — 3 KB         | Several active rows and dozens to hundreds of historical rows per user   | TTL controls stale growth               |
+| `ProgressSnapshot` current | 0.5 KB — 1 KB       | 1 per user                                                               | Aggregate snapshot                      |
+| `ProgressSnapshot` history | 0.5 KB — 2 KB       | 1 per completed lesson session                                           | History can grow with use               |
+| `SyncQueueItem`            | 1 KB — 4 KB         | Usually 0 — 50 per user                                                  | Payload size drives variance            |
+| `DownloadGrant`            | < 1 KB              | Usually 0 — 2 live grants per user per lesson                            | Very short-lived                        |
 
 ### Capacity Note
 
 All item shapes remain well below DynamoDB's 400 KB item limit in the MVP.
 
-## 10. Offline Schema
-
-The local database is an encrypted SQLite store or a Realm equivalent. The SQLite DDL below is the concrete reference schema.
-
-### 10.1 PracticeSession
-
-```sql
-CREATE TABLE practice_sessions (
-    session_id TEXT PRIMARY KEY,
-    user_id TEXT NOT NULL,
-    lesson_id TEXT NOT NULL,
-    status TEXT NOT NULL CHECK (status IN ('created', 'active', 'paused', 'completed', 'synced')),
-    started_at TEXT NOT NULL,
-    expires_at TEXT,
-    completed_at TEXT,
-    completion_percent INTEGER,
-    recording_local_uri TEXT,
-    client_mutation_id TEXT
-);
-
-CREATE INDEX idx_practice_sessions_user_started
-    ON practice_sessions(user_id, started_at DESC);
-
-CREATE INDEX idx_practice_sessions_status
-    ON practice_sessions(status);
-```
-
-### 10.2 ProgressSnapshot
-
-```sql
-CREATE TABLE progress_snapshots (
-    snapshot_id TEXT PRIMARY KEY,
-    user_id TEXT NOT NULL,
-    lesson_id TEXT,
-    snapshot_type TEXT NOT NULL CHECK (snapshot_type IN ('current', 'history')),
-    streak_days INTEGER NOT NULL,
-    minutes_practiced INTEGER NOT NULL,
-    last_practiced_at TEXT,
-    completed_lesson_count INTEGER NOT NULL,
-    updated_at TEXT NOT NULL
-);
-
-CREATE INDEX idx_progress_snapshots_user_type_updated
-    ON progress_snapshots(user_id, snapshot_type, updated_at DESC);
-```
-
-### 10.3 SyncQueueItem
-
-```sql
-CREATE TABLE sync_queue_items (
-    id TEXT PRIMARY KEY,
-    user_id TEXT NOT NULL,
-    type TEXT NOT NULL,
-    payload_json TEXT NOT NULL,
-    client_mutation_id TEXT NOT NULL,
-    retry_count INTEGER NOT NULL DEFAULT 0,
-    next_retry_at TEXT,
-    status TEXT NOT NULL CHECK (status IN ('pending', 'processing', 'failed', 'synced'))
-);
-
-CREATE INDEX idx_sync_queue_items_user_status_retry
-    ON sync_queue_items(user_id, status, next_retry_at);
-```
-
-### 10.4 Local Storage Notes
-
-- `payload_json` stores the serialized mutation payload for offline replay
-- `snapshot_type = current` represents the aggregate progress snapshot
-- `snapshot_type = history` represents completed lesson history rows
-- the client can derive `lesson_id` as nullable for the current snapshot and populated for history rows
-- local indexes should keep the newest session and retryable sync items cheap to read
-- `CachedLessonRow`, `RecordingReferenceRow`, and `AdCounterRow` are device-local structures defined in LLD Section 3.4 and are intentionally out of scope for this document because this document covers the DynamoDB-backed sync surface.
-
-## 11. Indexing Strategy Summary
+## 10. Indexing Strategy Summary
 
 | Index                      | Why It Exists                                                                                         |
 | -------------------------- | ----------------------------------------------------------------------------------------------------- |
@@ -354,9 +280,8 @@ CREATE INDEX idx_sync_queue_items_user_status_retry
 | Base table user partitions | Support direct profile, consent, progress, sync queue, and deletion workflows                         |
 | Base table session items   | Support direct `GetItem` by `sessionId`                                                               |
 | Base table lesson items    | Support direct lesson detail lookups by `lessonId`                                                    |
-| SQLite user/status indexes | Keep offline session, progress, and sync queue reads responsive on device                             |
 
-## 12. Design Notes and Constraints
+## 11. Design Notes and Constraints
 
 - No DAX is used in MVP
 - No Streams are used in MVP
