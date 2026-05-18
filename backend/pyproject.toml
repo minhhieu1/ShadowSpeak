@@ -4,11 +4,15 @@ version = "0.1.0"
 description = "FastAPI backend for the ShadowSpeak MVP."
 requires-python = ">=3.12"
 dependencies = [
+  "boto3>=1.37.0",
   "email-validator==2.3.0",
   "fastapi==0.136.1",
   "mangum==0.21.0",
   "pydantic==2.13.4",
   "pydantic-settings==2.14.1",
+  "pyjwt==2.12.1",
+  "cryptography==48.0.0",
+  "requests>=2.32",
   "uvicorn[standard]==0.47.0"
 ]
 
@@ -16,7 +20,8 @@ dependencies = [
 dev = [
   "httpx==0.28.1",
   "pytest==9.0.3",
-  "ruff==0.15.13"
+  "ruff==0.15.13",
+  "moto>=5.1.0"
 ]
 
 [tool.pytest.ini_options]

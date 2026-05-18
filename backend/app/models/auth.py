@@ -27,6 +27,7 @@ class UserProfile(BaseModel):
     email: EmailStr | None = None
     level: Level | None = None
     reminderTime: str | None = None
+    onboardingStep: str | None = None
     deletionRequestedAt: str | None = None
     deletionStatus: Literal["active", "deletion_requested", "purged"] | None = "active"
     createdAt: str
@@ -36,7 +37,10 @@ class UserProfile(BaseModel):
 class UpdateProfileInput(BaseModel):
     displayName: str | None = Field(default=None, max_length=80)
     level: Level | None = None
-    reminderTime: str | None = None
+    reminderTime: str | None = Field(
+        default=None,
+        pattern=r"^([01]\d|2[0-3]):[0-5]\d$",
+    )
 
 
 class DeleteAccountResult(BaseModel):

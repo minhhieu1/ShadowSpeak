@@ -23,6 +23,10 @@ class JsonEnvelope(BaseModel, Generic[T]):
 def get_request_id(request: Request | None) -> str:
     if request is None:
         return str(uuid4())
+    # Prefer request.state (set by RequestIDMiddleware), then header, then generate
+    request_id = getattr(request.state, "request_id", None)
+    if request_id:
+        return request_id
     return request.headers.get("X-Request-Id") or str(uuid4())
 
 

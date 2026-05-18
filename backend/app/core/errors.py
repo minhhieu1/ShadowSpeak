@@ -11,6 +11,7 @@ ERROR_STATUS: dict[str, int] = {
     "SESSION_NOT_FOUND": 404,
     "SESSION_STATE_INVALID": 409,
     "SYNC_CONFLICT": 409,
+    "RATE_LIMITED": 429,
     "SYSTEM_ERROR": 500,
 }
 

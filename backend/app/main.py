@@ -7,12 +7,18 @@ from app.api.routes import content, health, profile, session
 from app.core.config import get_settings
 from app.core.envelope import failure, get_request_id
 from app.core.errors import AppError
+from app.core.middleware import (
+    RateLimitMiddleware,
+    RequestIDMiddleware,
+    RequestLoggingMiddleware,
+)
 
 
 def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(title=settings.app_name, version="0.1.0")
 
+    # CORS middleware (outermost)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["*"],
@@ -21,12 +27,14 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
-    @app.middleware("http")
-    async def request_id_middleware(request: Request, call_next):
-        request_id = get_request_id(request)
-        response = await call_next(request)
-        response.headers["X-Request-Id"] = request_id
-        return response
+    # LLD Middleware chain order:
+    # 1. Request ID assignment
+    # 2. Structured request logging
+    # 3. Rate limiting
+    # (JWT verification, consent check, input validation via DI)
+    app.add_middleware(RequestIDMiddleware)
+    app.add_middleware(RequestLoggingMiddleware)
+    app.add_middleware(RateLimitMiddleware, max_requests=100, window_seconds=60)
 
     @app.exception_handler(AppError)
     async def app_error_handler(request: Request, exc: AppError):

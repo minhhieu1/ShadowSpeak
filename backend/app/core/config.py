@@ -9,6 +9,17 @@ class Settings(BaseSettings):
     api_version: str = "v1"
     allow_dev_auth: bool = True
 
+    # Cognito settings
+    cognito_user_pool_id: str = ""
+    cognito_region: str = "us-east-1"
+    cognito_client_id: str = ""
+    cognito_jwks_url: str = ""
+
+    # DynamoDB settings
+    dynamodb_table_name: str = "shadowspeak-local"
+    dynamodb_region: str = "us-east-1"
+    dynamodb_endpoint: str = ""
+
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
 
