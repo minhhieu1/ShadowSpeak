@@ -56,4 +56,86 @@ curl -s -H "Authorization: Bearer jwt-token" http://localhost:3001/v1/me | pytho
 
 ---
 
+## `dev_services`
+
+Starts the local development infrastructure for the backend rebuild:
+
+- **Keycloak** for dev authentication
+- **DynamoDB Local** for dev database storage
+
+### Location
+
+`scripts/dev_services`
+
+### Usage
+
+```bash
+# From the repository root
+./scripts/dev_services start
+./scripts/dev_services status
+./scripts/dev_services logs
+./scripts/dev_services stop
+./scripts/dev_services reset
+```
+
+### Local URLs
+
+| Service | URL |
+| --- | --- |
+| Keycloak Admin Console | `http://localhost:8080/admin` |
+| Keycloak realm issuer | `http://localhost:8080/realms/shadowspeak` |
+| Keycloak JWKS | `http://localhost:8080/realms/shadowspeak/protocol/openid-connect/certs` |
+| DynamoDB Local | `http://localhost:8000` |
+
+### Dev Credentials
+
+| Purpose | Value |
+| --- | --- |
+| Keycloak admin | `admin` / `admin` |
+| Test user | `dev.user@shadowspeak.local` / `DevPass123!` |
+| Mobile client | `shadowspeak-mobile` |
+| API audience | `shadowspeak-api` |
+
+### Social Login
+
+The local Keycloak realm includes enabled Google and Facebook identity providers. Their credentials are read from environment variables during realm import.
+
+```bash
+cp helper/docker/.env.example helper/docker/.env
+# Edit helper/docker/.env with real Google/Facebook dev app credentials.
+./scripts/dev_services reset
+./scripts/dev_services start
+```
+
+Configure these redirect URIs in the provider developer consoles:
+
+```text
+http://localhost:8080/realms/shadowspeak/broker/google/endpoint
+http://localhost:8080/realms/shadowspeak/broker/facebook/endpoint
+```
+
+### Backend Dev Config
+
+Use these values when wiring the new FastAPI backend:
+
+```bash
+APP_ENV=dev
+AUTH_ISSUER=http://localhost:8080/realms/shadowspeak
+AUTH_JWKS_URL=http://localhost:8080/realms/shadowspeak/protocol/openid-connect/certs
+AUTH_AUDIENCE=shadowspeak-api
+DYNAMODB_ENDPOINT=http://localhost:8000
+AWS_ACCESS_KEY_ID=dummy
+AWS_SECRET_ACCESS_KEY=dummy
+AWS_DEFAULT_REGION=us-east-1
+```
+
+### Notes
+
+- `reset` deletes generated local data under `helper/docker/keycloak/data` and `helper/docker/dynamodb`.
+- Keycloak imports the committed realm file only when the realm does not already exist.
+- After editing `helper/docker/keycloak/import/shadowspeak-realm.json`, run `./scripts/dev_services reset` before starting again.
+- Import `helper/postman/keycloak-local-basic.postman_collection.json` and `helper/postman/keycloak-local.postman_environment.json` into Postman to test local Keycloak.
+
+---
+
 Feel free to add additional scripts to this directory as the project evolves.

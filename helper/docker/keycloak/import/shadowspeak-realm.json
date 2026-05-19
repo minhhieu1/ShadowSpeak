@@ -1,0 +1,138 @@
+{
+  "realm": "shadowspeak",
+  "enabled": true,
+  "displayName": "ShadowSpeak Dev",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": true,
+  "rememberMe": true,
+  "identityProviders": [
+    {
+      "alias": "google",
+      "displayName": "Google",
+      "providerId": "google",
+      "enabled": true,
+      "trustEmail": true,
+      "storeToken": false,
+      "addReadTokenRoleOnCreate": false,
+      "authenticateByDefault": false,
+      "linkOnly": false,
+      "firstBrokerLoginFlowAlias": "first broker login",
+      "config": {
+        "clientId": "${KEYCLOAK_GOOGLE_CLIENT_ID}",
+        "clientSecret": "${KEYCLOAK_GOOGLE_CLIENT_SECRET}",
+        "defaultScope": "openid profile email",
+        "useJwksUrl": "true"
+      }
+    },
+    {
+      "alias": "facebook",
+      "displayName": "Facebook",
+      "providerId": "facebook",
+      "enabled": true,
+      "trustEmail": true,
+      "storeToken": false,
+      "addReadTokenRoleOnCreate": false,
+      "authenticateByDefault": false,
+      "linkOnly": false,
+      "firstBrokerLoginFlowAlias": "first broker login",
+      "config": {
+        "clientId": "${KEYCLOAK_FACEBOOK_CLIENT_ID}",
+        "clientSecret": "${KEYCLOAK_FACEBOOK_CLIENT_SECRET}",
+        "defaultScope": "email,public_profile"
+      }
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "learner",
+        "description": "Default ShadowSpeak learner role"
+      },
+      {
+        "name": "admin",
+        "description": "ShadowSpeak administrative role"
+      }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "shadowspeak-api",
+      "name": "ShadowSpeak API",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "authorizationServicesEnabled": false,
+      "redirectUris": [],
+      "webOrigins": []
+    },
+    {
+      "clientId": "shadowspeak-mobile",
+      "name": "ShadowSpeak Mobile Dev Client",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "implicitFlowEnabled": false,
+      "redirectUris": [
+        "shadowspeak://auth/callback",
+        "exp://localhost:8081/*",
+        "http://localhost:19006/*"
+      ],
+      "webOrigins": [
+        "+"
+      ],
+      "defaultClientScopes": [
+        "basic",
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ],
+      "protocolMappers": [
+        {
+          "name": "shadowspeak-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "consentRequired": false,
+          "config": {
+            "included.client.audience": "shadowspeak-api",
+            "id.token.claim": "false",
+            "access.token.claim": "true",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "dev.user@shadowspeak.local",
+      "email": "dev.user@shadowspeak.local",
+      "firstName": "Dev",
+      "lastName": "User",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "DevPass123!",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "learner"
+      ]
+    }
+  ]
+}

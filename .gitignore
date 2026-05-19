@@ -1,2 +1,7 @@
 .claude/settings.local.json
 .vscode/settings.json
+
+# Local Docker service data
+/helper/docker/.env
+/helper/docker/keycloak/data/
+/helper/docker/dynamodb/

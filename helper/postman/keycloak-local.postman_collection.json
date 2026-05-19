@@ -1,0 +1,419 @@
+{
+  "info": {
+    "_postman_id": "6f9d85f9-228c-463b-bc94-9cf5ad32ddc9",
+    "name": "ShadowSpeak Local Keycloak",
+    "description": "Local Keycloak requests for ShadowSpeak development. Start services with `./scripts/dev_services start`, then import this collection and the `ShadowSpeak Keycloak Local` environment.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Discovery",
+      "item": [
+        {
+          "name": "OpenID Configuration",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{keycloakBaseUrl}}/realms/{{realm}}/.well-known/openid-configuration"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('OpenID configuration is available', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.issuer).to.eql(`${pm.environment.get('keycloakBaseUrl')}/realms/${pm.environment.get('realm')}`);",
+                  "  pm.expect(body.jwks_uri).to.include('/protocol/openid-connect/certs');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "JWKS",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{keycloakBaseUrl}}/realms/{{realm}}/protocol/openid-connect/certs"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('JWKS contains signing keys', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.keys).to.be.an('array').that.is.not.empty;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "User Tokens",
+      "item": [
+        {
+          "name": "Get User Token - Password Grant",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{mobileClientId}}",
+                  "type": "text"
+                },
+                {
+                  "key": "username",
+                  "value": "{{testUsername}}",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "{{testPassword}}",
+                  "type": "text"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid profile email",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": "{{keycloakBaseUrl}}/realms/{{realm}}/protocol/openid-connect/token"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Token response is successful', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.access_token).to.be.a('string');",
+                  "  pm.expect(body.refresh_token).to.be.a('string');",
+                  "  pm.environment.set('access_token', body.access_token);",
+                  "  pm.environment.set('refresh_token', body.refresh_token);",
+                  "  if (body.id_token) pm.environment.set('id_token', body.id_token);",
+                  "});",
+                  "",
+                  "pm.test('Access token has backend claims', function () {",
+                  "  const token = pm.response.json().access_token;",
+                  "  const payload = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());",
+                  "  pm.expect(payload.sub).to.be.a('string');",
+                  "  pm.expect(payload.aud).to.eql(pm.environment.get('apiAudience'));",
+                  "  pm.expect(payload.realm_access.roles).to.include('learner');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refresh User Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "refresh_token",
+                  "type": "text"
+                },
+                {
+                  "key": "client_id",
+                  "value": "{{mobileClientId}}",
+                  "type": "text"
+                },
+                {
+                  "key": "refresh_token",
+                  "value": "{{refresh_token}}",
+                  "type": "text"
+                },
+                {
+                  "key": "scope",
+                  "value": "openid profile email",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": "{{keycloakBaseUrl}}/realms/{{realm}}/protocol/openid-connect/token"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Refresh response is successful', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.environment.set('access_token', body.access_token);",
+                  "  pm.environment.set('refresh_token', body.refresh_token);",
+                  "  if (body.id_token) pm.environment.set('id_token', body.id_token);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "UserInfo",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{keycloakBaseUrl}}/realms/{{realm}}/protocol/openid-connect/userinfo"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('UserInfo is returned for current token', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.email).to.eql(pm.environment.get('testUsername'));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Logout User Session",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "client_id",
+                  "value": "{{mobileClientId}}",
+                  "type": "text"
+                },
+                {
+                  "key": "refresh_token",
+                  "value": "{{refresh_token}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": "{{keycloakBaseUrl}}/realms/{{realm}}/protocol/openid-connect/logout"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Logout succeeds', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Browser Login URLs",
+      "item": [
+        {
+          "name": "Authorization Code URL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{keycloakBaseUrl}}/realms/{{realm}}/protocol/openid-connect/auth?client_id={{mobileClientId}}&redirect_uri={{redirectUri}}&response_type=code&scope=openid%20profile%20email",
+            "description": "Open this URL in a browser to test the Keycloak login page. Postman is not expected to complete the redirect flow."
+          }
+        },
+        {
+          "name": "Google Login URL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{keycloakBaseUrl}}/realms/{{realm}}/protocol/openid-connect/auth?client_id={{mobileClientId}}&redirect_uri={{redirectUri}}&response_type=code&scope=openid%20profile%20email&kc_idp_hint=google",
+            "description": "Open this URL in a browser to jump directly to Google login through Keycloak."
+          }
+        },
+        {
+          "name": "Facebook Login URL",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{keycloakBaseUrl}}/realms/{{realm}}/protocol/openid-connect/auth?client_id={{mobileClientId}}&redirect_uri={{redirectUri}}&response_type=code&scope=openid%20profile%20email&kc_idp_hint=facebook",
+            "description": "Open this URL in a browser to jump directly to Facebook login through Keycloak."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get Admin Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/x-www-form-urlencoded"
+              }
+            ],
+            "body": {
+              "mode": "urlencoded",
+              "urlencoded": [
+                {
+                  "key": "grant_type",
+                  "value": "password",
+                  "type": "text"
+                },
+                {
+                  "key": "client_id",
+                  "value": "admin-cli",
+                  "type": "text"
+                },
+                {
+                  "key": "username",
+                  "value": "{{adminUsername}}",
+                  "type": "text"
+                },
+                {
+                  "key": "password",
+                  "value": "{{adminPassword}}",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": "{{keycloakBaseUrl}}/realms/master/protocol/openid-connect/token"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Admin token response is successful', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.access_token).to.be.a('string');",
+                  "  pm.environment.set('admin_access_token', body.access_token);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "List Realm Clients",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{keycloakBaseUrl}}/admin/realms/{{realm}}/clients"
+          }
+        },
+        {
+          "name": "List Identity Providers",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{admin_access_token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": "{{keycloakBaseUrl}}/admin/realms/{{realm}}/identity-provider/instances"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Google and Facebook providers are present', function () {",
+                  "  pm.response.to.have.status(200);",
+                  "  const aliases = pm.response.json().map((provider) => provider.alias);",
+                  "  pm.expect(aliases).to.include('google');",
+                  "  pm.expect(aliases).to.include('facebook');",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "keycloakBaseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "realm",
+      "value": "shadowspeak"
+    }
+  ]
+}
