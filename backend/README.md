@@ -1,28 +1,103 @@
 # ShadowSpeak Backend
 
-FastAPI backend scaffold for the ShadowSpeak MVP.
+FastAPI backend workspace for the ShadowSpeak MVP rebuild.
 
 ## Stack
 
 - Python 3.12
 - FastAPI + Pydantic v2
 - Mangum adapter for AWS Lambda
-- Local in-memory repository for development
-- Future production adapters: Cognito, DynamoDB single-table, S3, CloudFront
+- Local development auth: **Keycloak**
+- Production auth: **AWS Cognito**
+- Local development database: **DynamoDB Local**
+- Production database: **AWS DynamoDB**
 
-## Structure
+## Environment Overview
+
+The backend runs in two distinct environments. Each uses a different auth provider and database backend, selected via environment variables.
+
+| Aspect              | Local (dev)                                  | Production (prod)                    |
+| ------------------- | -------------------------------------------- | ------------------------------------ |
+| Auth provider       | Keycloak (Docker)                            | AWS Cognito                          |
+| Database            | DynamoDB Local (Docker)                      | AWS DynamoDB (managed)               |
+| AWS credentials     | Dummy (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`) | Real IAM credentials / instance role |
+
+---
+
+## Required Environment Variables
+
+Before running the application, the following environment variables **must** be provided (either via `backend/.env` or as shell environment variables).
+
+### App metadata
+
+| Variable    | Local example         | Production example      |
+| ----------- | --------------------- | ----------------------- |
+| `APP_ENV`   | `dev`                 | `prod`                  |
+| `APP_NAME`  | `ShadowSpeak API`     | `ShadowSpeak API`       |
+| `API_VERSION` | `v1`                | `v1`                    |
+| `LOG_LEVEL` | `DEBUG`               | `INFO`                  |
+
+### Auth — OIDC / JWT verification
+
+| Variable              | Local (Keycloak)                                                      | Production (Cognito)                                                      |
+| --------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `AUTH_PROVIDER`       | `oidc`                                                                | `oidc`                                                                    |
+| `AUTH_ISSUER`         | `http://localhost:8080/realms/shadowspeak`                            | `https://cognito-idp.<region>.amazonaws.com/<user-pool-id>`               |
+| `AUTH_JWKS_URL`       | `http://localhost:8080/realms/shadowspeak/protocol/openid-certs`      | `https://cognito-idp.<region>.amazonaws.com/<user-pool-id>/.well-known/jwks.json` |
+| `AUTH_AUDIENCE`       | `shadowspeak-api`                                                     | `<cognito-app-client-id>`                                                 |
+| `AUTH_USER_ID_CLAIM`  | `sub`                                                                 | `sub`                                                                     |
+| `AUTH_ROLES_CLAIM`    | `realm_access.roles`                                                  | `cognito:groups` (or custom claim)                                        |
+
+### Database — DynamoDB
+
+| Variable              | Local (DynamoDB Local)        | Production (AWS DynamoDB)              |
+| --------------------- | ----------------------------- | -------------------------------------- |
+| `DYNAMODB_TABLE_NAME` | `shadowspeak-dev`             | `shadowspeak-prod`                     |
+| `DYNAMODB_REGION`     | `us-east-1`                   | `ap-southeast-1` (your deployment region) |
+| `DYNAMODB_ENDPOINT`   | `http://localhost:8000`       | _(omit — SDK uses default AWS endpoint)_ |
+
+### AWS credentials
+
+| Variable                | Local (DynamoDB Local ignores these, but SDK requires them) | Production                                  |
+| ----------------------- | ----------------------------------------------------------- | ------------------------------------------- |
+| `AWS_ACCESS_KEY_ID`     | `dummy`                                                     | Real AWS access key / instance role         |
+| `AWS_SECRET_ACCESS_KEY` | `dummy`                                                     | Real AWS secret key / instance role         |
+| `AWS_DEFAULT_REGION`    | `us-east-1`                                                 | `ap-southeast-1` (your deployment region)   |
+
+> **Local**: These dummy values satisfy the AWS SDK client init. DynamoDB Local does not validate them.
+> **Production**: Do **not** hard-code real AWS credentials in `.env`. Use IAM roles (Lambda execution role, ECS task role, etc.) or a secrets manager.
+
+## Environment Files
+
+Non-secret centralized config lives in:
 
 ```text
-backend/
-├── app/
-│   ├── api/routes/        # REST routes under /v1
-│   ├── core/              # config, auth boundary, envelopes, errors
-│   ├── models/            # Pydantic schemas from specs
-│   ├── repositories/      # in-memory repository, future DynamoDB adapter boundary
-│   ├── lambda_handler.py  # AWS Lambda entrypoint
-│   └── main.py            # FastAPI app factory
-├── tests/
-└── pyproject.toml
+backend/config/dev.json
+backend/config/prod.json
+```
+
+The local `.env` file selects the config file and provides secrets or machine-specific overrides:
+
+```bash
+# Local development: Keycloak + DynamoDB Local
+cp backend/.env.dev.example backend/.env
+```
+
+Do not commit `backend/.env`. Values in `backend/.env` override values from `backend/config/*.json`.
+
+For non-dev environments, do not create a checked-in `.env.<env>.example`. Pass required values through environment variables:
+
+```bash
+APP_ENV=prod \
+CONFIG_FILE=config/prod.json \
+AWS_DEFAULT_REGION=ap-southeast-1 \
+./scripts/backend run prod
+```
+
+Local development services are managed by:
+
+```bash
+./scripts/dev_services start
 ```
 
 ## Local Setup
@@ -58,32 +133,3 @@ pytest
 ruff check app tests
 ```
 
-## Implemented API Surface
-
-- `GET /health`
-- `GET /v1/me`
-- `PUT /v1/me`
-- `GET /v1/consent`
-- `PUT /v1/consent`
-- `DELETE /v1/account`
-- `GET /v1/lessons`
-- `GET /v1/lessons/{lesson_id}`
-- `GET /v1/home/recommendation`
-- `POST /v1/downloads/{lesson_id}/url`
-- `POST /v1/downloads/{lesson_id}/verify`
-- `GET /v1/sessions/{session_id}`
-- `POST /v1/sessions`
-- `PATCH /v1/sessions/{session_id}`
-- `POST /v1/sessions/{session_id}/complete`
-- `GET /v1/progress`
-- `GET /v1/progress/history`
-- `POST /v1/progress/sync`
-
-## Auth Boundary
-
-Local development uses `ALLOW_DEV_AUTH=true`, so protected endpoints resolve to `demo-user`
-without a bearer token. If a bearer token is provided, the token value is treated as the
-development user id.
-
-Production work should replace `app.core.auth.get_auth_context` with Cognito JWT validation
-while preserving the same `AuthContext` boundary for services and routers.

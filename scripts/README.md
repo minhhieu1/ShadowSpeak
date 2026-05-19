@@ -116,7 +116,13 @@ http://localhost:8080/realms/shadowspeak/broker/facebook/endpoint
 
 ### Backend Dev Config
 
-Use these values when wiring the new FastAPI backend:
+Use `backend/.env.dev.example` when wiring the new FastAPI backend:
+
+```bash
+cp backend/.env.dev.example backend/.env
+```
+
+It contains:
 
 ```bash
 APP_ENV=dev
@@ -135,6 +141,45 @@ AWS_DEFAULT_REGION=us-east-1
 - Keycloak imports the committed realm file only when the realm does not already exist.
 - After editing `helper/docker/keycloak/import/shadowspeak-realm.json`, run `./scripts/dev_services reset` before starting again.
 - Import `helper/postman/keycloak-local-basic.postman_collection.json` and `helper/postman/keycloak-local.postman_environment.json` into Postman to test local Keycloak.
+
+---
+
+## `backend`
+
+Manages the local backend workspace during the FastAPI rebuild.
+
+### Location
+
+`scripts/backend`
+
+### Usage
+
+```bash
+# From the repository root
+./scripts/backend setup dev
+./scripts/backend status
+./scripts/backend run dev
+./scripts/backend test
+./scripts/backend lint
+./scripts/backend reset
+```
+
+### Commands
+
+- **setup** - clean-installs the backend by deleting `backend/.venv`, preparing env config, recreating the virtualenv, and installing dependencies.
+- **run** - starts `uvicorn app.main:app --reload`; requires the backend app to exist.
+- **test** - runs `pytest`; requires `backend/tests/` to exist.
+- **lint** - runs `ruff check app tests`; requires the backend app to exist.
+- **status** - prints backend env, virtualenv, app, and test availability.
+- **reset** - deletes `backend/.venv` and local `backend/.env`.
+
+If env is omitted, the script defaults to `dev`. For any non-dev env, pass `APP_ENV`, `CONFIG_FILE`, and `AWS_DEFAULT_REGION` through environment variables. No non-dev `.env.<env>.example` file should be committed.
+
+Example non-dev setup:
+
+```bash
+APP_ENV=prod CONFIG_FILE=config/prod.json AWS_DEFAULT_REGION=ap-southeast-1 ./scripts/backend setup prod
+```
 
 ---
 

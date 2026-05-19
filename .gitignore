@@ -1,5 +1,6 @@
 .claude/settings.local.json
 .vscode/settings.json
+backend/.env
 
 # Local Docker service data
 /helper/docker/.env
