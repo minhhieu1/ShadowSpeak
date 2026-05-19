@@ -1,1 +1,0 @@
-"""ShadowSpeak backend package."""
