@@ -2,7 +2,7 @@
   "realm": "shadowspeak",
   "enabled": true,
   "displayName": "ShadowSpeak Dev",
-  "registrationAllowed": false,
+  "registrationAllowed": true,
   "resetPasswordAllowed": true,
   "rememberMe": true,
   "identityProviders": [

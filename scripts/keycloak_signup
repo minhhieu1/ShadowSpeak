@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+BASE_URL="${KEYCLOAK_BASE_URL:-http://localhost:8080}"
+REALM="${KEYCLOAK_REALM:-shadowspeak}"
+CLIENT_ID="${KEYCLOAK_CLIENT_ID:-shadowspeak-mobile}"
+REDIRECT_URI="${KEYCLOAK_REDIRECT_URI:-shadowspeak://auth/callback}"
+SCOPE="${KEYCLOAK_SCOPE:-openid profile email}"
+
+usage() {
+  cat <<'USAGE'
+Usage: ./scripts/keycloak_signup <username> <password>
+
+Creates a new user through the hosted Keycloak self-registration flow.
+The script generates random values for email, first name, and last name.
+
+Optional environment variables:
+  KEYCLOAK_BASE_URL      Default: http://localhost:8080
+  KEYCLOAK_REALM         Default: shadowspeak
+  KEYCLOAK_CLIENT_ID     Default: shadowspeak-mobile
+  KEYCLOAK_REDIRECT_URI  Default: shadowspeak://auth/callback
+  KEYCLOAK_SCOPE         Default: openid profile email
+USAGE
+}
+
+if [ $# -ne 2 ]; then
+  usage
+  exit 1
+fi
+
+USERNAME="$1"
+PASSWORD="$2"
+
+if ! command -v curl >/dev/null 2>&1; then
+  echo "curl is required." >&2
+  exit 1
+fi
+
+if [ -z "$USERNAME" ] || [ -z "$PASSWORD" ]; then
+  echo "Username and password must be non-empty." >&2
+  exit 1
+fi
+
+tmp_dir="$(mktemp -d)"
+trap 'rm -rf "$tmp_dir"' EXIT
+
+cookies_file="$tmp_dir/cookies.txt"
+register_page="$tmp_dir/register.html"
+response_headers="$tmp_dir/submit.headers"
+response_body="$tmp_dir/submit.html"
+
+random_suffix="$(date +%s)-$RANDOM"
+email_local_part="$(printf '%s' "$USERNAME" | tr -cd '[:alnum:]_.-' | tr '[:upper:]' '[:lower:]')"
+if [ -z "$email_local_part" ]; then
+  email_local_part="user"
+fi
+EMAIL="${email_local_part}.${random_suffix}@shadowspeak.local"
+FIRST_NAME="User${RANDOM}"
+LAST_NAME="Signup${RANDOM}"
+
+auth_url="${BASE_URL}/realms/${REALM}/protocol/openid-connect/auth"
+
+curl -sS \
+  -G \
+  -c "$cookies_file" \
+  --data-urlencode "client_id=$CLIENT_ID" \
+  --data-urlencode "redirect_uri=$REDIRECT_URI" \
+  --data-urlencode "response_type=code" \
+  --data-urlencode "scope=$SCOPE" \
+  --data-urlencode "prompt=create" \
+  "$auth_url" > "$register_page"
+
+form_action="$(
+  sed -n 's/.*<form id="kc-register-form"[^>]*action="\([^"]*\)".*/\1/p' "$register_page" \
+    | head -n 1 \
+    | sed 's/&amp;/\&/g'
+)"
+
+if [ -z "$form_action" ]; then
+  echo "Failed to find Keycloak registration form action." >&2
+  echo "Check that self-registration is enabled and Keycloak is reachable." >&2
+  exit 1
+fi
+
+curl -sS \
+  -D "$response_headers" \
+  -o "$response_body" \
+  -b "$cookies_file" \
+  -c "$cookies_file" \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  --data-urlencode "username=$USERNAME" \
+  --data-urlencode "password=$PASSWORD" \
+  --data-urlencode "password-confirm=$PASSWORD" \
+  --data-urlencode "email=$EMAIL" \
+  --data-urlencode "firstName=$FIRST_NAME" \
+  --data-urlencode "lastName=$LAST_NAME" \
+  "$form_action"
+
+status_code="$(awk 'toupper($1) ~ /^HTTP\// { code=$2 } END { print code }' "$response_headers")"
+location_header="$(awk 'BEGIN { IGNORECASE=1 } /^Location:/ { sub(/\r$/, "", $0); print substr($0, 11) }' "$response_headers" | tail -n 1)"
+
+if [ "$status_code" = "302" ] && printf '%s' "$location_header" | grep -q '^shadowspeak://auth/callback'; then
+  cat <<EOF
+Created user successfully.
+username=$USERNAME
+password=$PASSWORD
+email=$EMAIL
+firstName=$FIRST_NAME
+lastName=$LAST_NAME
+redirect=$location_header
+EOF
+  exit 0
+fi
+
+echo "Keycloak signup did not complete successfully." >&2
+echo "HTTP status: ${status_code:-unknown}" >&2
+
+errors="$(
+  grep -o 'kc-feedback-text[^>]*>[^<]*' "$response_body" \
+    | sed 's/.*>//' \
+    | sed '/^[[:space:]]*$/d' \
+    | paste -sd '; ' - || true
+)"
+
+if [ -n "$errors" ]; then
+  echo "Keycloak response: $errors" >&2
+else
+  echo "Inspect response body: $response_body" >&2
+fi
+
+exit 1

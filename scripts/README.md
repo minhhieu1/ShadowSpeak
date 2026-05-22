@@ -85,7 +85,7 @@ Starts the local development infrastructure for the backend rebuild:
 | Keycloak Admin Console | `http://localhost:8080/admin` |
 | Keycloak realm issuer | `http://localhost:8080/realms/shadowspeak` |
 | Keycloak JWKS | `http://localhost:8080/realms/shadowspeak/protocol/openid-connect/certs` |
-| DynamoDB Local | `http://localhost:8000` |
+| DynamoDB Local | `http://localhost:8010` |
 
 ### Dev Credentials
 
@@ -106,6 +106,8 @@ cp helper/docker/.env.example helper/docker/.env
 ./scripts/dev_services reset
 ./scripts/dev_services start
 ```
+
+If the local DynamoDB data directory is empty, `start` restores the seeded database file before the container comes up.
 
 Configure these redirect URIs in the provider developer consoles:
 
@@ -129,7 +131,7 @@ APP_ENV=dev
 AUTH_ISSUER=http://localhost:8080/realms/shadowspeak
 AUTH_JWKS_URL=http://localhost:8080/realms/shadowspeak/protocol/openid-connect/certs
 AUTH_AUDIENCE=shadowspeak-api
-DYNAMODB_ENDPOINT=http://localhost:8000
+DYNAMODB_ENDPOINT=http://localhost:8010
 AWS_ACCESS_KEY_ID=dummy
 AWS_SECRET_ACCESS_KEY=dummy
 AWS_DEFAULT_REGION=us-east-1
@@ -141,6 +143,8 @@ AWS_DEFAULT_REGION=us-east-1
 - Keycloak imports the committed realm file only when the realm does not already exist.
 - After editing `helper/docker/keycloak/import/shadowspeak-realm.json`, run `./scripts/dev_services reset` before starting again.
 - Import `helper/postman/keycloak-local-basic.postman_collection.json` and `helper/postman/keycloak-local.postman_environment.json` into Postman to test local Keycloak.
+- `./scripts/dev_services start` restores `helper/docker/dynamodb-seed/shared-local-instance.db` into `helper/docker/dynamodb/` when the local DynamoDB file is missing.
+- Keep the seeded DynamoDB file schema-only: it should contain the expected table and no application records.
 
 ---
 

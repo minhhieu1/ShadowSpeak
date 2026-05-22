@@ -5,7 +5,9 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DOCKER_DIR="$ROOT_DIR/helper/docker"
 COMPOSE_FILE="$ROOT_DIR/helper/docker/docker-compose.dev.yml"
 ENV_FILE="$ROOT_DIR/helper/docker/.env"
-
+DYNAMODB_SEED_DIR="$DOCKER_DIR/dynamodb-seed"
+DYNAMODB_DATA_DIR="$DOCKER_DIR/dynamodb"
+DYNAMODB_DB_FILE="shared-local-instance.db"
 compose() {
   if docker compose version >/dev/null 2>&1; then
     if [ -f "$ENV_FILE" ]; then
@@ -38,6 +40,25 @@ Usage: ./scripts/dev_services {start|stop|restart|status|logs|reset}
 USAGE
 }
 
+restore_dynamodb_seed() {
+  local seed_file="$DYNAMODB_SEED_DIR/$DYNAMODB_DB_FILE"
+  local data_file="$DYNAMODB_DATA_DIR/$DYNAMODB_DB_FILE"
+
+  mkdir -p "$DYNAMODB_DATA_DIR"
+
+  if [ -f "$data_file" ]; then
+    return 0
+  fi
+
+  if [ ! -f "$seed_file" ]; then
+    echo "Skipping DynamoDB seed restore: missing $seed_file."
+    return 0
+  fi
+
+  cp "$seed_file" "$data_file"
+  echo "Restored local DynamoDB data from seed: $seed_file"
+}
+
 print_urls() {
   cat <<'URLS'
 
@@ -45,7 +66,7 @@ Local dev service URLs:
   Keycloak Admin:      http://localhost:8080/admin
   Keycloak Issuer:     http://localhost:8080/realms/shadowspeak
   Keycloak JWKS:       http://localhost:8080/realms/shadowspeak/protocol/openid-connect/certs
-  DynamoDB Local:      http://localhost:8000
+  DynamoDB Local:      http://localhost:8010
 
 Keycloak dev credentials:
   Admin:               admin / admin
@@ -62,7 +83,8 @@ fi
 
 case "$1" in
   start)
-    mkdir -p "$DOCKER_DIR/keycloak/data" "$DOCKER_DIR/dynamodb"
+    mkdir -p "$DOCKER_DIR/keycloak/data" "$DYNAMODB_DATA_DIR"
+    restore_dynamodb_seed
     compose up -d
     print_urls
     ;;

@@ -5,5 +5,5 @@ This directory contains supporting resources for development effort, such as moc
 ## Contents
 
 - `mockserver/` - file-based mock API server for frontend development.
-- `docker/` - local Docker Compose services for backend development, including Keycloak, Google/Facebook social login placeholders, and DynamoDB Local.
+- `docker/` - local Docker Compose services for backend development, including Keycloak, Google/Facebook social login placeholders, DynamoDB Local, and the seeded DynamoDB Local database file used for first start. The DynamoDB seed should stay schema-only and not include application data.
 - `postman/` - Postman collections and environments for local development services.

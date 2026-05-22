@@ -45,14 +45,59 @@ def test_prod_settings_use_cognito_groups_claim() -> None:
         auth_roles_claim="cognito:groups",
         dynamodb_table_name="shadowspeak-prod",
         dynamodb_region="ap-southeast-1",
-        aws_access_key_id="dummy",
-        aws_secret_access_key="dummy",
         aws_default_region="ap-southeast-1",
     )
 
     assert settings.app_env == "prod"
     assert settings.auth_roles_claim == "cognito:groups"
     assert settings.dynamodb_endpoint is None
+
+
+def test_prod_settings_reject_static_aws_credentials() -> None:
+    import pytest
+
+    with pytest.raises(ValueError, match="Static AWS credentials are not allowed in prod"):
+        Settings(
+            _env_file=None,
+            app_env="prod",
+            app_name="ShadowSpeak API",
+            api_version="v1",
+            log_level="INFO",
+            auth_provider="oidc",
+            auth_issuer="https://issuer.example.com",
+            auth_jwks_url="https://issuer.example.com/jwks",
+            auth_audience="prod-client-id",
+            auth_user_id_claim="sub",
+            auth_roles_claim="groups",
+            dynamodb_table_name="shadowspeak-prod",
+            dynamodb_region="ap-southeast-1",
+            aws_access_key_id="dummy",
+            aws_secret_access_key="dummy",
+            aws_default_region="ap-southeast-1",
+        )
+
+
+def test_settings_require_both_static_aws_credential_fields() -> None:
+    import pytest
+
+    with pytest.raises(ValueError, match="must be provided together"):
+        Settings(
+            _env_file=None,
+            app_env="dev",
+            app_name="ShadowSpeak API",
+            api_version="v1",
+            log_level="DEBUG",
+            auth_provider="oidc",
+            auth_issuer="http://localhost:8080/realms/shadowspeak",
+            auth_jwks_url="http://localhost:8080/realms/shadowspeak/protocol/openid-connect/certs",
+            auth_audience="shadowspeak-api",
+            auth_user_id_claim="sub",
+            auth_roles_claim="realm_access.roles",
+            dynamodb_table_name="shadowspeak-dev",
+            dynamodb_region="us-east-1",
+            aws_access_key_id="dummy",
+            aws_default_region="us-east-1",
+        )
 
 
 def test_app_exposes_runtime_config() -> None:

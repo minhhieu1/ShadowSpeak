@@ -1,7 +1,9 @@
 from functools import lru_cache
+import json
 from pathlib import Path
 from typing import Literal
 
+from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -38,6 +40,13 @@ class Settings(BaseSettings):
     auth_audience: str
     auth_user_id_claim: str
     auth_roles_claim: str
+    auth_jwt_leeway: int = 30
+    auth_required_claims: str | None = None
+
+    rate_limit_enabled: bool = True
+    rate_limit_window_seconds: int = 60
+    rate_limit_authenticated_writes: int = 30
+    rate_limit_preauth_writes: int = 10
 
     dynamodb_table_name: str
     dynamodb_region: str
@@ -52,6 +61,38 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore",
     )
+
+    @field_validator("auth_required_claims")
+    @classmethod
+    def validate_required_claims(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        parsed = json.loads(value)
+        if not isinstance(parsed, dict):
+            raise ValueError("auth_required_claims must be a JSON object")
+        return value
+
+    def get_auth_required_claims(self) -> dict[str, str]:
+        if not self.auth_required_claims:
+            return {}
+        parsed = json.loads(self.auth_required_claims)
+        return {
+            str(key): str(value)
+            for key, value in parsed.items()
+        }
+
+    @model_validator(mode="after")
+    def validate_aws_credential_policy(self) -> "Settings":
+        has_static_key = bool(self.aws_access_key_id or self.aws_secret_access_key)
+        if self.app_env == "prod" and has_static_key:
+            raise ValueError(
+                "Static AWS credentials are not allowed in prod; use the default AWS credential chain"
+            )
+        if bool(self.aws_access_key_id) != bool(self.aws_secret_access_key):
+            raise ValueError(
+                "aws_access_key_id and aws_secret_access_key must be provided together"
+            )
+        return self
 
 
 @lru_cache

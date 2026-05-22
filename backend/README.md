@@ -54,7 +54,7 @@ Before running the application, the following environment variables **must** be 
 | --------------------- | ----------------------------- | -------------------------------------- |
 | `DYNAMODB_TABLE_NAME` | `shadowspeak-dev`             | `shadowspeak-prod`                     |
 | `DYNAMODB_REGION`     | `us-east-1`                   | `ap-southeast-1` (your deployment region) |
-| `DYNAMODB_ENDPOINT`   | `http://localhost:8000`       | _(omit — SDK uses default AWS endpoint)_ |
+| `DYNAMODB_ENDPOINT`   | `http://localhost:8010`       | _(omit — SDK uses default AWS endpoint)_ |
 
 ### AWS credentials
 
@@ -100,6 +100,8 @@ Local development services are managed by:
 ./scripts/dev_services start
 ```
 
+That command restores the seeded local DynamoDB database file when the local container data is missing. Backend startup does not create tables or restore local DynamoDB data automatically.
+
 ## Local Setup
 
 ```bash
@@ -132,4 +134,3 @@ source .venv/bin/activate
 pytest
 ruff check app tests
 ```
-
