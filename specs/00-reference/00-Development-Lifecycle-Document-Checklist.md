@@ -44,16 +44,7 @@ This document provides a professional overview of the documentation required thr
 | **Database Design Document** (DBD)       | DBA / Backend Lead     | LLD          | `backend-developer`       | `database-administrator` | Database schema, ERD, relationships, and indexing strategy.                                        |
 | **Security Design Document**             | Security Architect     | Architecture | `security-engineer`       | `security-auditor`       | Authentication, authorization, encryption, and compliance measures.                                |
 
-## Phase 5 – Planning
-
-| Document                       | Owner                | Depends On     | Writer Agent      | Reviewer Agent    | Description                                                   |
-| ------------------------------ | -------------------- | -------------- | ----------------- | ----------------- | ------------------------------------------------------------- |
-| **Effort Estimation Document** | Dev Team / Tech Lead | HLD + API + UI | `project-manager` | `scrum-master`    | Story points, man‑days, and complexity estimates.             |
-| **Sprint Planning Document**   | Scrum Master / PO    | Estimation     | `scrum-master`    | `project-manager` | Sprint scope, team capacity, and task assignments.            |
-| **Product Backlog**            | PO / PM              | User Story     | `product-manager` | `project-manager` | Prioritized list of features and tasks.                       |
-| **Release Plan Document**      | PM / Release Manager | Sprint Plan    | `project-manager` | `scrum-master`    | Release scope, timeline, dependencies, and rollback strategy. |
-
-## Phase 6 – Development
+## Phase 5 – Development
 
 | Document                              | Owner             | Depends On     | Writer Agent        | Reviewer Agent           | Description                                                     |
 | ------------------------------------- | ----------------- | -------------- | ------------------- | ------------------------ | --------------------------------------------------------------- |
@@ -61,7 +52,7 @@ This document provides a professional overview of the documentation required thr
 | **Source Code Documentation**         | Developer         | Implementation | `technical-writer`  | `code-reviewer`          | Internal logic, public interfaces, and dependency explanations. |
 | **Migration Document**                | Backend Developer | DB Design      | `backend-developer` | `database-administrator` | Database schema migration steps and rollback SQL.               |
 
-## Phase 7 – Testing
+## Phase 6 – Testing
 
 | Document                                   | Owner         | Depends On                | Writer Agent     | Reviewer Agent     | Description                                                                          |
 | ------------------------------------------ | ------------- | ------------------------- | ---------------- | ------------------ | ------------------------------------------------------------------------------------ |
@@ -72,7 +63,7 @@ This document provides a professional overview of the documentation required thr
 | **Defect Report** (Bug Report)             | QA            | Testing                   | `qa-expert`      | `test-automator`   | Recorded defects with severity, steps to reproduce, and status.                      |
 | **User Acceptance Testing Document** (UAT) | Business + QA | QA Passed                 | `qa-expert`      | `business-analyst` | Validation of the solution against acceptance criteria.                              |
 
-## Phase 8 – Release
+## Phase 7 – Release
 
 | Document                              | Owner                | Depends On   | Writer Agent       | Reviewer Agent    | Description                                                              |
 | ------------------------------------- | -------------------- | ------------ | ------------------ | ----------------- | ------------------------------------------------------------------------ |
@@ -80,7 +71,7 @@ This document provides a professional overview of the documentation required thr
 | **Release Notes**                     | PM / Release Manager | Deployment   | `technical-writer` | `product-manager` | Summary of new features, bug fixes, and known issues for the release.    |
 | **Production Verification Checklist** | QA / DevOps          | Deployment   | `qa-expert`        | `devops-engineer` | Post‑deployment validation checklist to ensure release health.           |
 
-## Phase 9 – Post‑Release
+## Phase 8 – Post‑Release
 
 | Document                               | Owner                | Depends On                | Writer Agent         | Reviewer Agent       | Description                                                                  |
 | -------------------------------------- | -------------------- | ------------------------- | -------------------- | -------------------- | ---------------------------------------------------------------------------- |
