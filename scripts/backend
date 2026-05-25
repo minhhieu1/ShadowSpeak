@@ -5,6 +5,9 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BACKEND_DIR="$ROOT_DIR/backend"
 VENV_DIR="$BACKEND_DIR/.venv"
 ENV_FILE="$BACKEND_DIR/.env"
+PID_FILE="$BACKEND_DIR/.uvicorn.pid"
+BACKEND_HOST="${BACKEND_HOST:-127.0.0.1}"
+BACKEND_PORT="${BACKEND_PORT:-8000}"
 
 usage() {
   cat <<'USAGE'
@@ -14,6 +17,7 @@ Usage: ./scripts/backend {env|install|run|test|lint|status|reset} [env]
            or validate and write required env vars for non-dev)
   install  Clean-install venv and deps (no env changes)
   run      Run FastAPI dev server with uvicorn using selected env
+  stop     Stop a backend uvicorn instance started by this script
   test     Run backend pytest suite
   lint     Run backend ruff checks
   status   Show backend env, venv, app, and test status
@@ -148,6 +152,48 @@ require_tests() {
   fi
 }
 
+read_pid_file() {
+  if [ -f "$PID_FILE" ]; then
+    tr -d '[:space:]' < "$PID_FILE"
+  fi
+}
+
+remove_stale_pid_file() {
+  local pid
+  pid="$(read_pid_file)"
+  if [ -n "$pid" ] && ! kill -0 "$pid" >/dev/null 2>&1; then
+    rm -f "$PID_FILE"
+  fi
+}
+
+stop_backend() {
+  local stopped=0
+  local pid
+  local port_pids
+
+  remove_stale_pid_file
+  pid="$(read_pid_file)"
+
+  if [ -n "$pid" ] && kill -0 "$pid" >/dev/null 2>&1; then
+    kill "$pid"
+    rm -f "$PID_FILE"
+    echo "Stopped backend process from PID file: $pid"
+    stopped=1
+    sleep 1
+  fi
+
+  port_pids="$(lsof -tiTCP:"$BACKEND_PORT" -sTCP:LISTEN 2>/dev/null || true)"
+  if [ -n "$port_pids" ]; then
+    kill $port_pids
+    echo "Stopped backend listener(s) on $BACKEND_HOST:$BACKEND_PORT: $port_pids"
+    stopped=1
+  fi
+
+  if [ "$stopped" -eq 0 ]; then
+    echo "No backend instance is running on $BACKEND_HOST:$BACKEND_PORT."
+  fi
+}
+
 if [ $# -lt 1 ] || [ $# -gt 2 ]; then
   usage
   exit 1
@@ -164,7 +210,12 @@ case "$1" in
     require_app
     ensure_venv
     cd "$BACKEND_DIR"
-    "$VENV_DIR/bin/uvicorn" app.main:app --reload
+    remove_stale_pid_file
+    echo "$$" > "$PID_FILE"
+    exec "$VENV_DIR/bin/uvicorn" app.main:app --host "$BACKEND_HOST" --port "$BACKEND_PORT" --reload
+    ;;
+  stop)
+    stop_backend
     ;;
   test)
     require_tests
@@ -183,6 +234,7 @@ case "$1" in
     fi
     ;;
   status)
+    remove_stale_pid_file
     echo "Backend directory: $BACKEND_DIR"
     if [ -f "$ENV_FILE" ]; then
       echo "Env file: present"
@@ -198,12 +250,24 @@ case "$1" in
       echo "Virtualenv: missing"
     fi
 
+    pid="$(read_pid_file)"
+    if [ -n "$pid" ] && kill -0 "$pid" >/dev/null 2>&1; then
+      echo "Backend process: running (PID $pid)"
+    else
+      port_pids="$(lsof -tiTCP:"$BACKEND_PORT" -sTCP:LISTEN 2>/dev/null || true)"
+      if [ -n "$port_pids" ]; then
+        echo "Backend process: running on $BACKEND_HOST:$BACKEND_PORT (PID(s) $port_pids)"
+      else
+        echo "Backend process: not running"
+      fi
+    fi
+
     [ -f "$BACKEND_DIR/app/main.py" ] && echo "App: present" || echo "App: missing"
     [ -d "$BACKEND_DIR/tests" ] && echo "Tests: present" || echo "Tests: missing"
     ;;
   reset)
-    rm -rf "$VENV_DIR" "$ENV_FILE"
-    echo "Deleted backend/.venv and backend/.env."
+    rm -rf "$VENV_DIR" "$ENV_FILE" "$PID_FILE"
+    echo "Deleted backend/.venv, backend/.env, and backend/.uvicorn.pid."
     ;;
   *)
     usage

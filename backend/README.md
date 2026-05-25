@@ -16,11 +16,11 @@ FastAPI backend workspace for the ShadowSpeak MVP rebuild.
 
 The backend runs in two distinct environments. Each uses a different auth provider and database backend, selected via environment variables.
 
-| Aspect              | Local (dev)                                  | Production (prod)                    |
-| ------------------- | -------------------------------------------- | ------------------------------------ |
-| Auth provider       | Keycloak (Docker)                            | AWS Cognito                          |
-| Database            | DynamoDB Local (Docker)                      | AWS DynamoDB (managed)               |
-| AWS credentials     | Dummy (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`) | Real IAM credentials / instance role |
+| Aspect          | Local (dev)                                          | Production (prod)                    |
+| --------------- | ---------------------------------------------------- | ------------------------------------ |
+| Auth provider   | Keycloak (Docker)                                    | AWS Cognito                          |
+| Database        | DynamoDB Local (Docker)                              | AWS DynamoDB (managed)               |
+| AWS credentials | Dummy (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`) | Real IAM credentials / instance role |
 
 ---
 
@@ -30,39 +30,39 @@ Before running the application, the following environment variables **must** be 
 
 ### App metadata
 
-| Variable    | Local example         | Production example      |
-| ----------- | --------------------- | ----------------------- |
-| `APP_ENV`   | `dev`                 | `prod`                  |
-| `APP_NAME`  | `ShadowSpeak API`     | `ShadowSpeak API`       |
-| `API_VERSION` | `v1`                | `v1`                    |
-| `LOG_LEVEL` | `DEBUG`               | `INFO`                  |
+| Variable      | Local example     | Production example |
+| ------------- | ----------------- | ------------------ |
+| `APP_ENV`     | `dev`             | `prod`             |
+| `APP_NAME`    | `ShadowSpeak API` | `ShadowSpeak API`  |
+| `API_VERSION` | `v1`              | `v1`               |
+| `LOG_LEVEL`   | `DEBUG`           | `INFO`             |
 
 ### Auth — OIDC / JWT verification
 
-| Variable              | Local (Keycloak)                                                      | Production (Cognito)                                                      |
-| --------------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `AUTH_PROVIDER`       | `oidc`                                                                | `oidc`                                                                    |
-| `AUTH_ISSUER`         | `http://localhost:8080/realms/shadowspeak`                            | `https://cognito-idp.<region>.amazonaws.com/<user-pool-id>`               |
-| `AUTH_JWKS_URL`       | `http://localhost:8080/realms/shadowspeak/protocol/openid-certs`      | `https://cognito-idp.<region>.amazonaws.com/<user-pool-id>/.well-known/jwks.json` |
-| `AUTH_AUDIENCE`       | `shadowspeak-api`                                                     | `<cognito-app-client-id>`                                                 |
-| `AUTH_USER_ID_CLAIM`  | `sub`                                                                 | `sub`                                                                     |
-| `AUTH_ROLES_CLAIM`    | `realm_access.roles`                                                  | `cognito:groups` (or custom claim)                                        |
+| Variable             | Local (Keycloak)                                                 | Production (Cognito)                                                              |
+| -------------------- | ---------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| `AUTH_PROVIDER`      | `oidc`                                                           | `oidc`                                                                            |
+| `AUTH_ISSUER`        | `http://localhost:8080/realms/shadowspeak`                       | `https://cognito-idp.<region>.amazonaws.com/<user-pool-id>`                       |
+| `AUTH_JWKS_URL`      | `http://localhost:8080/realms/shadowspeak/protocol/openid-certs` | `https://cognito-idp.<region>.amazonaws.com/<user-pool-id>/.well-known/jwks.json` |
+| `AUTH_AUDIENCE`      | `shadowspeak-api`                                                | `<cognito-app-client-id>`                                                         |
+| `AUTH_USER_ID_CLAIM` | `sub`                                                            | `sub`                                                                             |
+| `AUTH_ROLES_CLAIM`   | `realm_access.roles`                                             | `cognito:groups` (or custom claim)                                                |
 
 ### Database — DynamoDB
 
-| Variable              | Local (DynamoDB Local)        | Production (AWS DynamoDB)              |
-| --------------------- | ----------------------------- | -------------------------------------- |
-| `DYNAMODB_TABLE_NAME` | `shadowspeak-dev`             | `shadowspeak-prod`                     |
-| `DYNAMODB_REGION`     | `us-east-1`                   | `ap-southeast-1` (your deployment region) |
-| `DYNAMODB_ENDPOINT`   | `http://localhost:8010`       | _(omit — SDK uses default AWS endpoint)_ |
+| Variable              | Local (DynamoDB Local)  | Production (AWS DynamoDB)                 |
+| --------------------- | ----------------------- | ----------------------------------------- |
+| `DYNAMODB_TABLE_NAME` | `shadowspeak-dev`       | `shadowspeak-prod`                        |
+| `DYNAMODB_REGION`     | `us-east-1`             | `ap-southeast-1` (your deployment region) |
+| `DYNAMODB_ENDPOINT`   | `http://localhost:8010` | _(omit — SDK uses default AWS endpoint)_  |
 
 ### AWS credentials
 
-| Variable                | Local (DynamoDB Local ignores these, but SDK requires them) | Production                                  |
-| ----------------------- | ----------------------------------------------------------- | ------------------------------------------- |
-| `AWS_ACCESS_KEY_ID`     | `dummy`                                                     | Real AWS access key / instance role         |
-| `AWS_SECRET_ACCESS_KEY` | `dummy`                                                     | Real AWS secret key / instance role         |
-| `AWS_DEFAULT_REGION`    | `us-east-1`                                                 | `ap-southeast-1` (your deployment region)   |
+| Variable                | Local (DynamoDB Local ignores these, but SDK requires them) | Production                                |
+| ----------------------- | ----------------------------------------------------------- | ----------------------------------------- |
+| `AWS_ACCESS_KEY_ID`     | `dummy`                                                     | Real AWS access key / instance role       |
+| `AWS_SECRET_ACCESS_KEY` | `dummy`                                                     | Real AWS secret key / instance role       |
+| `AWS_DEFAULT_REGION`    | `us-east-1`                                                 | `ap-southeast-1` (your deployment region) |
 
 > **Local**: These dummy values satisfy the AWS SDK client init. DynamoDB Local does not validate them.
 > **Production**: Do **not** hard-code real AWS credentials in `.env`. Use IAM roles (Lambda execution role, ECS task role, etc.) or a secrets manager.

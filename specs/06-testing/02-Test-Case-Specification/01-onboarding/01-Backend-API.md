@@ -2,16 +2,16 @@
 
 ## Document Metadata
 
-| Field | Value |
-|---|---|
-| Project | ShadowSpeak |
-| Epic | 01 — First-Time Onboarding and Access |
-| Phase | 06 - Testing |
-| Type | Backend/API Test Case Specification |
-| Version | 1.0 |
-| Date | 2026-05-23 |
-| Status | Draft |
-| Owner | QA |
+| Field        | Value                                                                        |
+| ------------ | ---------------------------------------------------------------------------- |
+| Project      | ShadowSpeak                                                                  |
+| Epic         | 01 — First-Time Onboarding and Access                                        |
+| Phase        | 06 - Testing                                                                 |
+| Type         | Backend/API Test Case Specification                                          |
+| Version      | 1.0                                                                          |
+| Date         | 2026-05-23                                                                   |
+| Status       | Draft                                                                        |
+| Owner        | QA                                                                           |
 | Derived From | `specs/06-testing/01-Test-Scenario-Document/01-onboarding/01-Backend-API.md` |
 
 ## 1. Objective and Scope

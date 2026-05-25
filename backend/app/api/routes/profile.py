@@ -50,20 +50,19 @@ async def get_consent(
     x_device_id: str | None = Header(None),
     auth: AuthContext | None = Depends(get_optional_auth_context),
     consent_service: ConsentService = Depends(_get_consent_service),
-) -> JsonEnvelope[ConsentState | None]:
+) -> JsonEnvelope[ConsentState]:
     """Return the current consent state.
 
     Priority:
     1. Authenticated user → ``USER#`` consent
-    2. Device ID → ``DEVICE#`` consent
-    3. No consent → ``data: null``
+    2. Device ID → ``DEVICE#`` consent (returns defaults when no record exists)
     """
     request_id = getattr(request.state, "request_id", "")
     if auth:
         state = consent_service.get_consent(auth.userId)
     else:
         device_id = _require_valid_device_id(x_device_id)
-        state = consent_service.get_device_consent(device_id)
+        state = consent_service.get_or_create_device_consent(device_id)
 
     return success(state, request_id)
 

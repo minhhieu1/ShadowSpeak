@@ -163,6 +163,7 @@ Manages the local backend workspace during the FastAPI rebuild.
 ./scripts/backend setup dev
 ./scripts/backend status
 ./scripts/backend run dev
+./scripts/backend stop
 ./scripts/backend test
 ./scripts/backend lint
 ./scripts/backend reset
@@ -172,6 +173,7 @@ Manages the local backend workspace during the FastAPI rebuild.
 
 - **setup** - clean-installs the backend by deleting `backend/.venv`, preparing env config, recreating the virtualenv, and installing dependencies.
 - **run** - starts `uvicorn app.main:app --reload`; requires the backend app to exist.
+- **stop** - stops a running backend `uvicorn` instance using the PID file and port fallback on `127.0.0.1:8000`.
 - **test** - runs `pytest`; requires `backend/tests/` to exist.
 - **lint** - runs `ruff check app tests`; requires the backend app to exist.
 - **status** - prints backend env, virtualenv, app, and test availability.
