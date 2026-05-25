@@ -49,6 +49,28 @@ specs/
 - Research reports
 - Any structured project documentation
 
+## Agent Selection
+
+Always consult the **agent-selector** skill before starting multi-step or specialized tasks. It selects the right VoltAgent subagent (100+ specialized agents) and generates a ready-to-use structured prompt. Use it for:
+
+- **Building features** (frontend, backend, mobile, API, etc.)
+- **Code reviews & security audits**
+- **Architecture & design** (microservices, DB schema, system design)
+- **Research** (market, competitor, technical)
+- **Infrastructure** (deployment, CI/CD, cloud)
+- **Documentation** (API docs, technical writing)
+- **Any task that spans multiple domains or has specialized requirements**
+
+If the user describes a task without naming an agent, default to using agent-selector rather than guessing the approach. This is your primary routing mechanism for deciding which specialized agent to invoke.
+
+## Project Skills
+
+### keycloak-auth
+Use for any Keycloak-related task: creating/managing OIDC clients, protocol mappers (audience, roles, claims), users, roles, identity providers (Google, Facebook), organizations. Also for getting auth tokens for local testing and troubleshooting login/token/audience errors. The realm is ALWAYS `shadowspeak` — never use any other realm.
+
+### test-plan-generator
+Use when asked to generate a test plan, create test cases, write tests for the API, or produce an executable test plan — especially after writing or updating API specs, user stories, or test case specification documents. Requires all three inputs (API Design, User Story, Test Case Specification) to be available before proceeding. This skill ONLY reads spec documents (.md) — it does NOT read source code.
+
 ## Project Context
 
 - Project: ShadowSpeak — audio-first English shadowing practice app
