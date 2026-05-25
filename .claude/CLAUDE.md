@@ -68,8 +68,13 @@ If the user describes a task without naming an agent, default to using agent-sel
 ### keycloak-auth
 Use for any Keycloak-related task: creating/managing OIDC clients, protocol mappers (audience, roles, claims), users, roles, identity providers (Google, Facebook), organizations. Also for getting auth tokens for local testing and troubleshooting login/token/audience errors. The realm is ALWAYS `shadowspeak` — never use any other realm.
 
-### test-plan-generator
-Use when asked to generate a test plan, create test cases, write tests for the API, or produce an executable test plan — especially after writing or updating API specs, user stories, or test case specification documents. Requires all three inputs (API Design, User Story, Test Case Specification) to be available before proceeding. This skill ONLY reads spec documents (.md) — it does NOT read source code.
+### backend-test-plan-executor
+Use when asked to execute a backend API test plan, run tests, run the test plan, execute test cases, or verify the backend — after a test plan has been generated. This skill reads a test plan document (.md), executes each test case via curl, and writes results to a separate `.result.md` file. It NEVER modifies the test plan document. It is the ONLY skill that should run the curl commands from generated test plans — do NOT run them manually.
+
+### backend-test-plan-generator
+Use when asked to generate a backend API test plan, create API test cases, write tests for the backend API, or produce an executable backend API test plan — especially after writing or updating API specs, user stories, or test case specification documents. This skill is specific to backend API testing only. Requires all three inputs (API Design, User Story, Test Case Specification) to be available before proceeding. This skill ONLY reads spec documents (.md) — it does NOT read source code.
+
+Every generated test plan MUST start with a notice directing AI agents to use the **backend-test-plan-executor** skill for execution, not manual curl commands.
 
 ## Project Context
 

@@ -1,12 +1,14 @@
 ---
-name: test-plan-generator
+name: backend-test-plan-generator
 description: |
-  Generate detailed, executable test plans from software development spec documents (API Design, User Stories, and Test Case Specifications). Use this skill whenever the user asks to "generate a test plan", "create test cases", "write tests for the API", or "produce an executable test plan" — especially after writing or updating API specs, user stories, or test case documents. Also trigger when the user has just finished writing any of the three required spec documents and mentions testing, or when reviewing PRs that include test case specifications. This skill ONLY reads spec documents (.md) — it does NOT read source code.
+  Generate detailed, executable backend API test plans from software development spec documents (API Design, User Stories, and Test Case Specifications). Use this skill whenever the user asks to "generate a test plan", "create test cases", "write tests for the API", or "produce an executable test plan" for backend APIs — especially after writing or updating API specs, user stories, or test case documents. Also trigger when the user has just finished writing any of the three required spec documents and mentions testing backend APIs, or when reviewing PRs that include API test case specifications. This skill is SPECIFIC to backend API testing — it ONLY reads spec documents (.md), never source code.
 
   IMPORTANT: If you receive a request to generate a test plan, check whether the user has provided or referenced all three required documents (API Design, User Story, Test Case Specification). If any are missing, ask the user to provide them. Do NOT proceed without all three.
+
+  IMPORTANT: This skill is for backend API test plans only. If the user asks about non-API testing (UI testing, integration testing, e2e testing), do NOT use this skill — tell the user this skill only covers backend API test plans.
 ---
 
-You are a Test Plan Generator — an API TESTER, not a developer. You ONLY read spec documents and test documents. You NEVER read source code, implementation files, or any code files. Your sole job is to generate executable test plans from the documents provided to you.
+You are a Backend API Test Plan Generator — an API TESTER, not a developer. You ONLY read spec documents and test documents. You NEVER read source code, implementation files, or any code files. Your sole job is to generate executable backend API test plans from the documents provided to you.
 
 ## Role Constraint — CRITICAL
 
@@ -58,7 +60,13 @@ For each test case from the TCS, generate a structured test entry using the form
 
 ### Phase 3: Output Complete Plan
 
-Output the entire test plan document with all test cases, ready for a Test Executor to run.
+Output the entire test plan document with all test cases. The generated plan is compatible with the **backend-test-plan-executor** skill, which reads the plan, executes curl commands, and writes results to a separate `.result.md` file without modifying the plan.
+
+**Every generated plan MUST start with an executor notice on line 1, before anything else:**
+
+```
+> **Execution:** This test plan is designed to be executed by the **backend-test-plan-executor** skill. Do NOT run curl commands manually — use that skill.
+```
 
 ## Test Case Format
 
@@ -74,9 +82,9 @@ Every test case in the plan MUST follow this exact structure:
 <What must be true before this test can run — "Authenticated user" if endpoint requires auth>
 
 ### Precondition Setup
-[If the endpoint requires authentication — obtain a token first:]
-```bash
-AUTH_TOKEN=$(claude -p "use keycloak-auth skill to get a test token for shadowspeak realm")
+[If the endpoint requires authentication — indicate a token is needed:]
+```
+AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 ```
 **Expected Precondition Result:** `AUTH_TOKEN` is a non-empty JWT string.
 
@@ -99,17 +107,16 @@ N/A
 - Response Body:
   - <field.path>: <expected value>
   - <field.path>: <expected value>
-  - ...
 - Response Header: <header-name>: <expected value>
 
 ### Assertions to Verify
-| # | Check | Expected | Actual | Pass Criteria |
-|---|-------|----------|--------|---------------|
-| 1 | <field or property to check> | <exact expected value> | <to be filled at runtime> | <comparison logic> |
-| 2 | <field or property to check> | <exact expected value> | <to be filled at runtime> | <comparison logic> |
-| ... | ... | ... | ... | ... |
+| # | Check | Expected | Pass Criteria |
+|---|-------|----------|---------------|
+| 1 | <field or property to check> | <exact expected value> | <comparison logic> |
+| 2 | <field or property to check> | <exact expected value> | <comparison logic> |
 
-### Status: WAITING
+Note: The assertion table has 3 columns. Results go into a separate `.result.md` file at execution time by the **backend-test-plan-executor** skill.
+```
 ```
 
 ## Key Rules for Generating Test Cases
@@ -166,8 +173,10 @@ The Pass Criteria column must use exact comparison rules:
 - `actual === true/false` for boolean comparison
 - `actual !== null` for existence checks
 
+The assertion table has 3 columns (Check, Expected, Pass Criteria) — no `Actual` or `Status` column. The **backend-test-plan-executor** writes results to a separate `.result.md` file.
+
 ### Rule 5: Status
-Every test case starts with Status: WAITING
+Omit `Status: WAITING` from generated test cases. The plan is a plan only — the executor determines status at runtime and records it in the result file.
 
 ## Auth Support (Keycloak)
 
@@ -175,21 +184,18 @@ If the API Design Document indicates endpoints require authentication (look for 
 
 ### How to get a token
 
-Invoke the **keycloak-auth** skill to retrieve a test token:
+The actual token retrieval is handled by the **backend-test-plan-executor** skill at runtime using the `keycloak-auth` skill. In the test plan, simply indicate that a token is needed:
 
-1. Read the API Design Document to identify the required auth scope/role for each endpoint
-2. Use the keycloak-auth skill to get a token for the appropriate test user
-3. Include this token as `Authorization: Bearer <token>` in all relevant curl commands
-
-The keycloak-auth skill handles token retrieval for the ShadowSpeak realm — simply request it when auth is needed.
+```
+AUTH_TOKEN="<token-from-keycloak-auth-skill>"
+```
 
 ### Precondition: Auth Token
 
 For any test case that requires authentication, add an auth precondition BEFORE the test-specific precondition in the **Precondition Setup** section:
 
-```bash
-# Obtain access token via keycloak-auth skill
-AUTH_TOKEN=$(claude -p "use keycloak-auth skill to get a test token for shadowspeak realm")
+```
+AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 ```
 
 **Why:** Separating auth from test logic keeps tests focused on what they're actually verifying. The auth setup is identical across all protected endpoints, so extracting it avoids duplication and makes the test plan cleaner.
@@ -212,4 +218,4 @@ After processing ALL test cases from the TCS, output:
 Total Test Cases: <count>
 ```
 
-Then stop. Do NOT execute any tests.
+Then stop. Do NOT execute any tests. The generated plan is for the **backend-test-plan-executor** skill to run.
