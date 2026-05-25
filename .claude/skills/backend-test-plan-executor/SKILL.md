@@ -21,15 +21,68 @@ You are a test executor, NOT a developer. This means:
 6. You READ test plan documents (.md) only
 7. You WRITE only to the **test-result** file (never touch the test plan document)
 
-## Idempotent Result File
+## Result File — Run-Numbered (Not Overwritten)
 
-Test plans are NEVER modified. All results go into a separate file.
+Test plans are NEVER modified. All results go into separate per-run files inside a result directory.
 
-**Result file naming:** Take the test plan path and replace the file extension with `.result.md`. For example:
+**Result directory naming:** Take the test plan path and replace the file extension with `.result/` (a directory). For example:
 - Plan: `specs/06-testing/03-Test-Plan/01-onboarding/01-Backend-API.md`
-- Result: `specs/06-testing/03-Test-Plan/01-onboarding/01-Backend-API.result.md`
+- Dir:  `specs/06-testing/03-Test-Plan/01-onboarding/01-Backend-API.result/`
 
-If the result file already exists, **overwrite it** (create a fresh one). This makes re-runs idempotent — the plan stays clean and the result is always a complete snapshot.
+**Inside the result directory:**
+- `run-001.md` — first execution result
+- `run-002.md` — second execution result
+- ... (incremented on each re-execution)
+- `latest.md` — copy of the most recent run (always up to date)
+
+**Run Number Detection:**
+
+Before writing results, check if the result directory exists:
+
+```bash
+RESULT_DIR="specs/06-testing/03-Test-Plan/01-onboarding/01-Backend-API.result"
+if [ -d "$RESULT_DIR" ]; then
+  # Find the highest run number from existing files
+  LAST_RUN=$(ls -1 "$RESULT_DIR"/run-*.md 2>/dev/null | sort | tail -n 1 | grep -oP 'run-\K[0-9]+')
+  if [ -n "$LAST_RUN" ]; then
+    RUN_NUM=$((10#$LAST_RUN + 1))
+  else
+    RUN_NUM=1
+  fi
+else
+  mkdir -p "$RESULT_DIR"
+  RUN_NUM=1
+fi
+```
+
+Format run number as zero-padded 3 digits (001, 002, ..., 999).
+
+**Result file path:** `$RESULT_DIR/run-$(printf '%03d' $RUN_NUM).md`
+
+**Latest copy:** After writing the new run file, copy it to `$RESULT_DIR/latest.md` so there is always an up-to-date reference:
+```bash
+cp "$RESULT_DIR/run-$(printf '%03d' $RUN_NUM).md" "$RESULT_DIR/latest.md"
+```
+
+**Why run-numbered instead of overwrite:**
+- Every execution is preserved — no history is lost
+- You can `diff` two run files to see what changed between runs
+- The `latest.md` always points to the most recent complete result
+- Failed runs stay visible alongside successful re-runs
+
+**Diff tracking (optional — for cross-run comparison):**
+
+If the directory already has a previous run, you can produce a diff between the previous run and the current run after completing execution. This is useful for quickly identifying regressions:
+
+```bash
+# After completing a run-002.md, compare with previous run-001.md
+PREV_RUN=$(printf '%03d' $((RUN_NUM - 1)))
+if [ -f "$RESULT_DIR/run-$PREV_RUN.md" ]; then
+  diff "$RESULT_DIR/run-$PREV_RUN.md" "$RESULT_DIR/run-$(printf '%03d' $RUN_NUM).md" > "$RESULT_DIR/diff-$PREV_RUN-to-$(printf '%03d' $RUN_NUM).diff" 2>&1 || true
+fi
+```
+
+The diff file sits alongside the run files and shows exactly what changed: which tests flipped from PASSED to FAILED (regressions) or FAILED to PASSED (fixes). Report these deltas in the conversation summary.
 
 ## Why curl Only — No Scripts, No Python
 
@@ -98,10 +151,11 @@ If the backend's health check already covers database connectivity (many API hea
 
 If unhealthy, write the result file immediately and STOP. The result file should contain:
 ```markdown
-# Test Result
+# Test Result (Run NNN)
 
 **Test Plan:** <plan-path>
 **Executed at:** <ISO-8601-timestamp>
+**Run Number:** NNN
 **Status:** HALTED
 
 ## Infrastructure Health Check — FAILED
@@ -206,6 +260,7 @@ After ALL test cases have been executed, append a summary section to the end of 
 ## Execution Summary
 
 **Executed at:** 2026-05-25T15:54:00Z (ISO 8601, UTC)
+**Run Number:** NNN
 
 | Metric       | Count |
 |--------------|-------|
@@ -232,6 +287,27 @@ After ALL test cases have been executed, append a summary section to the end of 
 |-------|--------|
 | <ID>  | <why it was skipped> |
 ```
+
+**Cross-Run Delta (if this is not run-001):**
+
+If a previous run exists, compare the current run's verdicts against the previous run. After appending the summary, append a delta section:
+
+```markdown
+### Delta vs Previous Run (run-NNN)
+
+| Change Type | TC-ID | Description |
+|-------------|-------|-------------|
+| NEW FAIL → PASS | TC-ONB-BE-XXX | <description> |
+| NEW PASS → FAIL | TC-ONB-BE-YYY | <description> |
+| UNCHANGED       | ... | |
+
+**Summary:** <X> tests improved, <Y> tests regressed, <Z> unchanged.
+```
+
+To detect the delta:
+1. Read the previous run file's verdicts by searching for `**Verdict:**` lines
+2. Compare each TC-ID's verdict between previous run and current run
+3. Categorize: "NEW FAIL → PASS" (fixed), "NEW PASS → FAIL" (regressed), "UNCHANGED" (same verdict)
 
 ## Auth Integration
 
@@ -319,11 +395,11 @@ Do NOT create any .sh, .py, .js, or other script files. All execution happens th
 
 ### Rule 7: Never Touch the Test Plan
 
-The test plan document is **read-only**. Never edit, modify, or update it. All results go into the separate `.result.md` file.
+The test plan document is **read-only**. Never edit, modify, or update it. All results go into the separate `.result/` directory.
 
-### Rule 8: Idempotent Re-runs
+### Rule 8: Incremental Run Numbering
 
-If the result file already exists, **overwrite it completely**. Each run produces a fresh result. The test plan never accumulates state.
+Each execution creates a new run file with an incremented number. Never overwrite an existing run file. The `latest.md` in the result directory is always a copy of the most recent run.
 
 ### Rule 9: Assertion Comparison Rules
 
@@ -343,6 +419,15 @@ Because no human QA validates the backend:
 - If a response looks suspicious (empty body, wrong format), note it explicitly
 - If the same pattern of failure repeats across tests, flag the pattern in the summary
 
+### Rule 11: Cross-Run Delta Reporting
+
+After completing each run (except run-001), compare verdicts against the previous run and report deltas:
+- Which tests went from FAILED → PASSED (fixed)
+- Which tests went from PASSED → FAILED (regressed)
+- Which tests went from SKIPPED → anything (unblocked)
+- Include the delta table in the summary
+- Report key deltas verbally in the conversation output
+
 ## Output Format
 
 ### Result File Structure
@@ -350,10 +435,11 @@ Because no human QA validates the backend:
 The result file follows this structure:
 
 ```
-# Test Result
+# Test Result (Run NNN)
 
 **Test Plan:** <path-to-plan>
 **Executed at:** <ISO-8601-timestamp>
+**Run Number:** NNN
 **Status:** COMPLETED | HALTED
 
 ## Infrastructure Health Check
@@ -382,6 +468,7 @@ The result file follows this structure:
 ## Execution Summary
 
 **Executed at:** <ISO-8601-timestamp>
+**Run Number:** NNN
 
 | Metric | Count |
 |--------|-------|
@@ -393,12 +480,14 @@ The result file follows this structure:
 
 ### Init Result File
 
-After health check passes, create the result file with the header and health check table. Then append each test case result as they complete.
+After health check passes and run number is determined, create the result file with the header and health check table. Then append each test case result as they complete.
 
 ### Final Summary
 
 After all test cases complete and the summary is appended to the result file, also output a brief summary at the end of the conversation showing:
 - Result file path
+- Run number
 - Execution timestamp
 - Passed / Failed / Skipped counts
 - Any Failed TC-IDs
+- **If not run-001:** Delta summary vs previous run (how many fixed, how many regressed)

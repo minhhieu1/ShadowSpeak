@@ -59,23 +59,14 @@ class ProfileService:
         self.consent_service.require_consent(user_id)
         self._validate(normalized_input)
 
-        # Check if profile exists — if not, create one
+        # Check if profile exists — PUT is an update, not create
         existing = self.repository.get_profile(user_id)
-        now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
         if existing is None:
-            onboarding_step = normalized_input.onboardingStep.value if normalized_input.onboardingStep else None
-            profile = UserProfile(
-                userId=user_id,
-                displayName=normalized_input.displayName,
-                level=normalized_input.level,
-                reminderTime=normalized_input.reminderTime,
-                onboardingStep=onboarding_step,
-                createdAt=now,
-                updatedAt=now,
+            raise to_http_exception(
+                AppErrorCode.USER_NOT_FOUND,
+                "User profile not found",
             )
-            self.repository.put_profile(profile)
-            return profile
 
         # Partial update via repository
         onboarding_step = normalized_input.onboardingStep.value if normalized_input.onboardingStep else None

@@ -119,6 +119,11 @@ async def get_profile_endpoint(
     request_id = getattr(request.state, "request_id", "")
     device_id = _require_valid_device_id(x_device_id) if x_device_id is not None else None
     profile = profile_service.get_profile_with_rekey(auth.userId, device_id, request_id=request_id)
+    if profile is None:
+        raise to_http_exception(
+            AppErrorCode.USER_NOT_FOUND,
+            "User profile not found",
+        )
     return success(profile, request_id)
 
 
