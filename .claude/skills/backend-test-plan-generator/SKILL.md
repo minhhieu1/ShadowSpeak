@@ -54,19 +54,51 @@ Input validation rule: If you do not receive all 3 documents, respond with:
   - Steps
   - Expected result
 
-### Phase 2: Generate Test Plan
+### Phase 2: Determine Output Path
 
-For each test case from the TCS, generate a structured test entry using the format below. Do NOT execute any tests — only generate the plan.
-
-### Phase 3: Output Complete Plan
-
-Output the entire test plan document with all test cases. The generated plan is compatible with the **backend-test-plan-executor** skill, which reads the plan, executes curl commands, and writes results to a separate `.result.md` file without modifying the plan.
-
-**Every generated plan MUST start with an executor notice on line 1, before anything else:**
+Determine the output file path based on the project's spec directory structure. The pattern is:
 
 ```
-> **Execution:** This test plan is designed to be executed by the **backend-test-plan-executor** skill. Do NOT run curl commands manually — use that skill.
+specs/06-testing/03-Test-Plan/<NN-section-name>/<NN-Document-name>.md
 ```
+
+Check existing content in `specs/06-testing/03-Test-Plan/` first to reuse an existing section folder or determine the next number.
+
+### Phase 3: Generate Test Plan Header First
+
+Generate the test plan header first — this includes the executor notice, title, document metadata, and base configuration. Write this to the output file before proceeding to any test cases.
+
+The header MUST contain:
+1. The executor notice (line 1):
+   ```
+   > **Execution:** This test plan is designed to be executed by the **backend-test-plan-executor** skill. Do NOT run curl commands manually — use that skill.
+   ```
+2. Title and document metadata table
+3. Base configuration block
+4. Auth token setup section (if any endpoint requires authentication)
+
+### Phase 4: Generate Test Cases One-by-One
+
+After the header is written, generate each test case **one at a time, sequentially**. Do NOT batch multiple test cases in a single write step.
+
+**Why one-by-one:** Test Case Specifications can be large. Writing all test cases at once risks exceeding output limits and losing partial work. By writing one test case at a time, if an error occurs mid-way, all previously written test cases are already saved in the file.
+
+For each test case:
+1. Read the next test case from the TCS (ID, title, objective, preconditions, test data, steps, expected result)
+2. Generate the full structured test case entry (following the format in the next section)
+3. Append it to the output file
+4. Proceed to the next test case
+
+### Phase 5: Output Completion Marker
+
+After ALL test cases have been generated and written, append the completion marker at the end of the file:
+
+```
+=== Test Plan Complete ===
+Total Test Cases: <count>
+```
+
+The generated plan is compatible with the **backend-test-plan-executor** skill, which reads the plan, executes curl commands, and writes results to a separate `.result.md` file without modifying the plan.
 
 ## Test Case Format
 
@@ -209,13 +241,16 @@ BASE_URL=http://127.0.0.1:8000
 
 If the user provides a different base URL, use that instead.
 
-## Final Output
+## Writing the Plan to File
 
-After processing ALL test cases from the TCS, output:
+To write the output, use the **Write** tool for the header block (creates the file), then use **Edit** with `append` semantics for each test case. The file path should follow project conventions:
 
 ```
-=== Test Plan Complete ===
-Total Test Cases: <count>
+specs/06-testing/03-Test-Plan/01-onboarding/01-Backend-API.md
 ```
 
-Then stop. Do NOT execute any tests. The generated plan is for the **backend-test-plan-executor** skill to run.
+The project uses numbered document naming — consult the existing structure at `specs/06-testing/03-Test-Plan/` for the correct section number.
+
+## Stop Condition
+
+After writing the completion marker, stop. Do NOT execute any tests. The generated plan is for the **backend-test-plan-executor** skill to run.
