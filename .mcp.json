@@ -8,6 +8,10 @@
         "KEYCLOAK_ADMIN": "admin",
         "KEYCLOAK_ADMIN_PASSWORD": "admin"
       }
+    },
+    "mobile-mcp": {
+      "command": "npx",
+      "args": ["-y", "@mobilenext/mobile-mcp@latest"]
     }
   }
 }
