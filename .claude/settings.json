@@ -12,6 +12,7 @@
     "voltagent-biz@voltagent-subagents": true,
     "voltagent-meta@voltagent-subagents": true,
     "voltagent-research@voltagent-subagents": true,
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": true,
+    "ios-simulator-skill@conorluddy": true
   }
 }
