@@ -1,5 +1,5 @@
 ---
-name: frontend-test-executor
+name: frontend-test-plan-executor
 description: |
   Execute frontend test plans for the ShadowSpeak Expo/React Native app on the iOS simulator.
   Use this skill whenever a user says "test frontend", "execute frontend test plan", "run frontend tests", "check UI", "verify the frontend", "test the app", "execute test cases", "verify the screens", "test navigation" — after a test plan document has been provided.

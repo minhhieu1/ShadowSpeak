@@ -26,8 +26,8 @@ You are a test executor, NOT a developer. This means:
 Test plans are NEVER modified. All results go into separate per-run files inside a result directory.
 
 **Result directory naming:** Take the test plan path and replace the file extension with `.result/` (a directory). For example:
-- Plan: `specs/06-testing/03-Test-Plan/01-onboarding/01-Backend-API.md`
-- Dir:  `specs/06-testing/03-Test-Plan/01-onboarding/01-Backend-API.result/`
+- Plan: `specs/06-testing/03-Test-Plan/01-onboarding/backend/01-Onboarding-API.md`
+- Dir:  `specs/06-testing/03-Test-Plan/01-onboarding/backend/01-Onboarding-API.result/`
 
 **Inside the result directory:**
 - `run-001.md` — first execution result

@@ -59,10 +59,15 @@ Input validation rule: If you do not receive all 3 documents, respond with:
 Determine the output file path based on the project's spec directory structure. The pattern is:
 
 ```
-specs/06-testing/03-Test-Plan/<NN-section-name>/<NN-Document-name>.md
+specs/06-testing/03-Test-Plan/<NN-epic-name>/backend/<NN>-plan-name.md
 ```
 
-Check existing content in `specs/06-testing/03-Test-Plan/` first to reuse an existing section folder or determine the next number.
+Examples:
+- `specs/06-testing/03-Test-Plan/01-onboarding/backend/01-Onboarding-API.md`
+
+The directory hierarchy is: **epic-name** → **backend** → **numbered-plan-file**.
+
+Check existing content in `specs/06-testing/03-Test-Plan/` first to find the correct epic number and name.
 
 ### Phase 3: Generate Test Plan Header First
 
@@ -243,13 +248,19 @@ If the user provides a different base URL, use that instead.
 
 ## Writing the Plan to File
 
-To write the output, use the **Write** tool for the header block (creates the file), then use **Edit** with `append` semantics for each test case. The file path should follow project conventions:
+To write the output, use the **Write** tool for the header block (creates the file), then use **Edit** with `append` semantics for each test case. The file path MUST follow this convention:
 
 ```
-specs/06-testing/03-Test-Plan/01-onboarding/01-Backend-API.md
+specs/06-testing/03-Test-Plan/<NN-epic-name>/backend/<NN>-plan-name.md
 ```
 
-The project uses numbered document naming — consult the existing structure at `specs/06-testing/03-Test-Plan/` for the correct section number.
+Examples:
+- `specs/06-testing/03-Test-Plan/01-onboarding/backend/01-Onboarding-API.md`
+- `specs/06-testing/03-Test-Plan/02-lesson-discovery/backend/01-Lesson-Catalog-API.md`
+
+The directory hierarchy is: `epic-name` → `backend` → `numbered-plan-file`.
+
+Consult the existing structure at `specs/06-testing/03-Test-Plan/` for the correct epic number and name.
 
 ## Stop Condition
 
