@@ -97,7 +97,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if request.method not in {"POST", "PUT", "PATCH", "DELETE"}:
             return await call_next(request)
 
-        is_preauth_consent = request.url.path == "/consent" and "Authorization" not in request.headers
+        is_preauth_consent = request.url.path == "/v1/consent" and "Authorization" not in request.headers
         limit = self.preauth_limit if is_preauth_consent else self.authenticated_limit
         if limit <= 0:
             return await call_next(request)

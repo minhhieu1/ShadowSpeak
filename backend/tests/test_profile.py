@@ -350,7 +350,7 @@ class TestProfileEndpoints:
     @pytest.mark.asyncio
     async def test_get_me_requires_auth(self, client):
         """GET /me without JWT returns 401."""
-        resp = await client.get("/me")
+        resp = await client.get("/v1/me")
         assert resp.status_code == 401
 
     @pytest.mark.asyncio
@@ -360,7 +360,7 @@ class TestProfileEndpoints:
 
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
-            resp = await client.get("/me", headers=_auth_header(rsa_keys))
+            resp = await client.get("/v1/me", headers=_auth_header(rsa_keys))
             assert resp.status_code == 403
 
     @pytest.mark.asyncio
@@ -390,7 +390,7 @@ class TestProfileEndpoints:
 
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
-            resp = await client.get("/me", headers=_auth_header(rsa_keys))
+            resp = await client.get("/v1/me", headers=_auth_header(rsa_keys))
             assert resp.status_code == 200, resp.text
             data = resp.json()
             assert data["ok"] is True
@@ -401,7 +401,7 @@ class TestProfileEndpoints:
     @pytest.mark.asyncio
     async def test_put_me_requires_auth(self, client):
         """PUT /me without JWT returns 401."""
-        resp = await client.put("/me", json={"displayName": "New"})
+        resp = await client.put("/v1/me", json={"displayName": "New"})
         assert resp.status_code == 401
 
     @pytest.mark.asyncio
@@ -412,7 +412,7 @@ class TestProfileEndpoints:
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
             resp = await client.put(
-                "/me",
+                "/v1/me",
                 json={"displayName": "New"},
                 headers={**_auth_header(rsa_keys), "Content-Type": "application/json"},
             )
@@ -445,7 +445,7 @@ class TestProfileEndpoints:
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
             resp = await client.put(
-                "/me",
+                "/v1/me",
                 json={"displayName": "Updated"},
                 headers={**_auth_header(rsa_keys), "Content-Type": "application/json"},
             )
@@ -472,7 +472,7 @@ class TestProfileEndpoints:
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
             resp = await client.put(
-                "/me",
+                "/v1/me",
                 json={"displayName": "A" * 81},
                 headers={**_auth_header(rsa_keys), "Content-Type": "application/json"},
             )
@@ -495,7 +495,7 @@ class TestProfileEndpoints:
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
             resp = await client.put(
-                "/me",
+                "/v1/me",
                 json={"level": "expert"},
                 headers={**_auth_header(rsa_keys), "Content-Type": "application/json"},
             )
@@ -518,7 +518,7 @@ class TestProfileEndpoints:
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
             resp = await client.put(
-                "/me",
+                "/v1/me",
                 json={"reminderTime": "invalid"},
                 headers={**_auth_header(rsa_keys), "Content-Type": "application/json"},
             )

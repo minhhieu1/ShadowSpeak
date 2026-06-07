@@ -58,7 +58,7 @@ Approved assumptions used in this TCS:
 - Integration assertions are limited to documented observables. This TCS does not assert undocumented backend fields such as `onboardingStep` or undocumented profile fields for microphone permission state.
 - Reminder cross-layer validation uses documented profile field `reminderTime`, local notification permission state, and observable device notification behavior. It does not assume undocumented backend storage for notification permission flags.
 - Microphone permission persistence is verified through durable client permission state and post-onboarding recording behavior, not through a backend `UserProfile` field, because no approved API or storage contract exposes microphone status as a persisted profile attribute in the current source set. For this TCS, that user-story wording is treated as an approved contract gap to be reconciled upstream, not as a blocker to integration execution.
-- Consent verification uses documented `GET /consent` and `PUT /consent` behavior with `X-Device-Id` pre-auth and authenticated consent state post-auth.
+- Consent verification uses documented `GET /v1/consent` and `PUT /v1/consent` behavior with `X-Device-Id` pre-auth and authenticated consent state post-auth.
 
 ## 4. Integration Execution Rules
 
@@ -66,10 +66,10 @@ Unless a test case states otherwise, verify:
 
 - UI route destination is deterministic and matches the case setup.
 - Authentication side effects are verified through provider/auth existence and documented API access.
-- Consent is verified through `GET /consent` using the correct identity mode:
+- Consent is verified through `GET /v1/consent` using the correct identity mode:
   - Pre-auth: `X-Device-Id`
   - Post-auth: authenticated JWT
-- Profile persistence is verified through `GET /me` and documented fields only, especially `level` and `reminderTime`.
+- Profile persistence is verified through `GET /v1/me` and documented fields only, especially `level` and `reminderTime`.
 - Local permission and notification behavior is verified on-device, not inferred from undocumented backend fields.
 - Microphone permission persistence is verified by checking OS permission state and the app's allowed/blocked recording behavior after onboarding and relaunch.
 
@@ -79,8 +79,8 @@ Unless a test case states otherwise, verify:
 - Ability to inspect:
   - App UI behavior
   - Provider/account existence
-  - `GET /consent`
-  - `GET /me`
+  - `GET /v1/consent`
+  - `GET /v1/me`
   - Device notification and OS permission state
 - Local app storage can be reset between runs
 - Test data sets available for:
@@ -100,7 +100,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `TS-ONB-INT-01`
 - **Related User Story:** `US-1.1` to `US-7.1`
 - **Related FR:** `FR-1`, `FR-8`, `FR-9`
-- **Related Endpoints:** `PUT /consent`, `GET /consent`, `GET /me`
+- **Related Endpoints:** `PUT /v1/consent`, `GET /v1/consent`, `GET /v1/me`
 - **Related UX Sources:** `1.2 Age Gate`, `1.4 Privacy and Ad Consent`, `1.6 Sign Up`, `Approved deviation: intro before level`, `1.7 Level Selection`, `1.8 Reminder Setup`, `1.9 Permission Prompts`, `2.1 Home / Daily Practice`
 - **Title:** Complete first-time onboarding with email sign-up, reminder enabled, notification granted, and microphone granted
 - **Objective:** Validate the complete happy path across app UI, pre-auth consent bootstrap, account creation, post-auth consent re-key, profile persistence, local permission grants, and first Home entry.
@@ -109,7 +109,7 @@ Unless a test case states otherwise, verify:
 - **Steps:**
   1. Launch the app and complete the age gate as eligible.
   2. Accept consent.
-  3. Call or inspect `GET /consent` pre-auth with the same `X-Device-Id`.
+  3. Call or inspect `GET /v1/consent` pre-auth with the same `X-Device-Id`.
   4. Sign up with valid email/password.
   5. Complete the intro sequence.
   6. Select level `Beginner`.
@@ -117,10 +117,10 @@ Unless a test case states otherwise, verify:
   8. Grant notification permission when prompted.
   9. Grant microphone permission when prompted.
   10. Finish onboarding and land on Home.
-  11. Call authenticated `GET /consent`.
-  12. Call authenticated `GET /me`.
+  11. Call authenticated `GET /v1/consent`.
+  12. Call authenticated `GET /v1/me`.
   13. Relaunch the app and verify OS permission state for microphone remains granted.
-- **Expected Result:** Pre-auth `GET /consent` shows persisted consent for the device; onboarding completes successfully; Home is displayed; authenticated `GET /consent` returns the same accepted consent values under the authenticated user; authenticated `GET /me` returns `level=Beginner` and `reminderTime=08:00`; notification and microphone permissions are granted at OS level and microphone permission remains granted after relaunch.
+- **Expected Result:** Pre-auth `GET /v1/consent` shows persisted consent for the device; onboarding completes successfully; Home is displayed; authenticated `GET /v1/consent` returns the same accepted consent values under the authenticated user; authenticated `GET /v1/me` returns `level=Beginner` and `reminderTime=08:00`; notification and microphone permissions are granted at OS level and microphone permission remains granted after relaunch.
 - **Priority:** High
 
 #### TC-ONB-INT-002
@@ -128,7 +128,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `TS-ONB-INT-02`
 - **Related User Story:** `US-1.2`
 - **Related FR:** `FR-9`
-- **Related Endpoints:** `GET /consent`
+- **Related Endpoints:** `GET /v1/consent`
 - **Related UX Sources:** `1.2 Age Gate`, `1.3 Age Policy Block`
 - **Title:** Underage selection is blocked end to end with no account creation
 - **Objective:** Validate the underage hard-stop path across app and auth/account state.
@@ -148,7 +148,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `TS-ONB-INT-02`
 - **Related User Story:** `US-2.1`
 - **Related FR:** `FR-9`
-- **Related Endpoints:** `GET /consent`
+- **Related Endpoints:** `GET /v1/consent`
 - **Related UX Sources:** `1.4 Privacy and Ad Consent`
 - **Title:** Consent decline stops onboarding before authentication and account creation
 - **Objective:** Validate the declined-consent hard-stop path across client and backend entry conditions.
@@ -170,7 +170,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `TS-ONB-INT-03`
 - **Related User Story:** `US-3.2`
 - **Related FR:** `FR-1`
-- **Related Endpoints:** `GET /consent`
+- **Related Endpoints:** `GET /v1/consent`
 - **Related UX Sources:** `1.5 Sign In`
 - **Title:** Social-auth cancellation returns safely with no account creation
 - **Objective:** Validate provider cancel behavior across app and auth state.
@@ -190,7 +190,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `TS-ONB-INT-03`
 - **Related User Story:** `US-3.2`, `US-4.1`, `US-7.1`
 - **Related FR:** `FR-1`, `FR-8`, `FR-9`
-- **Related Endpoints:** `PUT /consent`, `GET /consent`, `GET /me`
+- **Related Endpoints:** `PUT /v1/consent`, `GET /v1/consent`, `GET /v1/me`
 - **Related UX Sources:** `1.4 Privacy and Ad Consent`, `1.5 Sign In`, `Approved deviation: intro before level`, `1.7 Level Selection`, `1.8 Reminder Setup`, `1.9 Permission Prompts`, `2.1 Home / Daily Practice`
 - **Title:** First-time social-auth success completes onboarding and exposes user-scoped consent and profile
 - **Objective:** Validate provider success, first-time onboarding continuation, and post-auth persistence for a social-auth user.
@@ -198,16 +198,16 @@ Unless a test case states otherwise, verify:
 - **Test Data:** Successful first-time Google or Apple auth; `level=Intermediate`; reminder skipped.
 - **Steps:**
   1. Complete age gate and accept consent.
-  2. Verify pre-auth `GET /consent` with `X-Device-Id`.
+  2. Verify pre-auth `GET /v1/consent` with `X-Device-Id`.
   3. Start and complete social-auth successfully.
   4. Complete intro screens.
   5. Select `Intermediate` level.
   6. Skip reminders.
   7. Resolve notification and microphone permission prompts as allowed by the build.
   8. Finish onboarding and land on Home.
-  9. Call authenticated `GET /consent`.
-  10. Call authenticated `GET /me`.
-- **Expected Result:** The app creates/authenticates the provider-linked account, completes onboarding successfully, and lands on Home; authenticated `GET /consent` reflects the accepted consent state; authenticated `GET /me` returns `level=Intermediate` and no reminder time.
+  9. Call authenticated `GET /v1/consent`.
+  10. Call authenticated `GET /v1/me`.
+- **Expected Result:** The app creates/authenticates the provider-linked account, completes onboarding successfully, and lands on Home; authenticated `GET /v1/consent` reflects the accepted consent state; authenticated `GET /v1/me` returns `level=Intermediate` and no reminder time.
 - **Priority:** High
 
 #### TC-ONB-INT-006
@@ -215,7 +215,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `TS-ONB-INT-04`
 - **Related User Story:** `US-7.2`
 - **Related FR:** `FR-9`
-- **Related Endpoints:** `PUT /consent`, `GET /consent`
+- **Related Endpoints:** `PUT /v1/consent`, `GET /v1/consent`
 - **Related UX Sources:** `1.4 Privacy and Ad Consent`, `1.5 Sign In`
 - **Title:** Pre-auth consent bootstrap survives relaunch and resumes at sign-in
 - **Objective:** Validate pre-auth consent persistence across relaunch before authentication.
@@ -223,11 +223,11 @@ Unless a test case states otherwise, verify:
 - **Test Data:** Eligible age; consent accepted.
 - **Steps:**
   1. Complete age gate and accept consent.
-  2. Call `GET /consent` with the same `X-Device-Id`.
+  2. Call `GET /v1/consent` with the same `X-Device-Id`.
   3. Close the app before authentication.
   4. Relaunch the app.
-  5. Call `GET /consent` again with the same `X-Device-Id`.
-- **Expected Result:** The app resumes at `Sign In` without requiring age gate or consent again; both pre- and post-relaunch `GET /consent` calls return the same persisted consent state for the device.
+  5. Call `GET /v1/consent` again with the same `X-Device-Id`.
+- **Expected Result:** The app resumes at `Sign In` without requiring age gate or consent again; both pre- and post-relaunch `GET /v1/consent` calls return the same persisted consent state for the device.
 - **Priority:** High
 
 #### TC-ONB-INT-007
@@ -235,7 +235,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `Supplementary`
 - **Related User Story:** `US-2.1`, `US-7.2`
 - **Related FR:** `FR-9`
-- **Related Endpoints:** `GET /consent`
+- **Related Endpoints:** `GET /v1/consent`
 - **Related UX Sources:** `1.4 Privacy and Ad Consent`, `1.5 Sign In`
 - **Title:** Completing authentication re-keys consent from device-scoped onboarding state to user-scoped consent state
 - **Objective:** Validate the core integration between pre-auth consent bootstrap and post-auth consent retrieval.
@@ -243,10 +243,10 @@ Unless a test case states otherwise, verify:
 - **Test Data:** Valid sign-up or first-time social-auth run.
 - **Steps:**
   1. Save consent in the pre-auth flow.
-  2. Verify `GET /consent` with `X-Device-Id` returns the expected device-scoped consent state.
+  2. Verify `GET /v1/consent` with `X-Device-Id` returns the expected device-scoped consent state.
   3. Authenticate successfully and complete the minimum required onboarding continuation to establish the session.
-  4. Call authenticated `GET /consent`.
-- **Expected Result:** Authenticated `GET /consent` returns the same accepted consent values under the authenticated user identity, demonstrating successful consent continuity from pre-auth to post-auth.
+  4. Call authenticated `GET /v1/consent`.
+- **Expected Result:** Authenticated `GET /v1/consent` returns the same accepted consent values under the authenticated user identity, demonstrating successful consent continuity from pre-auth to post-auth.
 - **Priority:** High
 
 ### 6.3 Partial Resume and Profile Persistence
@@ -256,7 +256,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `TS-ONB-INT-04`
 - **Related User Story:** `US-7.2`
 - **Related FR:** `FR-1`, `FR-8`
-- **Related Endpoints:** `GET /me`
+- **Related Endpoints:** `GET /v1/me`
 - **Related UX Sources:** `Approved deviation: intro before level`, `1.7 Level Selection`
 - **Title:** Relaunch after intro completion resumes at level selection
 - **Objective:** Validate the earliest authenticated resume point after the intro sequence.
@@ -267,8 +267,8 @@ Unless a test case states otherwise, verify:
   2. Complete the intro sequence.
   3. Close the app before selecting a level.
   4. Relaunch the app.
-  5. Call authenticated `GET /me`.
-- **Expected Result:** The app resumes at `Level Selection`; authenticated `GET /me` does not yet contain a saved `level` or `reminderTime`.
+  5. Call authenticated `GET /v1/me`.
+- **Expected Result:** The app resumes at `Level Selection`; authenticated `GET /v1/me` does not yet contain a saved `level` or `reminderTime`.
 - **Priority:** Medium
 
 #### TC-ONB-INT-009
@@ -276,7 +276,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `TS-ONB-INT-04`
 - **Related User Story:** `US-5.1`, `US-7.2`
 - **Related FR:** `FR-8`
-- **Related Endpoints:** `GET /me`
+- **Related Endpoints:** `GET /v1/me`
 - **Related UX Sources:** `1.7 Level Selection`, `1.8 Reminder Setup`
 - **Title:** Relaunch after level selection resumes at reminder setup with persisted level
 - **Objective:** Validate level persistence and next-step restore after interruption.
@@ -286,8 +286,8 @@ Unless a test case states otherwise, verify:
   1. Select `Advanced` level.
   2. Close the app before completing reminder setup.
   3. Relaunch the app.
-  4. Call authenticated `GET /me`.
-- **Expected Result:** The app resumes at `Reminder Setup`; authenticated `GET /me` returns `level=Advanced`; no incorrect reset to an earlier step occurs.
+  4. Call authenticated `GET /v1/me`.
+- **Expected Result:** The app resumes at `Reminder Setup`; authenticated `GET /v1/me` returns `level=Advanced`; no incorrect reset to an earlier step occurs.
 - **Priority:** High
 
 #### TC-ONB-INT-010
@@ -295,7 +295,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `TS-ONB-INT-04`
 - **Related User Story:** `US-5.2`, `US-7.2`
 - **Related FR:** `FR-8`
-- **Related Endpoints:** `GET /me`
+- **Related Endpoints:** `GET /v1/me`
 - **Related UX Sources:** `1.8 Reminder Setup`, `1.9 Permission Prompts`
 - **Title:** Relaunch after reminder setup resumes at permission prompts with persisted reminder time
 - **Objective:** Validate reminder profile persistence and next-step restore after interruption.
@@ -305,8 +305,8 @@ Unless a test case states otherwise, verify:
   1. Enable reminders and choose `07:30`.
   2. Close the app before finishing permission prompts.
   3. Relaunch the app.
-  4. Call authenticated `GET /me`.
-- **Expected Result:** The app resumes at `Permission Prompts`; authenticated `GET /me` returns `reminderTime=07:30`.
+  4. Call authenticated `GET /v1/me`.
+- **Expected Result:** The app resumes at `Permission Prompts`; authenticated `GET /v1/me` returns `reminderTime=07:30`.
 - **Priority:** High
 
 ### 6.4 Reminder and Permission Branches
@@ -316,7 +316,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `Supplementary`
 - **Related User Story:** `US-5.2`
 - **Related FR:** `FR-8`
-- **Related Endpoints:** `GET /me`
+- **Related Endpoints:** `GET /v1/me`
 - **Related UX Sources:** `1.8 Reminder Setup`, `1.9 Permission Prompts`
 - **Title:** Skipping reminders completes onboarding without saving a reminder time
 - **Objective:** Validate the optional reminder branch across profile persistence and device behavior.
@@ -326,8 +326,8 @@ Unless a test case states otherwise, verify:
   1. Reach `Reminder Setup`.
   2. Tap `Skip reminders`.
   3. Finish the remaining onboarding flow.
-  4. Call authenticated `GET /me`.
-- **Expected Result:** Onboarding completes successfully; authenticated `GET /me` returns no reminder time; no reminder is scheduled on the device.
+  4. Call authenticated `GET /v1/me`.
+- **Expected Result:** Onboarding completes successfully; authenticated `GET /v1/me` returns no reminder time; no reminder is scheduled on the device.
 - **Priority:** Medium
 
 #### TC-ONB-INT-012
@@ -355,7 +355,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `Supplementary`
 - **Related User Story:** `US-5.2`
 - **Related FR:** `FR-8`
-- **Related Endpoints:** `GET /me`
+- **Related Endpoints:** `GET /v1/me`
 - **Related UX Sources:** `1.8 Reminder Setup`, `1.9 Permission Prompts`
 - **Title:** Granted reminder setup produces a local notification at the scheduled time
 - **Objective:** Validate full reminder integration from onboarding setup to device notification outcome.
@@ -363,10 +363,10 @@ Unless a test case states otherwise, verify:
 - **Test Data:** Reminder scheduled a few minutes ahead of current device time.
 - **Steps:**
   1. Complete onboarding with reminders enabled and notification permission granted.
-  2. Call authenticated `GET /me`.
+  2. Call authenticated `GET /v1/me`.
   3. Wait until the scheduled reminder time.
   4. Observe device notification behavior.
-- **Expected Result:** Authenticated `GET /me` returns the saved reminder time; the device displays the expected local reminder notification at the scheduled time.
+- **Expected Result:** Authenticated `GET /v1/me` returns the saved reminder time; the device displays the expected local reminder notification at the scheduled time.
 - **Priority:** Medium
 
 #### TC-ONB-INT-014
@@ -374,7 +374,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `TS-ONB-INT-05`
 - **Related User Story:** `US-6.2`, `US-7.1`
 - **Related FR:** `FR-8`
-- **Related Endpoints:** `GET /me`
+- **Related Endpoints:** `GET /v1/me`
 - **Related UX Sources:** `1.9 Permission Prompts`, `2.1 Home / Daily Practice`, `2.4 Practice Session`
 - **Title:** Microphone denial still allows onboarding completion and blocks later recording with recovery guidance
 - **Objective:** Validate the listening-only onboarding path and later protection of recording-capable flows.
@@ -397,7 +397,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `TS-ONB-INT-06`
 - **Related User Story:** `US-7.1`, `US-7.2`
 - **Related FR:** `FR-1`, `FR-8`
-- **Related Endpoints:** `GET /consent`, `GET /me`
+- **Related Endpoints:** `GET /v1/consent`, `GET /v1/me`
 - **Related UX Sources:** `2.1 Home / Daily Practice`
 - **Title:** Valid completed-user session restores directly to Home
 - **Objective:** Validate boot-time restoration for a fully onboarded authenticated user.
@@ -406,8 +406,8 @@ Unless a test case states otherwise, verify:
 - **Steps:**
   1. Launch the app with a valid saved session.
   2. Observe the first routed screen.
-  3. Call authenticated `GET /consent`.
-  4. Call authenticated `GET /me`.
+  3. Call authenticated `GET /v1/consent`.
+  4. Call authenticated `GET /v1/me`.
 - **Expected Result:** The user bypasses onboarding and lands directly on Home; authenticated consent and profile remain retrievable.
 - **Priority:** Medium
 
@@ -416,7 +416,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `TS-ONB-INT-06`
 - **Related User Story:** `US-7.2`
 - **Related FR:** `FR-1`, `FR-9`
-- **Related Endpoints:** `GET /consent`
+- **Related Endpoints:** `GET /v1/consent`
 - **Related UX Sources:** `1.5 Sign In`
 - **Title:** Expired saved session clears safely and routes the user to sign-in
 - **Objective:** Validate boot-time handling of expired authenticated state.
@@ -450,7 +450,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `Supplementary`
 - **Related User Story:** `US-3.3`
 - **Related FR:** `FR-1`
-- **Related Endpoints:** `GET /me`
+- **Related Endpoints:** `GET /v1/me`
 - **Related UX Sources:** `1.5 Sign In`, `2.1 Home / Daily Practice`
 - **Title:** Returning email/password sign-in succeeds and restores direct access to Home
 - **Objective:** Validate the full returning-user sign-in submission path across app, auth, and profile retrieval.
@@ -461,8 +461,8 @@ Unless a test case states otherwise, verify:
   2. Enter valid returning-user credentials.
   3. Submit the sign-in form.
   4. Observe the routed destination.
-  5. Call authenticated `GET /me`.
-- **Expected Result:** Sign-in succeeds; the user is routed directly to Home; authenticated `GET /me` returns the existing profile for the returning user.
+  5. Call authenticated `GET /v1/me`.
+- **Expected Result:** Sign-in succeeds; the user is routed directly to Home; authenticated `GET /v1/me` returns the existing profile for the returning user.
 - **Priority:** High
 
 #### TC-ONB-INT-019
@@ -492,7 +492,7 @@ Unless a test case states otherwise, verify:
 - **Related Scenario ID:** `Supplementary`
 - **Related User Story:** `US-3.2`, `US-3.3`
 - **Related FR:** `FR-1`
-- **Related Endpoints:** `GET /me`
+- **Related Endpoints:** `GET /v1/me`
 - **Related UX Sources:** `1.5 Sign In`, `2.1 Home / Daily Practice`
 - **Title:** Returning social-auth sign-in restores direct access to Home
 - **Objective:** Validate the returning-user social-auth path across provider, app, and authenticated profile access.
@@ -503,8 +503,8 @@ Unless a test case states otherwise, verify:
   2. Start the linked provider auth flow.
   3. Complete provider authentication successfully.
   4. Return to the app.
-  5. Call authenticated `GET /me`.
-- **Expected Result:** The returning social-auth user is authenticated and routed directly to Home; authenticated `GET /me` returns the existing profile.
+  5. Call authenticated `GET /v1/me`.
+- **Expected Result:** The returning social-auth user is authenticated and routed directly to Home; authenticated `GET /v1/me` returns the existing profile.
 - **Priority:** High
 
 ## 7. Traceability Summary

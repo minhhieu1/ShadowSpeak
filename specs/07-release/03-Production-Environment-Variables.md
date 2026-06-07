@@ -69,7 +69,7 @@ AWS_DEFAULT_REGION=<aws-region>
 The only frontend env var is:
 
 ```
-EXPO_PUBLIC_API_BASE_URL=https://api.shadowspeak.app/v1
+EXPO_PUBLIC_API_BASE_URL=https://api.shadowspeak.app
 ```
 
 All OIDC provider details are fetched from `GET /v1/config/runtime` at startup.

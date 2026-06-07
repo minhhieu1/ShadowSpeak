@@ -20,9 +20,9 @@ This document defines detailed backend/API test cases for Epic 01 onboarding. It
 
 In scope:
 
-- `GET /consent`, `PUT /consent`
-- `GET /me`, `PUT /me`
-- `PUT /me/onboarding-step`
+- `GET /v1/consent`, `PUT /v1/consent`
+- `GET /v1/me`, `PUT /v1/me`
+- `PUT /v1/me/onboarding-step`
 - JWT validation and consent guard behavior
 - Consent bootstrap, re-key, audit logging, and persistence details
 
@@ -40,7 +40,7 @@ Out of scope:
 
 Source precedence note:
 
-- For `PUT /me/onboarding-step` and `onboardingStep` persistence, this TCS follows the backend task breakdown and backend testing scope as the implementation source of truth. The API spec is currently behind on this endpoint/field and should be aligned separately.
+- For `PUT /v1/me/onboarding-step` and `onboardingStep` persistence, this TCS follows the backend task breakdown and backend testing scope as the implementation source of truth. The API spec is currently behind on this endpoint/field and should be aligned separately.
 - For `displayName` values longer than 80 characters, this TCS explicitly treats `422 VALIDATION_ERROR` as the sign-off expectation and supersedes the conflicting truncation wording in the current backend task breakdown until the upstream documents are reconciled. Any persisted value longer than 80 characters is non-compliant for sign-off.
 
 ## 3. Contract Rules
@@ -72,7 +72,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** No JWT; a device-scoped consent record already exists for the device.
 - **Test Data:** `X-Device-Id: device-001`, `X-Request-Id: req-be-001`
 - **Steps:**
-  1. Send `GET /consent` without `Authorization` and with `X-Device-Id` and `X-Request-Id`.
+  1. Send `GET /v1/consent` without `Authorization` and with `X-Device-Id` and `X-Request-Id`.
   2. Capture status, headers, and response body.
 - **Expected Result:** `200 OK`; response matches `JsonEnvelope<ConsentState>`; `data.userId` is device-scoped; returned values match the seeded consent record; `X-Request-Id` is echoed in header and envelope.
 - **Priority:** High
@@ -85,7 +85,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** No JWT; no consent record exists for the device.
 - **Test Data:** `X-Device-Id: device-new-001`, `X-Request-Id: req-be-001a`
 - **Steps:**
-  1. Send `GET /consent` without `Authorization` and with `X-Device-Id` and `X-Request-Id`.
+  1. Send `GET /v1/consent` without `Authorization` and with `X-Device-Id` and `X-Request-Id`.
   2. Capture status, headers, and response body.
 - **Expected Result:** `200 OK`; response matches `JsonEnvelope<ConsentState>`; `data.userId` is device-scoped; default values are `ageVerified=false`, `privacyAccepted=false`, and `adConsent="unknown"`; `X-Request-Id` is echoed in header and envelope.
 - **Priority:** Medium
@@ -98,8 +98,8 @@ Canonical error expectations used in this document:
 - **Preconditions:** No JWT; valid device ID available.
 - **Test Data:** `X-Device-Id: device-002`, `Accept-Language: fr-FR`, body `{ "ageVerified": true, "privacyAccepted": true, "adConsent": "unknown" }`
 - **Steps:**
-  1. Send `PUT /consent` without `Authorization` and with valid device ID, `Accept-Language`, and valid JSON body.
-  2. Send pre-auth `GET /consent` for the same device.
+  1. Send `PUT /v1/consent` without `Authorization` and with valid device ID, `Accept-Language`, and valid JSON body.
+  2. Send pre-auth `GET /v1/consent` for the same device.
   3. Inspect the persisted record.
 - **Expected Result:** `200 OK`; consent is readable for the same device; DB record is stored at `DEVICE#<deviceId>#CONSENT`; `consentUpdatedAt`, `locale=fr-FR`, `entityType`, and `ttlEpoch` are persisted.
 - **Priority:** High
@@ -112,7 +112,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** No JWT; valid device ID available.
 - **Test Data:** `X-Device-Id: device-003`, valid consent body without `Accept-Language`
 - **Steps:**
-  1. Send `PUT /consent` without `Accept-Language`.
+  1. Send `PUT /v1/consent` without `Accept-Language`.
   2. Read the consent state for the same device.
   3. Inspect the persisted record.
 - **Expected Result:** `200 OK`; returned and persisted `locale` is `en-US`.
@@ -126,8 +126,8 @@ Canonical error expectations used in this document:
 - **Preconditions:** No JWT.
 - **Test Data:** Missing `X-Device-Id`
 - **Steps:**
-  1. Send `GET /consent` without `Authorization` and without `X-Device-Id`.
-  2. Send `PUT /consent` without `Authorization`, without `X-Device-Id`, and with otherwise valid JSON body.
+  1. Send `GET /v1/consent` without `Authorization` and without `X-Device-Id`.
+  2. Send `PUT /v1/consent` without `Authorization`, without `X-Device-Id`, and with otherwise valid JSON body.
 - **Expected Result:** Both requests return `422 VALIDATION_ERROR`; failure envelope and `X-Request-Id` are present; no consent record is created.
 - **Priority:** High
 
@@ -139,7 +139,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** No JWT; valid device ID available.
 - **Test Data:** `X-Device-Id: device-004`, body with `adConsent: "invalid_value"`
 - **Steps:**
-  1. Send `PUT /consent` with invalid `adConsent`.
+  1. Send `PUT /v1/consent` with invalid `adConsent`.
   2. Inspect status and persisted state.
 - **Expected Result:** `422 VALIDATION_ERROR`; invalid value is not persisted.
 - **Priority:** High
@@ -152,7 +152,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** No JWT; valid device ID available.
 - **Test Data:** Body missing required consent fields or violating age-gate rules
 - **Steps:**
-  1. Send `PUT /consent` with invalid payload.
+  1. Send `PUT /v1/consent` with invalid payload.
   2. Inspect status and persisted state.
 - **Expected Result:** `422 VALIDATION_ERROR`; no invalid consent state is persisted.
 - **Priority:** High
@@ -167,7 +167,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** Valid JWT; user-scoped consent exists.
 - **Test Data:** `Authorization: Bearer <valid-jwt-user-001>`
 - **Steps:**
-  1. Send `GET /consent` with valid JWT and no `X-Device-Id`.
+  1. Send `GET /v1/consent` with valid JWT and no `X-Device-Id`.
   2. Inspect status, envelope, and returned `userId`.
 - **Expected Result:** `200 OK`; `data.userId` matches JWT `sub`; record is read from `USER#<userId>#CONSENT`; missing `X-Device-Id` does not fail authenticated request.
 - **Priority:** High
@@ -180,8 +180,8 @@ Canonical error expectations used in this document:
 - **Preconditions:** Valid JWT for an existing user.
 - **Test Data:** `Authorization: Bearer <valid-jwt-user-002>`, `Accept-Language: en-GB`, valid consent body
 - **Steps:**
-  1. Send `PUT /consent` with valid JWT and valid body.
-  2. Send authenticated `GET /consent`.
+  1. Send `PUT /v1/consent` with valid JWT and valid body.
+  2. Send authenticated `GET /v1/consent`.
   3. Inspect the persisted record.
 - **Expected Result:** `200 OK`; consent is stored at `USER#<userId>#CONSENT`; `locale=en-GB`, `consentUpdatedAt`, and `entityType` are persisted; `ttlEpoch` is not required for canonical user consent.
 - **Priority:** High
@@ -194,7 +194,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** Valid JWT for user-scoped consent; mismatched device-scoped consent may exist for another device.
 - **Test Data:** `Authorization: Bearer <valid-jwt-user-002>`, `X-Device-Id: device-mismatch`
 - **Steps:**
-  1. Send authenticated `GET /consent` with a valid JWT and a mismatched `X-Device-Id`.
+  1. Send authenticated `GET /v1/consent` with a valid JWT and a mismatched `X-Device-Id`.
   2. Inspect returned `userId`, consent values, and any persistence side effects.
 - **Expected Result:** `200 OK`; returned consent is resolved only from `USER#<userId>#CONSENT`; mismatched device header does not alter identity binding, does not return device-scoped consent, and does not create unwanted side effects.
 - **Priority:** High
@@ -211,7 +211,7 @@ Canonical error expectations used in this document:
 - **Steps:**
   1. Save pre-auth consent for `device-005`.
   2. Authenticate as `user-005`.
-  3. Call `GET /me` as the first authenticated request that triggers re-key.
+  3. Call `GET /v1/me` as the first authenticated request that triggers re-key.
   4. Inspect consent records before and after the call.
 - **Expected Result:** User-scoped consent is created with preserved values; bootstrap `DEVICE#<deviceId>#CONSENT` record is deleted after successful re-key; request succeeds normally.
 - **Priority:** High
@@ -239,7 +239,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** Valid JWT; no `DEVICE#<deviceId>#CONSENT` record exists.
 - **Test Data:** `Authorization: Bearer <valid-jwt-user-007>`
 - **Steps:**
-  1. Call `GET /me` or authenticated `GET /consent`.
+  1. Call `GET /v1/me` or authenticated `GET /v1/consent`.
   2. Inspect response and resulting records.
 - **Expected Result:** Request succeeds; no error is raised; user consent state remains correct; no unexpected device-scoped record is created.
 - **Priority:** Medium
@@ -250,7 +250,7 @@ Canonical error expectations used in this document:
 - **Title:** Emit audit log on consent updates and re-key events
 - **Objective:** Verify consent changes and consent migration are auditable.
 - **Preconditions:** Structured audit logs are accessible.
-- **Test Data:** One direct `PUT /consent` and one successful re-key flow
+- **Test Data:** One direct `PUT /v1/consent` and one successful re-key flow
 - **Steps:**
   1. Perform a successful consent update.
   2. Perform a successful re-key flow.
@@ -268,9 +268,9 @@ Canonical error expectations used in this document:
 - **Preconditions:** None.
 - **Test Data:** Missing `Authorization` header
 - **Steps:**
-  1. Send `GET /me` without JWT.
-  2. Send `PUT /me` without JWT.
-  3. Send `PUT /me/onboarding-step` without JWT.
+  1. Send `GET /v1/me` without JWT.
+  2. Send `PUT /v1/me` without JWT.
+  3. Send `PUT /v1/me/onboarding-step` without JWT.
 - **Expected Result:** Each request returns `401 AUTH_UNAUTHORIZED`; failure envelope and `X-Request-Id` are present.
 - **Priority:** High
 
@@ -282,9 +282,9 @@ Canonical error expectations used in this document:
 - **Preconditions:** Expired JWT available.
 - **Test Data:** `Authorization: Bearer <expired-jwt>`
 - **Steps:**
-  1. Send `GET /me` with expired JWT.
-  2. Send `PUT /me` with expired JWT.
-  3. Send `PUT /me/onboarding-step` with expired JWT.
+  1. Send `GET /v1/me` with expired JWT.
+  2. Send `PUT /v1/me` with expired JWT.
+  3. Send `PUT /v1/me/onboarding-step` with expired JWT.
 - **Expected Result:** Each request returns `401 AUTH_UNAUTHORIZED`; no state mutation occurs.
 - **Priority:** High
 
@@ -296,9 +296,9 @@ Canonical error expectations used in this document:
 - **Preconditions:** Invalid-signature JWT available.
 - **Test Data:** `Authorization: Bearer <invalid-signature-jwt>`
 - **Steps:**
-  1. Send `GET /me` with invalid-signature JWT.
-  2. Send `PUT /me` with invalid-signature JWT.
-  3. Send `PUT /me/onboarding-step` with invalid-signature JWT.
+  1. Send `GET /v1/me` with invalid-signature JWT.
+  2. Send `PUT /v1/me` with invalid-signature JWT.
+  3. Send `PUT /v1/me/onboarding-step` with invalid-signature JWT.
 - **Expected Result:** Each request returns `401 AUTH_UNAUTHORIZED`; no protected data is disclosed and no profile or onboarding-progress state changes are persisted.
 - **Priority:** High
 
@@ -310,8 +310,8 @@ Canonical error expectations used in this document:
 - **Preconditions:** Valid JWT; missing or incomplete consent.
 - **Test Data:** `Authorization: Bearer <valid-jwt-user-008>`, valid profile update body
 - **Steps:**
-  1. Send `GET /me`.
-  2. Send `PUT /me` with valid body.
+  1. Send `GET /v1/me`.
+  2. Send `PUT /v1/me` with valid body.
 - **Expected Result:** Both requests return `403 CONSENT_REQUIRED`; failure envelope and `X-Request-Id` are present; profile remains unchanged.
 - **Priority:** High
 
@@ -320,12 +320,12 @@ Canonical error expectations used in this document:
 #### TC-ONB-BE-017
 
 - **Related Scenario ID:** `TS-ONB-BE-13`
-- **Title:** Return authenticated user's profile from `GET /me`
+- **Title:** Return authenticated user's profile from `GET /v1/me`
 - **Objective:** Verify profile reads are bound to the authenticated JWT subject.
 - **Preconditions:** Valid JWT; consent complete; profile exists.
 - **Test Data:** `Authorization: Bearer <valid-jwt-user-009>`
 - **Steps:**
-  1. Send `GET /me`.
+  1. Send `GET /v1/me`.
   2. Compare returned `data.userId` to the JWT `sub`.
 - **Expected Result:** `200 OK`; `data.userId` matches JWT `sub`; returned profile belongs only to the authenticated user.
 - **Priority:** High
@@ -333,25 +333,25 @@ Canonical error expectations used in this document:
 #### TC-ONB-BE-018
 
 - **Related Scenario ID:** `TS-ONB-BE-14`
-- **Title:** Return `USER_NOT_FOUND` when profile does not exist on `GET /me`
+- **Title:** Return `USER_NOT_FOUND` when profile does not exist on `GET /v1/me`
 - **Objective:** Verify missing profile rows are reported with the canonical error.
 - **Preconditions:** Valid JWT; consent complete; no profile row exists for JWT `sub`.
 - **Test Data:** `Authorization: Bearer <valid-jwt-user-missing>`
 - **Steps:**
-  1. Send `GET /me`.
+  1. Send `GET /v1/me`.
 - **Expected Result:** `404 USER_NOT_FOUND`; failure envelope and `X-Request-Id` are present.
 - **Priority:** High
 
 #### TC-ONB-BE-019
 
 - **Related Scenario ID:** `TS-ONB-BE-15`
-- **Title:** Apply partial `PUT /me` update without clearing omitted fields
+- **Title:** Apply partial `PUT /v1/me` update without clearing omitted fields
 - **Objective:** Verify partial update semantics for the profile endpoint.
 - **Preconditions:** Valid JWT; consent complete; profile exists with `level` and `reminderTime` already populated.
 - **Test Data:** Body `{ "level": "advanced" }`
 - **Steps:**
   1. Read the current profile.
-  2. Send `PUT /me` with only `level`.
+  2. Send `PUT /v1/me` with only `level`.
   3. Read the profile again.
   4. Inspect the persisted profile record.
 - **Expected Result:** `200 OK`; `level` is updated; omitted fields remain unchanged; persisted record retains `entityType`.
@@ -360,12 +360,12 @@ Canonical error expectations used in this document:
 #### TC-ONB-BE-020
 
 - **Related Scenario ID:** `TS-ONB-BE-14`
-- **Title:** Return `USER_NOT_FOUND` when profile does not exist on `PUT /me`
+- **Title:** Return `USER_NOT_FOUND` when profile does not exist on `PUT /v1/me`
 - **Objective:** Verify missing profile rows are reported consistently during updates.
 - **Preconditions:** Valid JWT; consent complete; no profile row exists for JWT `sub`.
 - **Test Data:** Valid profile update body
 - **Steps:**
-  1. Send `PUT /me` with valid body.
+  1. Send `PUT /v1/me` with valid body.
 - **Expected Result:** `404 USER_NOT_FOUND`; no profile row is created implicitly.
 - **Priority:** High
 
@@ -377,7 +377,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** Valid JWT; consent complete; profile exists.
 - **Test Data:** Body `{ "displayName": "  Alex  " }`
 - **Steps:**
-  1. Send `PUT /me` with whitespace-padded `displayName`.
+  1. Send `PUT /v1/me` with whitespace-padded `displayName`.
   2. Read the profile.
 - **Expected Result:** `200 OK`; persisted `displayName` is trimmed to `Alex`.
 - **Priority:** Medium
@@ -390,7 +390,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** Valid JWT; consent complete; profile exists.
 - **Test Data:** Body with `displayName` longer than 80 characters
 - **Steps:**
-  1. Send `PUT /me` with over-length `displayName`.
+  1. Send `PUT /v1/me` with over-length `displayName`.
   2. Inspect response and persisted profile.
 - **Expected Result:** `422 VALIDATION_ERROR`; no persisted `displayName` longer than 80 characters exists after the request.
 - **Priority:** High
@@ -398,12 +398,12 @@ Canonical error expectations used in this document:
 #### TC-ONB-BE-023
 
 - **Related Scenario ID:** `TS-ONB-BE-16`
-- **Title:** Reject invalid `level` value on `PUT /me`
+- **Title:** Reject invalid `level` value on `PUT /v1/me`
 - **Objective:** Verify `level` enum validation.
 - **Preconditions:** Valid JWT; consent complete; profile exists.
 - **Test Data:** Body `{ "level": "expert" }`
 - **Steps:**
-  1. Send `PUT /me` with invalid `level`.
+  1. Send `PUT /v1/me` with invalid `level`.
   2. Read the profile.
 - **Expected Result:** `422 VALIDATION_ERROR`; invalid value is not persisted.
 - **Priority:** High
@@ -411,12 +411,12 @@ Canonical error expectations used in this document:
 #### TC-ONB-BE-024
 
 - **Related Scenario ID:** `TS-ONB-BE-16`
-- **Title:** Reject invalid `reminderTime` format on `PUT /me`
+- **Title:** Reject invalid `reminderTime` format on `PUT /v1/me`
 - **Objective:** Verify `HH:MM` validation.
 - **Preconditions:** Valid JWT; consent complete; profile exists.
 - **Test Data:** Body `{ "reminderTime": "25:99" }`
 - **Steps:**
-  1. Send `PUT /me` with invalid `reminderTime`.
+  1. Send `PUT /v1/me` with invalid `reminderTime`.
   2. Read the profile.
 - **Expected Result:** `422 VALIDATION_ERROR`; invalid value is not persisted.
 - **Priority:** High
@@ -429,7 +429,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** Separate profiles exist for two users.
 - **Test Data:** JWT for user A; persisted profile for user B
 - **Steps:**
-  1. Send `GET /me` as user A.
+  1. Send `GET /v1/me` as user A.
   2. Inspect returned profile.
   3. Confirm the endpoint has no request shape that allows selecting another user's profile.
 - **Expected Result:** Only user A's profile is returned; user B's profile is never exposed through this endpoint.
@@ -445,8 +445,8 @@ Canonical error expectations used in this document:
 - **Preconditions:** Valid JWT; consent complete; profile exists.
 - **Test Data:** `age_gate_done`, `consent_done`, `intro_done`, `level_selected`, `reminder_set`, `mic_permission_done`, `complete`
 - **Steps:**
-  1. Send `PUT /me/onboarding-step` for each valid value one by one.
-  2. After each write, call `GET /me`.
+  1. Send `PUT /v1/me/onboarding-step` for each valid value one by one.
+  2. After each write, call `GET /v1/me`.
 - **Expected Result:** Each allowed step is accepted and returned as the current `onboardingStep`.
 - **Priority:** High
 
@@ -458,7 +458,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** Valid JWT; consent complete; profile exists.
 - **Test Data:** Body `{ "step": "foobar" }`
 - **Steps:**
-  1. Send `PUT /me/onboarding-step` with invalid step.
+  1. Send `PUT /v1/me/onboarding-step` with invalid step.
   2. Read profile state afterward.
 - **Expected Result:** `422 VALIDATION_ERROR`; previously stored `onboardingStep` remains unchanged.
 - **Priority:** High
@@ -471,7 +471,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** None.
 - **Test Data:** Body `{ "step": "intro_done" }`
 - **Steps:**
-  1. Send `PUT /me/onboarding-step` without JWT.
+  1. Send `PUT /v1/me/onboarding-step` without JWT.
 - **Expected Result:** `401 AUTH_UNAUTHORIZED`; failure envelope and `X-Request-Id` are present.
 - **Priority:** High
 
@@ -504,7 +504,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** Endpoint available in normal health state.
 - **Test Data:** Valid onboarding request without `X-Request-Id`
 - **Steps:**
-  1. Send a valid onboarding request such as pre-auth `GET /consent` without `X-Request-Id`.
+  1. Send a valid onboarding request such as pre-auth `GET /v1/consent` without `X-Request-Id`.
   2. Inspect response headers and envelope body.
 - **Expected Result:** Backend returns a generated `X-Request-Id` response header and matching `requestId` in the envelope.
 - **Priority:** Medium
@@ -517,7 +517,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** Rate limiting can be triggered in QA or simulated.
 - **Test Data:** Burst of repeated writes to a rate-limited onboarding endpoint
 - **Steps:**
-  1. Repeatedly call a write endpoint such as `PUT /consent` until the limit is exceeded.
+  1. Repeatedly call a write endpoint such as `PUT /v1/consent` until the limit is exceeded.
   2. Inspect the failing response.
 - **Expected Result:** Backend returns `429 Too Many Requests`; the response is clearly retryable from a transport perspective and does not corrupt persisted state.
 - **Priority:** Medium
@@ -530,7 +530,7 @@ Canonical error expectations used in this document:
 - **Preconditions:** Controlled backend dependency failure can be simulated.
 - **Test Data:** Valid request to an onboarding endpoint during simulated repository or service failure
 - **Steps:**
-  1. Simulate a backend dependency failure for an onboarding endpoint such as `PUT /consent` or `GET /me`.
+  1. Simulate a backend dependency failure for an onboarding endpoint such as `PUT /v1/consent` or `GET /v1/me`.
   2. Send the valid request.
   3. Inspect the failing response.
 - **Expected Result:** Backend returns `500 SYSTEM_ERROR` using failure envelope conventions and without leaking internal exception details.

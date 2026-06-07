@@ -41,7 +41,7 @@ describe('authBootstrap', () => {
   it('returns cached config when cache exists (no backend call)', async () => {
     await saveOidcConfig(backendConfig);
     // Even if backend is available, cache takes priority.
-    mock.onGet('/config/runtime').reply(200, { version: 2, provider: 'keycloak' } as any);
+    mock.onGet('/v1/config/runtime').reply(200, { version: 2, provider: 'keycloak' } as any);
 
     const result = await authBootstrap();
 
@@ -53,7 +53,7 @@ describe('authBootstrap', () => {
   });
 
   it('fetches config from backend when cache is empty', async () => {
-    mock.onGet('/config/runtime').reply(200, backendConfig);
+    mock.onGet('/v1/config/runtime').reply(200, backendConfig);
 
     const result = await authBootstrap();
 
@@ -63,7 +63,7 @@ describe('authBootstrap', () => {
   });
 
   it('saves fetched config to storage for next startup', async () => {
-    mock.onGet('/config/runtime').reply(200, backendConfig);
+    mock.onGet('/v1/config/runtime').reply(200, backendConfig);
 
     await authBootstrap();
 
@@ -80,7 +80,7 @@ describe('authBootstrap', () => {
     };
     await saveOidcConfig(invalidConfig);
     // Backend returns valid config.
-    mock.onGet('/config/runtime').reply(200, backendConfig);
+    mock.onGet('/v1/config/runtime').reply(200, backendConfig);
 
     const result = await authBootstrap();
 
@@ -90,7 +90,7 @@ describe('authBootstrap', () => {
   });
 
   it('fails gracefully when both cache and backend are unavailable', async () => {
-    mock.onGet('/config/runtime').networkError();
+    mock.onGet('/v1/config/runtime').networkError();
 
     const result = await authBootstrap();
 
@@ -100,7 +100,7 @@ describe('authBootstrap', () => {
   });
 
   it('fails when cache is empty and backend returns invalid data', async () => {
-    mock.onGet('/config/runtime').reply(200, {
+    mock.onGet('/v1/config/runtime').reply(200, {
       version: 1,
       issuer: '',
       clientId: '',
@@ -117,7 +117,7 @@ describe('authBootstrap', () => {
   });
 
   it('fails when cache is empty and backend returns missing fields', async () => {
-    mock.onGet('/config/runtime').reply(200, { badField: 'nope' } as any);
+    mock.onGet('/v1/config/runtime').reply(200, { badField: 'nope' } as any);
 
     const result = await authBootstrap();
 

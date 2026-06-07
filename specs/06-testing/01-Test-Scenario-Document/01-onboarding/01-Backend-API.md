@@ -19,9 +19,9 @@ This document defines backend and API test scenarios for Epic 01 onboarding. It 
 
 In scope:
 
-- Pre-auth and authenticated consent endpoints: `GET /consent`, `PUT /consent`
-- Authenticated profile endpoints: `GET /me`, `PUT /me`
-- Authenticated onboarding-progress endpoint: `PUT /me/onboarding-step`
+- Pre-auth and authenticated consent endpoints: `GET /v1/consent`, `PUT /v1/consent`
+- Authenticated profile endpoints: `GET /v1/me`, `PUT /v1/me`
+- Authenticated onboarding-progress endpoint: `PUT /v1/me/onboarding-step`
 - JWT validation, consent guard, and own-profile semantics from JWT `sub`
 - Pre-auth consent bootstrap with `X-Device-Id`
 - Consent re-key from `DEVICE#<deviceId>#CONSENT` to `USER#<userId>#CONSENT`
@@ -79,12 +79,12 @@ Unless a scenario explicitly states otherwise, the following assertions apply to
 #### TS-ONB-BE-01
 
 - **Related User Story:** `US-2.1`
-- **Title:** Pre-auth `GET /consent` returns device-scoped consent state
+- **Title:** Pre-auth `GET /v1/consent` returns device-scoped consent state
 - **Description:** Verify anonymous onboarding clients can read consent state using `X-Device-Id`.
 - **Preconditions:** No JWT; seeded device-scoped consent exists for `device-001`.
 - **Test Data:** `X-Device-Id: device-001`, `X-Request-Id: req-onb-001`.
 - **Steps:**
-  1. Send `GET /consent` without `Authorization` and with `X-Device-Id` and `X-Request-Id`.
+  1. Send `GET /v1/consent` without `Authorization` and with `X-Device-Id` and `X-Request-Id`.
   2. Inspect the HTTP status, `JsonEnvelope<ConsentState>`, and `X-Request-Id` response header.
 - **Expected Result:** API returns `200 OK`; `ok=true`; `data.userId` is the device-scoped anonymous identifier; the response includes the same or server-generated `requestId` and `X-Request-Id`.
 - **Priority:** High
@@ -92,13 +92,13 @@ Unless a scenario explicitly states otherwise, the following assertions apply to
 #### TS-ONB-BE-02
 
 - **Related User Story:** `US-2.1`
-- **Title:** Pre-auth `PUT /consent` persists valid consent, locale, and TTL
+- **Title:** Pre-auth `PUT /v1/consent` persists valid consent, locale, and TTL
 - **Description:** Verify valid onboarding consent can be saved before authentication with correct persistence attributes.
 - **Preconditions:** No JWT; valid device ID available.
 - **Test Data:** `X-Device-Id: device-002`, `Accept-Language: fr-FR`, payload `{ ageVerified: true, privacyAccepted: true, adConsent: "unknown" }`.
 - **Steps:**
-  1. Send `PUT /consent` without `Authorization` and with `X-Device-Id`, `Accept-Language`, `Content-Type: application/json`, and `X-Request-Id`.
-  2. Re-read the same consent with pre-auth `GET /consent`.
+  1. Send `PUT /v1/consent` without `Authorization` and with `X-Device-Id`, `Accept-Language`, `Content-Type: application/json`, and `X-Request-Id`.
+  2. Re-read the same consent with pre-auth `GET /v1/consent`.
   3. Inspect the persisted `DEVICE#<deviceId>#CONSENT` record.
 - **Expected Result:** API returns `200 OK`; `JsonEnvelope<ConsentState>` includes `locale="fr-FR"` and server-generated `consentUpdatedAt`; DB record is stored under `DEVICE#device-002#CONSENT` with `entityType="consent"` and `ttlEpoch` set to approximately now + 86400 seconds.
 - **Priority:** High
@@ -106,13 +106,13 @@ Unless a scenario explicitly states otherwise, the following assertions apply to
 #### TS-ONB-BE-03
 
 - **Related User Story:** `US-2.1`
-- **Title:** Pre-auth `PUT /consent` defaults locale to `en-US` when `Accept-Language` is absent
+- **Title:** Pre-auth `PUT /v1/consent` defaults locale to `en-US` when `Accept-Language` is absent
 - **Description:** Verify locale fallback behavior for anonymous consent writes.
 - **Preconditions:** No JWT; valid device ID available.
 - **Test Data:** `X-Device-Id: device-003`, payload `{ ageVerified: true, privacyAccepted: true, adConsent: "personalized" }`.
 - **Steps:**
-  1. Send `PUT /consent` without `Authorization` and without `Accept-Language`.
-  2. Call pre-auth `GET /consent` for the same device.
+  1. Send `PUT /v1/consent` without `Authorization` and without `Accept-Language`.
+  2. Call pre-auth `GET /v1/consent` for the same device.
   3. Inspect the persisted consent record.
 - **Expected Result:** API returns `200 OK`; `data.locale="en-US"`; persisted record stores `locale="en-US"` and valid `consentUpdatedAt`.
 - **Priority:** High
@@ -125,8 +125,8 @@ Unless a scenario explicitly states otherwise, the following assertions apply to
 - **Preconditions:** No JWT.
 - **Test Data:** Missing `X-Device-Id`.
 - **Steps:**
-  1. Send `GET /consent` without `Authorization` and without `X-Device-Id`.
-  2. Send `PUT /consent` without `Authorization`, without `X-Device-Id`, and with an otherwise valid body.
+  1. Send `GET /v1/consent` without `Authorization` and without `X-Device-Id`.
+  2. Send `PUT /v1/consent` without `Authorization`, without `X-Device-Id`, and with an otherwise valid body.
   3. Inspect the response contract and persistence layer.
 - **Expected Result:** Both requests return `422 Unprocessable Entity` with `ok=false`, `error.code="VALIDATION_ERROR"`, `JsonEnvelope`, and `X-Request-Id`; no consent record is written.
 - **Priority:** High
@@ -134,12 +134,12 @@ Unless a scenario explicitly states otherwise, the following assertions apply to
 #### TS-ONB-BE-05
 
 - **Related User Story:** `US-2.1`, `US-3.1`
-- **Title:** Authenticated `GET /consent` returns user-scoped consent for the JWT subject
+- **Title:** Authenticated `GET /v1/consent` returns user-scoped consent for the JWT subject
 - **Description:** Verify authenticated consent reads use the authenticated identity rather than device scope.
 - **Preconditions:** Valid JWT for `sub=user-001`; user-scoped consent exists.
 - **Test Data:** `Authorization: Bearer <valid-jwt-user-001>`, optional mismatched `X-Device-Id: device-other`.
 - **Steps:**
-  1. Send `GET /consent` with valid JWT.
+  1. Send `GET /v1/consent` with valid JWT.
   2. Inspect response identity fields and returned consent state.
 - **Expected Result:** API returns `200 OK`; `data.userId="user-001"`; returned consent is sourced from `USER#user-001#CONSENT`; optional `X-Device-Id` does not cause another profile's consent to be returned.
 - **Priority:** High
@@ -147,13 +147,13 @@ Unless a scenario explicitly states otherwise, the following assertions apply to
 #### TS-ONB-BE-06
 
 - **Related User Story:** `US-2.1`, `US-3.1`
-- **Title:** Authenticated `PUT /consent` persists user-scoped consent without bootstrap TTL
+- **Title:** Authenticated `PUT /v1/consent` persists user-scoped consent without bootstrap TTL
 - **Description:** Verify authenticated consent writes persist to the canonical user record and follow the response contract.
 - **Preconditions:** Valid JWT for `sub=user-002`.
 - **Test Data:** `Authorization: Bearer <valid-jwt-user-002>`, payload `{ ageVerified: true, privacyAccepted: true, adConsent: "non_personalized" }`.
 - **Steps:**
-  1. Send `PUT /consent` with valid JWT and valid body.
-  2. Call authenticated `GET /consent`.
+  1. Send `PUT /v1/consent` with valid JWT and valid body.
+  2. Call authenticated `GET /v1/consent`.
   3. Inspect the persisted `USER#<userId>#CONSENT` record.
 - **Expected Result:** API returns `200 OK`; `data.userId="user-002"`; DB record is stored under `USER#user-002#CONSENT` with `entityType="consent"`; `ttlEpoch` is absent for the canonical user consent record; response envelope and `X-Request-Id` are present.
 - **Priority:** High
@@ -168,7 +168,7 @@ Unless a scenario explicitly states otherwise, the following assertions apply to
 - **Steps:**
   1. Save consent pre-auth for `device-004`.
   2. Authenticate as `user-004`.
-  3. Call the first authenticated endpoint that should trigger re-key, such as `GET /me` or `GET /consent`.
+  3. Call the first authenticated endpoint that should trigger re-key, such as `GET /v1/me` or `GET /v1/consent`.
   4. Inspect consent records and audit logs before and after the call.
 - **Expected Result:** Canonical `USER#user-004#CONSENT` is created with preserved `ageVerified`, `privacyAccepted`, `adConsent`, `locale`, and `consentUpdatedAt`; bootstrap `DEVICE#device-004#CONSENT` is deleted; an audit entry exists for the re-key event.
 - **Priority:** High
@@ -196,8 +196,8 @@ Unless a scenario explicitly states otherwise, the following assertions apply to
 - **Preconditions:** Audit logs are accessible.
 - **Test Data:** One pre-auth consent write, one authenticated consent update, one re-key flow.
 - **Steps:**
-  1. Submit a `PUT /consent` write pre-auth.
-  2. Submit a `PUT /consent` write authenticated.
+  1. Submit a `PUT /v1/consent` write pre-auth.
+  2. Submit a `PUT /v1/consent` write authenticated.
   3. Execute a re-key flow.
   4. Inspect logs using `requestId`, timestamp, and subject identifiers.
 - **Expected Result:** Every consent change produces one structured audit entry; re-key also produces an audit entry; entries contain allowed identifiers, request correlation, and no unexpected PII.
@@ -206,13 +206,13 @@ Unless a scenario explicitly states otherwise, the following assertions apply to
 #### TS-ONB-BE-10
 
 - **Related User Story:** `US-2.1`, `US-5.1`, `US-5.2`
-- **Title:** Consent guard blocks `GET /me` and `PUT /me` until required consent is complete
+- **Title:** Consent guard blocks `GET /v1/me` and `PUT /v1/me` until required consent is complete
 - **Description:** Verify authenticated users cannot access protected profile routes before required consent is present.
 - **Preconditions:** Valid JWT; consent missing or incomplete.
 - **Test Data:** Authenticated user with either no consent record or `privacyAccepted=false`.
 - **Steps:**
-  1. Call `GET /me`.
-  2. Call `PUT /me` with a valid profile body.
+  1. Call `GET /v1/me`.
+  2. Call `PUT /v1/me` with a valid profile body.
   3. Inspect status, error code, envelope, and headers.
 - **Expected Result:** Both requests return `403 Forbidden` with `ok=false`, `error.code="CONSENT_REQUIRED"`, `JsonEnvelope`, and `X-Request-Id`.
 - **Priority:** High
@@ -225,7 +225,7 @@ Unless a scenario explicitly states otherwise, the following assertions apply to
 - **Preconditions:** One unauthenticated context and one expired-JWT fixture.
 - **Test Data:** Missing JWT; expired JWT.
 - **Steps:**
-  1. Call `GET /me`, `PUT /me`, and `PUT /me/onboarding-step` without JWT.
+  1. Call `GET /v1/me`, `PUT /v1/me`, and `PUT /v1/me/onboarding-step` without JWT.
   2. Repeat the same requests with an expired JWT.
 - **Expected Result:** Each request returns `401 Unauthorized` with `ok=false`, `error.code="AUTH_UNAUTHORIZED"`, `JsonEnvelope`, and `X-Request-Id`.
 - **Priority:** High
@@ -238,21 +238,21 @@ Unless a scenario explicitly states otherwise, the following assertions apply to
 - **Preconditions:** Invalid-signature JWT fixture available.
 - **Test Data:** JWT with valid shape but invalid signature.
 - **Steps:**
-  1. Call `GET /me` with invalid-signature JWT.
-  2. Call `PUT /me` with invalid-signature JWT.
-  3. Call `PUT /me/onboarding-step` with invalid-signature JWT.
+  1. Call `GET /v1/me` with invalid-signature JWT.
+  2. Call `PUT /v1/me` with invalid-signature JWT.
+  3. Call `PUT /v1/me/onboarding-step` with invalid-signature JWT.
 - **Expected Result:** Each request returns `401 Unauthorized` with `error.code="AUTH_UNAUTHORIZED"`; no profile or onboarding data changes are persisted.
 - **Priority:** High
 
 #### TS-ONB-BE-13
 
 - **Related User Story:** `US-5.1`
-- **Title:** `GET /me` returns only the profile belonging to JWT `sub`
+- **Title:** `GET /v1/me` returns only the profile belonging to JWT `sub`
 - **Description:** Verify own-profile semantics are derived from the authenticated JWT subject and not from client-supplied identifiers.
 - **Preconditions:** Distinct profiles exist for `user-010` and `user-011`; valid JWT for `sub=user-010`; required consent exists for `user-010`.
 - **Test Data:** `Authorization: Bearer <valid-jwt-user-010>`, optional unrelated `X-Device-Id`.
 - **Steps:**
-  1. Call `GET /me` as `user-010`.
+  1. Call `GET /v1/me` as `user-010`.
   2. Inspect returned `UserProfile.userId`.
   3. Confirm no mechanism exists to switch target identity through request body, query, or header data.
 - **Expected Result:** API returns `200 OK`; `data.userId="user-010"`; profile data for `user-011` is never returned.
@@ -261,13 +261,13 @@ Unless a scenario explicitly states otherwise, the following assertions apply to
 #### TS-ONB-BE-14
 
 - **Related User Story:** `US-5.1`, `US-5.2`
-- **Title:** `GET /me` and `PUT /me` return `USER_NOT_FOUND` when the JWT subject has no profile
+- **Title:** `GET /v1/me` and `PUT /v1/me` return `USER_NOT_FOUND` when the JWT subject has no profile
 - **Description:** Verify missing-profile cases match the documented profile contract.
 - **Preconditions:** Valid JWT for `sub=user-missing`; consent state is sufficient to pass consent checks; no `USER#user-missing#PROFILE` record exists.
 - **Test Data:** Valid JWT for a user with no profile.
 - **Steps:**
-  1. Call `GET /me` with the JWT.
-  2. Call `PUT /me` with a valid profile body and the same JWT.
+  1. Call `GET /v1/me` with the JWT.
+  2. Call `PUT /v1/me` with a valid profile body and the same JWT.
   3. Inspect HTTP status, canonical error code, envelope, and response header.
 - **Expected Result:** Both requests return `404 Not Found` with `ok=false`, `error.code="USER_NOT_FOUND"`, `JsonEnvelope`, and `X-Request-Id`.
 - **Priority:** High
@@ -275,13 +275,13 @@ Unless a scenario explicitly states otherwise, the following assertions apply to
 #### TS-ONB-BE-15
 
 - **Related User Story:** `US-5.2`
-- **Title:** `PUT /me` applies partial-update semantics and persists profile under the JWT subject
+- **Title:** `PUT /v1/me` applies partial-update semantics and persists profile under the JWT subject
 - **Description:** Verify omitted fields remain unchanged and the write is bound to the authenticated user only.
 - **Preconditions:** Valid JWT for `sub=user-012`; required consent exists; seeded profile has `displayName`, `level`, `reminderTime`, and `onboardingStep`.
 - **Test Data:** Partial body updating only `level`.
 - **Steps:**
-  1. Read the current profile with `GET /me`.
-  2. Send `PUT /me` with a body containing only `level`.
+  1. Read the current profile with `GET /v1/me`.
+  2. Send `PUT /v1/me` with a body containing only `level`.
   3. Re-read the profile and inspect the DB record.
 - **Expected Result:** API returns `200 OK`; only `level` changes; omitted fields remain unchanged; persisted record remains under `USER#user-012#PROFILE` with `entityType="profile"`.
 - **Priority:** High
@@ -289,41 +289,41 @@ Unless a scenario explicitly states otherwise, the following assertions apply to
 #### TS-ONB-BE-16
 
 - **Related User Story:** `US-5.2`
-- **Title:** `PUT /me` trims `displayName` and enforces max length 80
+- **Title:** `PUT /v1/me` trims `displayName` and enforces max length 80
 - **Description:** Verify profile display-name normalization and validation rules.
 - **Preconditions:** Valid JWT and consent.
 - **Test Data:** Case A: `displayName="  Taylor  "`; Case B: `displayName` length `81`; Case C: invalid `reminderTime="25:99"` or invalid `level`.
 - **Steps:**
-  1. Send `PUT /me` with Case A body and re-read the profile.
-  2. Send `PUT /me` with Case B body.
-  3. Send `PUT /me` with Case C body.
+  1. Send `PUT /v1/me` with Case A body and re-read the profile.
+  2. Send `PUT /v1/me` with Case B body.
+  3. Send `PUT /v1/me` with Case C body.
 - **Expected Result:** Case A returns `200 OK` and stores `displayName="Taylor"`; Cases B and C return `422 Unprocessable Entity` with `error.code="VALIDATION_ERROR"`; invalid values are not persisted.
 - **Priority:** High
 
 #### TS-ONB-BE-17
 
 - **Related User Story:** `US-7.2`
-- **Title:** `PUT /me/onboarding-step` accepts and persists the full valid step set
+- **Title:** `PUT /v1/me/onboarding-step` accepts and persists the full valid step set
 - **Description:** Verify the endpoint supports every documented onboarding step value.
 - **Preconditions:** Valid JWT, consent, and an existing profile.
 - **Test Data:** `age_gate_done`, `consent_done`, `intro_done`, `level_selected`, `reminder_set`, `mic_permission_done`, `complete`.
 - **Steps:**
-  1. For each valid step value, call `PUT /me/onboarding-step` with `{ "step": "<value>" }`.
-  2. After each update, call `GET /me`.
+  1. For each valid step value, call `PUT /v1/me/onboarding-step` with `{ "step": "<value>" }`.
+  2. After each update, call `GET /v1/me`.
   3. Inspect the persisted profile after the final update.
-- **Expected Result:** Every listed step returns `200 OK`; `GET /me` returns the latest persisted `onboardingStep`; final profile record stores the last submitted valid step.
+- **Expected Result:** Every listed step returns `200 OK`; `GET /v1/me` returns the latest persisted `onboardingStep`; final profile record stores the last submitted valid step.
 - **Priority:** High
 
 #### TS-ONB-BE-18
 
 - **Related User Story:** `US-7.2`
-- **Title:** `PUT /me/onboarding-step` rejects invalid step values and missing auth
+- **Title:** `PUT /v1/me/onboarding-step` rejects invalid step values and missing auth
 - **Description:** Verify onboarding-progress endpoint enforces both validation and authentication.
 - **Preconditions:** Authenticated and unauthenticated request contexts available.
 - **Test Data:** Invalid step such as `foobar`; missing JWT.
 - **Steps:**
-  1. Send `PUT /me/onboarding-step` without JWT.
-  2. Send `PUT /me/onboarding-step` with invalid step and valid JWT.
+  1. Send `PUT /v1/me/onboarding-step` without JWT.
+  2. Send `PUT /v1/me/onboarding-step` with invalid step and valid JWT.
   3. Re-read the profile for the authenticated user.
 - **Expected Result:** Missing JWT returns `401 Unauthorized` with `error.code="AUTH_UNAUTHORIZED"`; invalid step returns `422 Unprocessable Entity` with `error.code="VALIDATION_ERROR"`; no invalid onboarding step is persisted.
 - **Priority:** High

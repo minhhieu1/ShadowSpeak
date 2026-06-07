@@ -8,1103 +8,1049 @@
 | Epic      | 01 — First-Time Onboarding and Access      |
 | Type      | Technical Task Breakdown (Frontend)        |
 | Phase     | 05 - Development                           |
-| Date      | 2026-05-16                                 |
+| Date      | 2026-06-07                                 |
 | Status    | Draft                                      |
 | Owner     | Solo Dev                                   |
 
 ## Purpose
 
-Detailed breakdown of each frontend task in Epic 01 linking user stories → screens → navigation → Zustand stores → API client → implementation files. Each task specifies exactly what to build, where to put it, and what to test.
+Detailed breakdown of each frontend task in Epic 01 linking user stories, UI design specs, LLD components, and API endpoints to implementation files. Each task specifies exactly what to build, where to put it, what TypeScript interfaces and Zustand stores to create, what states to cover, and what to test.
+
+## Prerequisites — Required npm Packages
+
+The following packages must be installed before implementing these tasks (add to `frontend/package.json` via `npx expo install`):
+
+| Package | Used By | Purpose |
+|---------|---------|---------|
+| `uuid` + `@types/uuid` | 1.1 | Device ID generation (crypto.randomUUID unavailable in React Native) |
+| `expo-auth-session` | 1.3 | OAuth social sign-in (Google/Apple) |
+| `expo-web-browser` | 1.3 | OAuth redirect handling |
+| `expo-notifications` | 1.9, 1.11 | Local notification scheduling and handling |
+| `react-native-pager-view` | 1.7 | Swipeable intro carousel |
+| `@react-native-community/datetimepicker` | 1.1, 1.9 | Native date/time picker |
+| `react-native-google-mobile-ads` | C.5 | AdMob SDK integration |
+| `expo-sqlite` | C.8 | Local SQLite database |
+| `aws-amplify` or `amazon-cognito-identity-js` | 1.4, 1.5, 1.6 | Cognito authentication |
+| `@testing-library/react-native` | T.12–T.16 | Component testing |
+| `jest` + `@types/jest` | All tests | Test runner |
 
 ## Existing Frontend Structure
 
-All frontend code lives under `frontend/` with a flat single-screen scaffold:
+All frontend code lives under `frontend/` with the following layout:
 
 ```
 frontend/
-├── App.tsx                              # Root component — manual tab switching, no navigation library
 ├── src/
 │   ├── api/
-│   │   └── client.ts                    # Basic GET-only API client (no auth, no PUT)
-│   ├── assets.ts                        # Asset references
-│   ├── data/
-│   │   └── demoData.ts                  # Demo lesson/progress types
+│   │   ├── client.ts          # Axios instance, JsonEnvelope<T>, interceptors, token refresh
+│   │   └── http.ts            # AuthManager singleton, apiGet/apiPut/apiPost/apiPatch/apiDelete helpers
+│   ├── auth/
+│   │   ├── authBootstrap.ts   # BootstrapResult, authBootstrap() — OIDC config cache/fetch
+│   │   ├── oidcConfigManager.ts
+│   │   ├── oidcConfigService.ts
+│   │   ├── oidcConfigStorage.ts
+│   │   ├── oidcConfigTypes.ts
+│   │   └── oidcConfigValidator.ts
 │   ├── state/
-│   │   └── useAppStore.ts               # Zustand — activeTab only
-│   ├── theme.ts                         # Color, spacing, radii, typography tokens
-│   └── types/
-│       └── assets.d.ts                  # Asset type declarations
-├── package.json                         # Expo SDK 54, RN 0.81.5, Zustand 5.x, no @react-navigation
-└── tsconfig.json                        # Strict mode enabled
+│   │   └── useAppStore.ts     # AppState: activeTab + setter (Zustand)
+│   ├── storage/
+│   │   └── tokenStorage.ts    # saveToken, getToken, clearToken, saveRefreshToken, etc.
+│   ├── types/
+│   │   └── assets.d.ts
+│   ├── theme.ts               # colors, spacing, radii, typography tokens
+│   ├── data/
+│   │   └── demoData.ts
+│   └── assets.ts
+├── assets/
+├── app.json
+├── package.json
+└── tsconfig.json
 ```
 
-New code follows the directory conventions from the Mobile LLD:
-
-```
-frontend/src/
-├── screens/onboarding/     # Onboarding screens (one per task)
-├── components/             # Reusable UI components
-│   ├── ui/                 # Generic UI primitives (Button, Input, etc.)
-│   └── onboarding/         # Onboarding-specific components
-├── stores/                 # Zustand stores (auth, consent, notification)
-├── services/
-│   ├── api/                # API client modules (authApi, consentApi, profileApi)
-│   ├── auth/               # Auth service (Cognito integration helpers)
-│   └── notifications/      # Notification service (reminder scheduling)
-├── navigation/             # Navigation configuration (Root, Onboarding, MainTabs)
-└── types/                  # TypeScript type definitions (auth, consent, navigation, notification)
-```
-
-## Dependencies to Install
-
-Run the following before starting implementation:
-
-```bash
-# Navigation core
-npx expo install @react-navigation/native @react-navigation/native-stack @react-navigation/bottom-tabs
-# Peer deps for navigation
-npx expo install react-native-screens react-native-safe-area-context
-# Auth (social sign-in)
-npx expo install expo-auth-session expo-web-browser
-# Secure storage for tokens
-npx expo install expo-secure-store
-# Notifications
-npx expo install expo-notifications
-# Microphone permission
-npx expo install expo-av
-# AdMob
-npx expo install react-native-google-mobile-ads
-# UUID generation for X-Device-Id
-npx expo install expo-crypto
-# Async storage for device ID persistence
-npx expo install @react-native-async-storage/async-storage
-```
+New code follows the same conventions: **types → stores → services → components → app/routes**.
 
 ---
 
-## Cross-cutting: Navigation Architecture (C.Nav)
+## 1.1 — Age Gate Screen (Date Picker + Underage Block)
 
 ### Design References
-- **IA Doc**: Navigation Architecture (Depth 0-3, Tab/Stack/Modal patterns)
-- **UI Spec**: Navigation and Transition Rules section
-- **User Flow**: First-Time Onboarding Flow diagram
-- **Wireframes**: Shared Shell Pattern
-
-### Implementation Tasks
-
-| Sub-task | File | Description |
-|----------|------|-------------|
-| C.Nav.1 | `frontend/src/types/navigation.ts` | Define all navigation param lists: `RootStackParamList`, `OnboardingStackParamList`, `MainTabParamList`. Include `isAuthenticated`, `onboardingStep` as route params where needed. |
-| C.Nav.2 | `frontend/src/navigation/MainTabNavigator.tsx` | Bottom tab navigator with 5 tabs: Home, Lessons, Downloads, Progress, Settings. Uses `@react-navigation/bottom-tabs`. Each tab is a placeholder screen initially (migrated from existing App.tsx inline components). |
-| C.Nav.3 | `frontend/src/navigation/OnboardingNavigator.tsx` | Stack navigator for the full onboarding flow. Screens in order: AgeGate, Consent, SignIn (with nested SignUp/ForgotPassword push), IntroScreens, LevelSelection, ReminderSetup, PermissionPrompts. Uses `@react-navigation/native-stack` with `headerShown: false` for custom headers. |
-| C.Nav.4 | `frontend/src/navigation/RootNavigator.tsx` | Root navigator that switches between OnboardingStack and MainTabs based on auth+onboarding state. Reads from authStore and consentStore to determine initial route. Includes AgeGate and AgePolicyBlock as modal/full-screen blocking states at Depth 0. |
-| C.Nav.5 | `frontend/App.tsx` | Replace manual tab switching with `NavigationContainer` wrapping `RootNavigator`. Remove inline screen components (HomeScreen, LessonCatalog, etc.) — they become tab screens inside MainTabNavigator. Keep SafeAreaProvider wrapping. |
-
-### Navigation Param Types
-
-```typescript
-// frontend/src/types/navigation.ts
-
-export type RootStackParamList = {
-  Loading: undefined;
-  Onboarding: undefined;
-  MainTabs: undefined;
-};
-
-export type OnboardingStackParamList = {
-  AgeGate: undefined;
-  AgePolicyBlock: undefined;
-  Consent: undefined;
-  SignIn: undefined;
-  SignUp: undefined;
-  ForgotPassword: undefined;
-  IntroScreens: undefined;
-  LevelSelection: undefined;
-  ReminderSetup: undefined;
-  PermissionPrompts: undefined;
-};
-
-export type MainTabParamList = {
-  Home: undefined;
-  Lessons: undefined;
-  Downloads: undefined;
-  Progress: undefined;
-  Settings: undefined;
-};
-```
-
-### States Table
-
-| State | Behavior |
-|-------|----------|
-| Loading (boot) | Show AppLaunch screen with brand mark and spinner while resolving auth/consent/onboarding step |
-| Unauthenticated, no consent | Show OnboardingStack from AgeGate |
-| Unauthenticated, age gate done + consent given | Show OnboardingStack from SignIn |
-| Authenticated, onboarding incomplete | Show OnboardingStack from the step indicated by `onboardingStep` |
-| Authenticated, onboarding complete | Show MainTabs directly |
-| Underage blocked | Show AgePolicyBlock (modal, no escape) |
-
-### Acceptance Criteria
-
-- Onboarding flow uses Stack navigator with push transitions
-- After onboarding completion, app switches to MainTabs (Bottom Tab navigator)
-- Bottom tab bar shows 5 tabs: Home, Lessons, Downloads, Progress, Settings
-- Back button on all onboarding stack screens (except AgePolicyBlock which is blocking)
-- Navigation state persists correctly across cold starts (via US-7.2 rehydration)
-- Age gate and consent screens presented as full-screen blocking states (Depth 0)
-
----
-
-## Cross-cutting: API Client Update (C.API)
-
-### Design References
-- **API Spec**: Section 2.2 (auth notes), X-Device-Id header
-- **Backend TTB**: 1.13.3 (consent endpoints), 1.14 (profile endpoints)
-- **Existing**: `frontend/src/api/client.ts` (GET only, no auth)
-
-### Implementation Tasks
-
-| Sub-task | File | Description |
-|----------|------|-------------|
-| C.API.1 | `frontend/src/services/api/client.ts` | Rewrite API client: add `apiGet<T>()`, `apiPut<T>()`, `apiPost<T>()` methods. Accept optional auth token, X-Device-Id, X-Request-Id headers. Parse `JsonEnvelope<T>` response and throw typed errors. Handle 401 by triggering sign-out. |
-| C.API.2 | `frontend/src/services/api/authApi.ts` | Auth API methods: `signUp(email, password)`, `signIn(email, password)`, `signInWithGoogle()`, `signInWithApple()`, `forgotPassword(email)`, `resetPassword(code, newPassword)`. Wraps Cognito SDK calls (or API calls to backend auth proxy). |
-| C.API.3 | `frontend/src/services/api/consentApi.ts` | Consent API methods: `getConsent(deviceId?, token?)`, `putConsent(consentData, deviceId?, token?)`. Handles pre-auth (X-Device-Id) and authenticated (Bearer JWT) variants. |
-| C.API.4 | `frontend/src/services/api/profileApi.ts` | Profile API methods: `getProfile(token)`, `updateProfile(updates, token)`, `updateOnboardingStep(step, token)`. |
-| C.API.5 | `frontend/src/types/api.ts` | TypeScript types for API: `ApiClientConfig`, `ApiError` with code/message/details, `JsonEnvelope<T>` matching backend envelope shape. |
-
-### API Client Interface
-
-```typescript
-export type ApiClientConfig = {
-  baseUrl: string;
-  token?: string;
-  deviceId?: string;
-};
-
-export async function apiGet<T>(
-  path: string,
-  config?: ApiClientConfig,
-): Promise<T>;
-
-export async function apiPut<T>(
-  path: string,
-  body: unknown,
-  config?: ApiClientConfig,
-): Promise<T>;
-
-export async function apiPost<T>(
-  path: string,
-  body: unknown,
-  config?: ApiClientConfig,
-): Promise<T>;
-```
-
-### Acceptance Criteria
-
-- Authenticated requests include `Authorization: Bearer <jwt>` header
-- Pre-auth requests include `X-Device-Id` header
-- All requests include `X-Request-Id` header
-- 401 responses trigger auth store sign-out + navigation to SignIn
-- Network errors surface as typed `ApiError` with code and message
-- `apiPut` and `apiPost` send JSON body with `Content-Type: application/json`
-
----
-
-## Cross-cutting: Zustand Stores (C.9)
-
-### Design References
-- **LLD Mobile**: Section 2 (State Management), Section 3.2 (Notification Store shape)
-- **User Stories**: All (stores underpin every screen)
-- **Existing**: `frontend/src/state/useAppStore.ts` (minimal — only activeTab)
-
-### Implementation Tasks
-
-| Sub-task | File | Description |
-|----------|------|-------------|
-| C.9.1 | `frontend/src/stores/authStore.ts` | `AuthStore`: `token` (string | null), `user` (UserProfile | null), `isLoading` (boolean), `error` (string | null). Actions: `signIn()`, `signUp()`, `signOut()`, `restoreSession()` (check SecureStore for cached token on boot), `clearError()`. Persist token to SecureStore. |
-| C.9.2 | `frontend/src/stores/consentStore.ts` | `ConsentStore`: `ageVerified` (boolean), `privacyAccepted` (boolean), `adConsent` ('unknown' \| 'personalized' \| 'non_personalized'), `deviceId` (string), `isLoading`, `error`. Actions: `setAgeVerified()`, `acceptPrivacy()`, `declinePrivacy()`, `setAdConsent()`, `submitConsent()`, `restoreConsent()`. Auto-generate deviceId on first launch via `expo-crypto` randomUUID, persist in AsyncStorage. |
-| C.9.2a | `frontend/src/services/device/deviceService.ts` | `getOrCreateDeviceId()`: Check AsyncStorage for stored deviceId. If missing, generate via `expo-crypto` randomUUID, persist in AsyncStorage, return it. Used by consentApi for pre-auth X-Device-Id header. |
-| C.9.3 | `frontend/src/stores/notificationStore.ts` | `NotificationStore`: `reminderEnabled` (boolean), `reminderTime` (string — HH:MM), `permissionStatus` ('unknown' \| 'granted' \| 'denied' \| 'blocked'), `recoveryState` ('idle' \| 'denied' \| 'recovery_prompt' \| 'settings_redirect'), `scheduledNotificationId` (string | null), `isLoading`. Actions: `setReminderEnabled()`, `setReminderTime()`, `scheduleReminder()`, `cancelReminder()`, `checkPermission()`, `requestPermission()`. |
-| C.9.4 | `frontend/src/stores/onboardingStore.ts` | `OnboardingStore`: `currentStep` (string — one of the step values), `hasCompletedIntro` (boolean), `selectedLevel` (string | null), `micPermissionGranted` (boolean), `isLoading`. Actions: `setStep()`, `completeIntro()`, `setLevel()`, `setMicPermission()`, `resetOnboarding()`. |
-| C.9.5 | `frontend/src/stores/index.ts` | Re-export all stores for convenient imports. |
-
-### Onboarding Step Values
-
-| Value | Meaning | Resume Action |
-|-------|---------|---------------|
-| `null` (not set) | Not started | Start from age gate |
-| `age_gate_done` | Age verified | Show consent screen |
-| `consent_done` | Consent accepted | Show sign-in |
-| `intro_done` | Intro screens completed | Show level selection |
-| `level_selected` | Level chosen | Show reminder setup |
-| `reminder_set` | Reminder configured | Show microphone permission |
-| `mic_permission_done` | Mic handled | Show complete → Home |
-| `complete` | Onboarding finished | Go directly to Home |
-
-### Zustand Persistence Strategy
-
-- **authStore**: Token in `expo-secure-store` (sensitive). Restore on app launch.
-- **consentStore.deviceId**: Persisted in `@react-native-async-storage/async-storage`. Generated once via `expo-crypto` randomUUID.
-- **consentStore** (ageVerified, privacyAccepted): Local only during flow. Submitted to backend via PUT /consent on accept.
-- **onboardingStore**: Local in-memory only — backend source of truth (`GET /me` returns `onboardingStep`).
-- **notificationStore**: Local state only — no backend persistence. Reminder schedule managed by OS.
-
-### Acceptance Criteria
-
-- All stores follow the same Zustand pattern as existing `useAppStore.ts`
-- Token persisted securely via expo-secure-store
-- Device ID generated once, persisted, survives app reinstalls (AsyncStorage)
-- Consent store drives AdMob initialization mode (personalized vs non-personalized)
-- Notification store state is restored from local persistence on cold start
-- All stores have `isLoading` and `error` fields for UI binding
-
----
-
-## Task 1.12 — Exit Path Screen (Safe Exit)
-
-### Design References
-- **UI Spec**: Section 5.2 (Exit Path)
-- **Wireframe**: 5.2 (Exit Path)
-- **User Stories**: US-1.2 (underage block), US-2.1 AC3 (consent decline)
-- **IA Doc**: Exit Path screen in Recovery and Safe Exit
-
-### Implementation Tasks
-
-| Sub-task | File | Description |
-|----------|------|-------------|
-| 1.12.1 | `frontend/src/screens/onboarding/ExitPathScreen.tsx` | Full-screen exit path with: final message ("You are leaving ShadowSpeak"), self-service reassurance text, "Exit" primary button. No navigation to any other app screen. Used when: (1) underage user is blocked, (2) user declines consent, (3) user chooses to exit from Age Gate secondary action. |
-
-### States Table
-
-| State | Behavior |
-|-------|----------|
-| Default | Exit message shown, "Exit" button is the only action |
-| Exit tapped | App exits (iOS: `exit(0)` not recommended — instead, present a dead-end state with no navigation forward). For MVP, this is a dead-end screen with no back action and no way to proceed into the app. |
-
-### Edge Cases
-
-- User backgrounds the app and returns → still on ExitPathScreen
-- App is killed and restarted → boot sequence runs again, if age gate already done and consent declined, show ExitPathScreen again (no way forward until consent is accepted)
-
-### Acceptance Criteria
-
-- US-1.2 AC2: Underage block does not proceed to account creation
-- US-1.2 AC3: No personal data stored for underage user
-- US-2.1 AC3: Consent decline exits without creating account
-- ExitPathScreen has no navigation path into the app
-
----
-
-## Cross-cutting: App Launch / Boot Sequence (C.Boot)
-
-### Design References
-- **User Story**: US-7.2 (Onboarding Abandonment and Partial Progress)
-- **LLD Mobile**: NFR-1 (cold start <=2.5s)
-- **IA Doc**: App Launch screen
-- **UI Spec**: Section 1.1 (App Launch), Wireframe 1.1
-
-### Implementation Tasks
-
-| Sub-task | File | Description |
-|----------|------|-------------|
-| C.Boot.1 | `frontend/src/screens/onboarding/AppLaunchScreen.tsx` | Full-screen neutral loading state with centered brand mark, loading indicator, and "Checking your setup..." status text. Optional retry button if startup fails. Uses AppLaunch screen spec from UI Spec Section 1.1. |
-| C.Boot.2 | `frontend/src/navigation/RootNavigator.tsx` | Boot sequence: (1) Read deviceId from AsyncStorage (generate if missing via expo-crypto), (2) Read stored consent from AsyncStorage (ageVerified, privacyAccepted), (3) Try to restore auth token from SecureStore, (4) If token exists, call `GET /me` to get `onboardingStep`, (5) If `onboardingStep === 'complete'` → MainTabs, (6) If `onboardingStep` has a value → resume from that step via OnboardingStack, (7) If no token → check consent state: if age+privacy done → OnboardingStack from SignIn, else → OnboardingStack from AgeGate. |
-| C.Boot.3 | `frontend/src/stores/authStore.ts` | Implement `restoreSession()` action: read token from SecureStore, validate it is not expired (decode JWT, check exp), if valid set token+user, if expired clear and return null. |
-
-### Boot Decision Flow
-
-```
-App Launch
-  ├─ Read deviceId from AsyncStorage (generate if missing)
-  ├─ Read token from SecureStore
-  │    ├─ Token exists + valid → GET /me
-  │    │    ├─ onboardingStep = 'complete' → MainTabs
-  │    │    ├─ onboardingStep = 'mic_permission_done' → PermissionPrompts
-  │    │    ├─ onboardingStep = 'reminder_set' → PermissionPrompts
-  │    │    ├─ onboardingStep = 'level_selected' → ReminderSetup
-  │    │    ├─ onboardingStep = 'intro_done' → LevelSelection
-  │    │    ├─ onboardingStep = 'consent_done' → SignIn (with auto-fill)
-  │    │    ├─ onboardingStep = 'age_gate_done' → Consent (should not happen with auth)
-  │    │    └─ onboardingStep = null → AgeGate (should not happen with auth)
-  │    └─ No token → check local consent
-  │         ├─ ageVerified + privacyAccepted → SignIn
-  │         ├─ ageVerified only → Consent
-  │         └─ nothing → AgeGate
-  └─ Boot failure → AppLaunch with retry button
-```
-
-### Acceptance Criteria
-
-- Cold start shows AppLaunch screen for <2.5s (NFR-1 target)
-- Authenticated user with complete onboarding goes directly to Home
-- Authenticated user with incomplete onboarding resumes at correct step (US-7.2 AC2)
-- Unauthenticated user with consent done goes to SignIn (US-7.2 AC1)
-- New user starts at Age Gate
-- Token expiry triggers sign-out + redirect to SignIn
-- Network failure on boot shows retryable error, not blank screen
-
----
-
-## Task 1.1 — Age Gate Screen
-
-### Design References
+- **UI Spec**: Section 1.2 (Age Gate) — screens 1.2 and 1.3
 - **User Stories**: US-1.1 (Age Eligibility Check), US-1.2 (Underage Block)
-- **UI Spec**: Section 1.2 (Age Gate), Section 1.3 (Age Policy Block)
-- **Wireframes**: 1.2 (Age Gate), 1.3 (Age Policy Block)
-- **User Flow**: First-Time Onboarding Flow (age gate decision diamond)
-- **IA Doc**: Age Gate screen in Entry, Compliance, and Onboarding
+- **LLD Mobile**: Section 2 — Zustand state management; Section 5 — error states
+- **API Spec**: Section 5.3, 5.4 — `GET /consent`, `PUT /consent` (pre-auth with `X-Device-Id`)
 
 ### Implementation Tasks
 
 | Sub-task | File | Description |
 |----------|------|-------------|
-| 1.1.1 | `frontend/src/screens/onboarding/AgeGateScreen.tsx` | Full-screen age gate with: title ("Age Gate"), explanation text ("You must be 13 or older to use ShadowSpeak"), age confirmation control (picker or button-based — e.g. "I am 13 or older" / "I am under 13"), Continue button, Exit button. Back action in top bar. Uses theme colors and typography from UI Spec. |
-| 1.1.2 | `frontend/src/screens/onboarding/AgePolicyBlockScreen.tsx` | Full-screen blocking state for underage users. Blocking title, explanation text ("ShadowSpeak is not available to users under 13"), Exit button. No navigation to any other screen. Safe exit only. No back button (blocking state, Depth 0). |
-| 1.1.3 | `frontend/src/stores/consentStore.ts` | Add `setAgeVerified(isOfAge: boolean)` action. When `isOfAge = true`, set `ageVerified = true` and persist locally. When `isOfAge = false`, set `ageVerified = false` (or leave null) — handled by redirect to AgePolicyBlock. |
-
-### States Table
-
-| State | Screen | Behavior |
-|-------|--------|----------|
-| Default | AgeGateScreen | Age confirmation control visible, helper copy shown, Continue/Exit buttons enabled |
-| Age confirmed (13+) | AgeGateScreen | On success, set `ageVerified = true` in consentStore, navigate to Consent screen |
-| Underage (under 13) | AgePolicyBlockScreen | Navigate to AgePolicyBlock, show blocking message, Exit button only |
-| Exit tapped | AgePolicyBlockScreen | Navigate to ExitPathScreen — safe exit |
-| Exit tapped from AgeGate "Exit" button | ExitPathScreen | If user exits from Age Gate directly (secondary action), navigate to ExitPathScreen |
-
-### Edge Cases
-
-- Store-provided age signal: if `expo-ads` or platform provides an age signal, use it as shortcut. If signal indicates underage, skip directly to AgePolicyBlock. If signal indicates adult, skip AgeGate entirely and go to Consent. If no signal, show in-app AgeGate. (US-1.1 AC3)
-- Back navigation: if user navigates back from Consent to AgeGate, the age selection should persist.
-- Re-entry: if `ageVerified = true` already stored, skip AgeGate entirely on subsequent launches.
-
-### Acceptance Criteria
-
-- US-1.1 AC1: New learner presented with age gate before any sign-in screen
-- US-1.1 AC2: Age-eligible learner proceeds to consent flow
-- US-1.1 AC3: Store-provided age signal may shortcut but in-app check is final
-- US-1.2 AC1: Underage selection shows clear ineligibility message
-- US-1.2 AC2: Underage block does NOT proceed to account creation or main experience
-- US-1.2 AC3: Underage block stores no personal data
-- Age gate passed state is persisted so returning users skip this step
-
----
-
-## Task 1.2 — Privacy and Ad Consent Screen
-
-### Design References
-- **User Story**: US-2.1 (Consent and Privacy Acknowledgment)
-- **UI Spec**: Section 1.4 (Privacy and Ad Consent)
-- **Wireframe**: 1.4 (Privacy and Ad Consent)
-- **Backend API**: GET /consent, PUT /consent (pre-auth with X-Device-Id)
-- **Backend TTB**: 1.13 (Consent Endpoints), 1.15 (Pre-auth Bootstrap)
-
-### Implementation Tasks
-
-| Sub-task | File | Description |
-|----------|------|-------------|
-| 1.2.1 | `frontend/src/screens/onboarding/ConsentScreen.tsx` | Consent screen with: title ("Privacy and Ad Consent"), consent explanation block (summary of privacy policy + terms), required privacy acknowledgment checkbox/toggle, ad preference section (toggle for personalized ads), "Accept and Continue" primary button, "Decline and Exit" secondary button. Scrollable content for legal copy. |
-| 1.2.2 | `frontend/src/services/api/consentApi.ts` | Wire `putConsent()` to backend PUT /consent with pre-auth X-Device-Id header. Send `{ ageVerified, privacyAccepted, adConsent }`. |
-| 1.2.3 | `frontend/src/stores/consentStore.ts` | Add `submitConsent()` action: calls `putConsent()` with current consent state and deviceId, persists locally on success. Add `loadConsent()` for GET /consent on re-entry. |
-
-### States Table
-
-| State | Behavior |
-|-------|----------|
-| Default | Consent choices visible and editable. Privacy checkbox unchecked, ad consent set to "non_personalized" by default. |
-| Privacy unchecked, Accept tapped | Inline validation error: "You must accept the privacy policy to continue." |
-| Decline tapped | Navigate to ExitPathScreen. No account created. No personal data stored. (US-2.1 AC3) |
-| Consenting loading | Disable buttons, show spinner on Accept button. |
-| Consenting error | Show error message with retry option. |
-| Success (consent persisted) | Navigate to SignIn screen. |
-| Re-entry (consent already given) | Skip this screen entirely — go directly to SignIn. |
-
-### Validation Rules
-
-- Privacy acknowledgment checkbox must be checked before Accept is enabled (or show validation on tap)
-- Ad consent defaults to `non_personalized` if user does not explicitly choose
-
-### Edge Cases
-
-- Network failure during `PUT /consent`: show retryable error, do not advance
-- Re-entry after consent given: check `GET /consent` response or local cache, skip screen
-- Consent decline: no account creation, no personal data stored (US-2.1 AC3)
-- Backend returns 422 for missing X-Device-Id: show error, regenerate device ID
-
-### Acceptance Criteria
-
-- US-2.1 AC1: Privacy policy and terms shown before acceptance
-- US-2.1 AC2: Accept records consent and proceeds to sign-in
-- US-2.1 AC3: Decline exits onboarding without creating account
-- US-2.1 AC4: Cannot skip consent step
-- Consent state persisted to backend via PUT /consent with X-Device-Id
-- Returning user who already gave consent skips this screen
-
----
-
-## Task 1.3 — Social Sign-In Buttons (Google/Apple)
-
-### Design References
-- **User Story**: US-3.2 (Social Sign-In)
-- **UI Spec**: Section 1.5 (Sign In) — social sign-in buttons
-- **Wireframe**: 1.5 (Sign In)
-- **LLD Mobile**: Technology Stack (Cognito for auth)
-- **Backend TTB**: C.4 (Cognito User Pool with Google/Apple OIDC)
-
-### Implementation Tasks
-
-| Sub-task | File | Description |
-|----------|------|-------------|
-| 1.3.1 | `frontend/src/services/auth/authService.ts` | `signInWithGoogle()`: Use `expo-auth-session` to initiate Google OAuth flow via Cognito hosted UI or direct provider. Exchange authorization code for Cognito tokens. Return JWT token set. Handle cancellation and error. |
-| 1.3.2 | `frontend/src/services/auth/authService.ts` | `signInWithApple()`: Same pattern as Google but for Apple Sign-In. Use `expo-apple-authentication` if available, fall back to `expo-auth-session`. |
-| 1.3.3 | `frontend/src/components/onboarding/SocialSignInButton.tsx` | Reusable social sign-in button component. Props: `provider: 'google' | 'apple'`, `onPress`, `isLoading`. Renders provider icon + "Sign in with Google" / "Sign in with Apple" label. Uses theme styling. |
-| 1.3.4 | `frontend/src/stores/authStore.ts` | Add `socialSignIn(provider: 'google' | 'apple')` action: calls authService, on success stores token in SecureStore + sets user profile, on failure sets error. |
-
-### States Table
-
-| State | Behavior |
-|-------|----------|
-| Default | Social buttons visible and tappable on SignIn screen |
-| Loading (Google) | Google button shows spinner, other controls remain active |
-| Loading (Apple) | Apple button shows spinner, other controls remain active |
-| Success | Token stored, user profile hydrated, navigate to IntroScreens (new user) or Home (returning user) |
-| Auth cancelled by user | Return to SignIn screen, no error, no account created (US-3.2 AC3) |
-| Auth failure | Show inline error message, buttons re-enabled |
-| Returning social user | Social sign-in authenticates without needing email/password (US-3.3 AC5) |
-
-### Edge Cases
-
-- User cancels the OAuth flow at the provider page → remain on SignIn, no error
-- Network loss during OAuth redirect → show retryable error
-- Apple Sign-In requires configuration on Apple Developer portal — must be set up before this task
-- Google Sign-In requires OAuth client ID for iOS and Android in Google Cloud Console
-- If social sign-in fails due to configuration, fall back gracefully to email/password
-
-### Acceptance Criteria
-
-- US-3.2 AC1: Google/Apple buttons redirect to provider auth flow
-- US-3.2 AC2: Successful social auth creates account (new) or authenticates (returning), proceeds to intro screens
-- US-3.2 AC3: Failed/cancelled social auth returns to SignIn with no account created
-- US-3.3 AC5: Returning social user can sign in with social button without email/password
-
----
-
-## Task 1.4 — Email/Password Sign-Up With Validation
-
-### Design References
-- **User Story**: US-3.1 (Email/Password Sign-Up)
-- **UI Spec**: Section 1.6 (Sign Up)
-- **Wireframe**: 1.6 (Sign Up)
-- **Backend TTB**: C.4 (Cognito User Pool)
-
-### Implementation Tasks
-
-| Sub-task | File | Description |
-|----------|------|-------------|
-| 1.4.1 | `frontend/src/screens/onboarding/SignUpScreen.tsx` | Sign-up screen with: email input, password input (with show/hide toggle), confirm password input (with show/hide toggle), password strength indicator, Terms of Service + Privacy Policy link, "Create Account" primary button, "Already have account? Sign In" link. Real-time inline validation on each field. |
-| 1.4.2 | `frontend/src/components/ui/PasswordStrengthIndicator.tsx` | Password strength bar with 3 levels: Weak (red), Medium (yellow/orange), Strong (green). Criteria: 8+ chars, mixed case, contains number. |
-| 1.4.3 | `frontend/src/components/ui/FormTextInput.tsx` | Reusable text input component with: label, error state display, helper text, show/hide toggle for password fields. Uses theme colors and typography. 48pt minimum height. |
-| 1.4.4 | `frontend/src/services/auth/authService.ts` | `signUp(email, password)`: Call Cognito `signUp` (via AWS Amplify or direct Cognito API). For MVP, pre-sign-up Lambda auto-confirms (no email verification needed). Return JWT token set. |
-| 1.4.5 | `frontend/src/stores/authStore.ts` | Add `emailSignUp(email, password)` action: calls authService.signUp, stores token, sets user. Handle "User already exists" error with navigation hint to sign-in. |
-
-### States Table
-
-| State | Behavior |
-|-------|----------|
-| Default | Empty form, all fields editable, Create Account disabled until all fields valid |
-| Email validation | Real-time: show error if format invalid (missing @, no domain, etc.) |
-| Password validation | Strength indicator updates as user types |
-| Password mismatch | Show "Passwords do not match" error below confirm field |
-| Loading | All fields disabled, Create Account shows spinner |
-| Error (user exists) | Show "An account with this email already exists. Sign in instead." with link to SignIn |
-| Error (weak password) | Keep form visible, show "Password is too weak" error |
-| Error (network) | Show retryable error toast/banner |
-| Success | Token stored, navigate to IntroScreens (this is a new user) |
-
-### Validation Rules
-
-| Field | Rule | Error Message |
-|-------|------|---------------|
-| Email | Valid email format (RFC 5322 simplified) | "Please enter a valid email address" |
-| Password | Minimum 8 characters | "Password must be at least 8 characters" |
-| Password | Contains uppercase letter | "Password must contain an uppercase letter" |
-| Password | Contains lowercase letter | "Password must contain a lowercase letter" |
-| Password | Contains a number | "Password must contain a number" |
-| Confirm Password | Must match password exactly | "Passwords do not match" |
-
-### Edge Cases
-
-- User tries to sign up with already-registered email → show specific error with "Sign In" action (US-3.1 AC3)
-- Network timeout during sign-up → show retryable error, preserve form state
-- Keyboard avoidance: ensure form scrolls properly when keyboard is open
-- Password manager autofill: test with iOS Keychain and Android Smart Lock
-
-### Acceptance Criteria
-
-- US-3.1 AC1: Valid email + strong password creates account successfully
-- US-3.1 AC2: Successful sign-up authenticates user and redirects to intro screens
-- US-3.1 AC3: Existing email shows error and prompts sign-in
-- US-3.1 AC4: Invalid email or weak password shows inline validation, account not created
-- Password strength indicator shows correct level for all password inputs
-- Confirm password field validates match on every change
-
----
-
-## Task 1.5 — Returning User Sign-In Screen
-
-### Design References
-- **User Story**: US-3.3 (Returning User Sign-In)
-- **UI Spec**: Section 1.5 (Sign In)
-- **Wireframe**: 1.5 (Sign In)
-- **Backend TTB**: C.4 (Cognito User Pool)
-
-### Implementation Tasks
-
-| Sub-task | File | Description |
-|----------|------|-------------|
-| 1.5.1 | `frontend/src/screens/onboarding/SignInScreen.tsx` | Sign-in screen with: email input (pre-filled if returning), password input (with show/hide), "Forgot Password?" link, social sign-in buttons (Google/Apple — from Task 1.3), "Sign In" primary button, "Create Account" link at bottom. |
-| 1.5.2 | `frontend/src/services/auth/authService.ts` | `signIn(email, password)`: Call Cognito `initiateAuth` with `USER_PASSWORD_AUTH` flow. Return JWT token set (access token, refresh token, id token). |
-| 1.5.3 | `frontend/src/stores/authStore.ts` | Add `emailSignIn(email, password)` action: calls authService.signIn, stores token in SecureStore, hydrates user profile from GET /me, checks onboardingStep to determine navigation target. |
-
-### States Table
-
-| State | Behavior |
-|-------|----------|
-| Default | Email field (pre-filled if email available from previous attempt), password field empty, Sign In disabled until fields populated |
-| Loading | Both fields disabled, Sign In shows spinner, social buttons remain active |
-| Error (wrong password) | "Incorrect email or password. Please try again." + "Forgot Password?" link emphasized (US-3.3 AC3) |
-| Error (user not found) | "No account found with this email. Create one?" with link to SignUp |
-| Error (network) | "Unable to connect. Check your internet connection and try again." |
-| Success (onboarding incomplete) | Navigate to resume step based on onboardingStep from GET /me |
-| Success (onboarding complete) | Navigate to Home (MainTabs) |
-
-### Validation Rules
-
-| Field | Rule | Error Message |
-|-------|------|---------------|
-| Email | Must not be empty | "Please enter your email" |
-| Email | Valid email format | "Please enter a valid email address" |
-| Password | Must not be empty | "Please enter your password" |
-
-### Edge Cases
-
-- Returning user who previously signed up with social provider → social button sign-in works without email/password (US-3.3 AC5)
-- Account locked after too many attempts → show account lock message with recovery instructions
-- Session token still valid from last launch → skip sign-in entirely, go to Home
-- User navigates from SignUp to SignIn (already has email filled from SignUp form)
-
-### Acceptance Criteria
-
-- US-3.3 AC1: Returning user sees sign-in screen (skips age gate and consent)
-- US-3.3 AC2: Correct credentials → authenticated. If onboarding complete → taken to Home. If onboarding incomplete → taken to resume step (per US-7.2).
-- US-3.3 AC3: Incorrect password → error message with "Forgot Password?" link
-- US-3.3 AC4: "Forgot Password?" link navigates to password reset flow
-- US-3.3 AC5: Returning social user can sign in with social button
-
----
-
-## Task 1.6 — Forgot Password / Reset Flow
-
-### Design References
-- **User Story**: US-3.4 (Forgot Password / Password Reset)
-- **UI Spec**: Not explicitly specified — inferred from Sign In screen "Forgot Password?" link
-- **Backend TTB**: C.4 (Cognito User Pool — Cognito handles password reset via email)
-
-### Implementation Tasks
-
-| Sub-task | File | Description |
-|----------|------|-------------|
-| 1.6.1 | `frontend/src/screens/onboarding/ForgotPasswordScreen.tsx` | Forgot password screen: email input, "Send Reset Link" primary button, "Back to Sign In" link. After sending: confirmation message with instructions to check email. |
-| 1.6.2 | `frontend/src/services/auth/authService.ts` | `forgotPassword(email)`: Call Cognito `forgotPassword` API. Returns success if email is registered. |
-| 1.6.3 | Add reset password confirmation to ForgotPasswordScreen | After user receives reset code via email, show code input + new password fields + confirm password. "Reset Password" button submits. On success, navigate to SignIn with success message. |
-| 1.6.4 | `frontend/src/services/auth/authService.ts` | `confirmResetPassword(email, code, newPassword)`: Call Cognito `confirmForgotPassword` API. |
-| 1.6.5 | `frontend/src/screens/onboarding/ForgotPasswordScreen.tsx` | Handle deep-link from reset email: when the app opens via the password reset URL, parse the verification code from the URL/link. Pre-fill the code input field. User enters new password + confirm. Submit reset. On success, navigate to SignIn with success banner. |
-
-### States Table
-
-| State | Behavior |
-|-------|----------|
-| Default (email step) | Email input visible, "Send Reset Link" button |
-| Email sent | Confirmation message: "Check your email for the reset link." Link back to Sign In. |
-| Loading (send) | Button shows spinner, email field disabled |
-| Error (unregistered email) | "No account found with this email address" (US-3.4 AC3) |
-| Error (network) | Retryable error |
-| Default (reset step) | Code input, new password input, confirm password, strength indicator |
-| Loading (reset) | Button shows spinner, all fields disabled |
-| Success (reset) | "Password updated successfully. Please sign in." Navigate to SignIn |
-| Error (expired code) | "This reset link has expired. Request a new one." (US-3.4 AC7) |
-| Error (weak password) | Same validation as sign-up (US-3.4 AC6) |
-| Deep-link from reset email | App opens with verification code pre-filled (parsed from URL/deep-link). User completes new password + confirm. Submits reset. |
-
-### Validation Rules
-
-Same password rules as Task 1.4:
-- Minimum 8 characters, mixed case, contains number
-- Confirm password must match
-
-### Edge Cases
-
-- User requests multiple reset emails → only last code is valid
-- Reset code expires (Cognito default: 1 hour) → show expiration message
-- User navigates back from reset screen → return to Sign In
-- User closes app during reset flow → restart from Sign In
-
-### Acceptance Criteria
-
-- US-3.4 AC1: "Forgot Password?" from SignIn goes to password reset screen
-- US-3.4 AC2: Registered email receives reset email
-- US-3.4 AC3: Unregistered email shows error
-- US-3.4 AC4: Reset link opens secure password reset page
-- US-3.4 AC5: Valid new password updates and redirects to SignIn with success message
-- US-3.4 AC6: Weak password shows validation error, not updated
-- US-3.4 AC7: Expired reset link shows expiration message with prompt to request new one
-
----
-
-## Task 1.7 — Intro Screens (Swipe-Through)
-
-### Design References
-- **User Story**: US-4.1 (App Introduction Screens)
-- **UI Spec**: Inferred from onboarding flow (not explicitly detailed but referenced)
-- **Wireframes**: Follow-on from Sign In / Sign Up in the flow
-- **User Flow**: Intro screens appear after first-time authentication
-
-### Implementation Tasks
-
-| Sub-task | File | Description |
-|----------|------|-------------|
-| 1.7.1 | `frontend/src/screens/onboarding/IntroScreens.tsx` | Swipeable intro screen carousel. 3-4 screens explaining: (1) What is ShadowSpeak, (2) How shadowing works, (3) Audio-first practice concept, (4) Get started. Pagination dots indicator. "Next" button on each screen, "Get Started" on last screen. Uses `react-native` `FlatList` with `pagingEnabled` or `react-native-pager-view`. |
-| 1.7.2 | `frontend/src/components/onboarding/IntroSlide.tsx` | Individual intro slide component: illustration/image placeholder, title (H1), description text (Body). Clean layout with minimal text density. |
-| 1.7.3 | `frontend/src/stores/onboardingStore.ts` | Add `completeIntro()` action: sets `hasCompletedIntro = true`. When onboarding completes, this flag + `onboardingStep = 'intro_done'` ensures intro screens are never shown again. |
-
-### States Table
-
-| State | Behavior |
-|-------|----------|
-| Default | First intro slide visible, "Next" button active, pagination dot 1/3 or 1/4 highlighted |
-| Middle slides | User swipes or taps Next to advance. "Next" button on each. |
-| Last slide | "Get Started" button replaces "Next". Tap navigates to Level Selection. |
-| Re-entry (already seen) | If `onboardingStep > 'intro_done'` or `hasCompletedIntro === true`, skip entirely (US-4.1 AC4) |
-
-### Edge Cases
-
-- User swipes back to previous slides → allowed, no data loss
-- Accessibility: VoiceOver/TalkBack should announce slide content and current position
-- Dynamic type: text should scale without breaking layout
-- Rapid tapping on "Next" → debounce to prevent multiple navigation calls
-
-### Acceptance Criteria
-
-- US-4.1 AC1: First-time authenticated user sees introduction screen sequence
-- US-4.1 AC2: Swipe or "Next" advances to next screen
-- US-4.1 AC3: Last screen "Get Started" proceeds to profile setup (Level Selection)
-- US-4.1 AC4: Completing intro screens once means they are never shown again (even after sign-out/sign-in)
-- Pagination dots accurately reflect current position
-
----
-
-## Task 1.8 — Level Selection Screen
-
-### Design References
-- **User Story**: US-5.1 (Practice Level Selection)
-- **UI Spec**: Section 1.7 (Level Selection)
-- **Wireframe**: 1.7 (Level Selection)
-- **Backend API**: PUT /me (saves level to profile)
-- **Backend TTB**: 1.14 (Profile Endpoints)
-
-### Implementation Tasks
-
-| Sub-task | File | Description |
-|----------|------|-------------|
-| 1.8.1 | `frontend/src/screens/onboarding/LevelSelectionScreen.tsx` | Level selection screen with: guidance text ("What is your current English level?"), 3-4 level cards (Beginner, Intermediate, Advanced), "Continue" primary button. One level must be selected to continue. Each card shows level name and short description. |
-| 1.8.2 | `frontend/src/components/onboarding/LevelCard.tsx` | Level card component: selected state (primary border/tint), unselected state (neutral border), level name (H3), description (Body Small). Tap to select. Large tap target (minimum 48pt height per card). |
-| 1.8.3 | `frontend/src/stores/onboardingStore.ts` | Add `setLevel(level)` action. `PUT /me` with `{ level }` via profileApi on save. On success, set `onboardingStep = 'level_selected'` and navigate to ReminderSetup. |
-
-### States Table
-
-| State | Behavior |
-|-------|----------|
-| Default | Level cards displayed, none selected, Continue disabled |
-| Level selected | Card shows selected state, Continue enabled |
-| Continue without selection | Error: "Please select a level to continue" (US-5.1 AC3) |
-| Loading (saving) | Continue button shows spinner, cards disabled |
-| Error (save failed) | Show retryable error, keep selection |
-| Success | Navigate to ReminderSetup |
-
-### Validation Rules
-
-- User must select exactly one level before Continue is enabled (or validate on tap)
-- Level values: `beginner`, `intermediate`, `advanced`
-
-### Edge Cases
-
-- User taps Skip (if available) — level defaults to `beginner` (or the app shows a default recommendation)
-- Backend save fails → retry, do not advance until confirmed
-- User re-enters this screen (e.g., from Settings later) → pre-select their saved level
-
-### Acceptance Criteria
-
-- US-5.1 AC1: 3-4 clearly described level options presented
-- US-5.1 AC2: Selected level saved to profile on Continue
-- US-5.1 AC3: No selection shows prompt to choose before proceeding
-
----
-
-## Task 1.9 — Reminder Setup and Notification Permission
-
-### Design References
-- **User Stories**: US-5.2 (Reminder Preference Setup), US-4.6 (local reminder notification)
-- **UI Spec**: Section 1.8 (Reminder Setup)
-- **Wireframe**: 1.8 (Reminder Setup)
-- **LLD Mobile**: Section 3.2 (Local Reminder Notifications), Notification Store shape
-- **User Flow**: Reminder Setup → Permission Prompts sequence
-
-### Implementation Tasks
-
-| Sub-task | File | Description |
-|----------|------|-------------|
-| 1.9.1 | `frontend/src/screens/onboarding/ReminderSetupScreen.tsx` | Reminder setup screen with: explanation text, toggle switch (Enable/Disable), time picker (enabled when toggle is on), "Continue" primary button, "Skip reminders" secondary button. |
-| 1.9.2 | `frontend/src/services/notifications/notificationService.ts` | `scheduleReminder(time: string)`: Use `expo-notifications` to schedule daily local notification at the specified time. Cancel existing schedule first. `cancelReminder()`: Cancel all scheduled notifications. `checkPermission()`: Check current notification permission status. `requestPermission()`: Request notification permission from OS. |
-| 1.9.3 | `frontend/src/stores/notificationStore.ts` | Add `enableReminder(time)`, `disableReminder()`, `skipReminder()` actions. On enable: request permission, schedule notification, persist preference to local store. On disable: cancel schedule. On skip: move to next step without scheduling. |
-| 1.9.4 | `frontend/src/services/api/profileApi.ts` | Wire `updateProfile({ reminderEnabled, reminderTime })` to `PUT /me`. |
-
-### States Table
-
-| State | Behavior |
-|-------|----------|
-| Default (off) | Toggle off, time picker hidden/disabled, Continue enabled |
-| Toggle on | Time picker appears, default time 08:00 (or configurable default) |
-| Permission prompt | OS dialog appears when toggle is first enabled |
-| Permission granted | Reminder scheduled, Continue navigates to PermissionPrompts |
-| Permission denied | Inline note: "Reminders need notification permission. You can enable this later in Settings." Toggle stays on, no schedule created, Continue advances |
-| Loading (saving) | Spinner on Continue |
-| Error | Show toast/banner with retry |
-| Skip tapped | Navigate to PermissionPrompts without scheduling |
-
-### Validation Rules
-
-- Time must be valid HH:MM format (24h)
-- Default to 08:00 if time not explicitly set
-
-### Edge Cases
-
-- Permission denied at OS level → show recovery path, never prompt again (user must go to Settings)
-- Time zone change → notification service should revalidate on app foreground
-- Duplicate reminder scheduling → cancel existing before creating new (idempotent)
-- User skips reminder → `reminderEnabled = false`, no notification scheduled
-- App reinstalled → no stored preferences, default to off
-
-### Acceptance Criteria
-
-- US-5.2 AC1: Time picker offered for daily reminder time
-- US-5.2 AC2: Time selected + enabled → reminder scheduled and saved to profile
-- US-5.2 AC3: Skip tapped → no reminder, proceeds to next step
-- US-5.2 AC4: Scheduled time triggers local push notification
-- Notification permission denial does not block onboarding progression
-- Reminder preference persisted locally and saved to backend profile via PUT /me
-
----
-
-## Task 1.10 — Microphone Permission Screen
-
-### Design References
-- **User Stories**: US-6.1 (Microphone Permission Request), US-6.2 (Graceful Handling)
-- **UI Spec**: Section 1.9 (Permission Prompts)
-- **Wireframe**: 1.9 (Permission Prompts)
-- **LLD Mobile**: Section 3.2 (Permission recovery states)
-
-### Implementation Tasks
-
-| Sub-task | File | Description |
-|----------|------|-------------|
-| 1.10.1 | `frontend/src/screens/onboarding/PermissionPromptsScreen.tsx` | Permission prompt screen with two permission cards stacked: (1) Notification card — shows current status (granted badge / denied note), (2) Microphone card — shows rationale and status. "Continue" primary button. "Open Settings" secondary button (visible when any permission is denied). |
-| 1.10.2 | `frontend/src/components/onboarding/PermissionCard.tsx` | Permission card component: permission icon, title, description, status badge (granted/denied), action button ("Allow" / "Open Settings"). |
-| 1.10.3 | `frontend/src/services/notifications/notificationService.ts` | Add `requestMicrophonePermission()`: Uses `expo-av` or `expo-permissions` to request `MICROPHONE` permission. Returns status. |
-| 1.10.4 | `frontend/src/stores/notificationStore.ts` | Add `requestMicPermission()` action: calls service, stores result. When granted, mark step complete. When denied, allow continue with mic unavailable. |
-| 1.10.5 | Update `frontend/src/navigation/OnboardingNavigator.tsx` | On finish of PermissionPrompts: call `PUT /me/onboarding-step` with `complete`, then `PUT /me` with all profile fields (level, reminderTime, reminderEnabled), then navigate to MainTabs. |
-
-### States Table
-
-| State | Behavior |
-|-------|----------|
-| Default | Both permission cards visible. Notification shows current status (previously determined in ReminderSetup). Microphone shows "not requested" or "not determined". |
-| Mic "Allow" tapped | OS microphone permission dialog appears |
-| Mic granted | Card shows "Granted" badge. Permission status recorded (US-6.1 AC3) |
-| Mic denied | Card shows "Denied" with explanation: "You can enable microphone access in Settings to record your shadowing." Continue is still enabled. "Open Settings" button appears. (US-6.2 AC1) |
-| Both permissions resolved | "Continue" navigates to Home (MainTabs) |
-| "Open Settings" tapped | Opens system Settings for ShadowSpeak (US-6.2 AC3) |
-
-### Cross-Epic Note (US-6.2 AC2, AC4)
-
-The practice-time handling of microphone permission denial is out of scope for Epic 01. Specifically:
-- **US-6.2 AC2**: Showing permission explanation + settings button when user tries to start a practice session → **Epic 02 (Practice Session)**
-- **US-6.2 AC4**: Blocking recording when mic permission is not granted → **Epic 02 (Practice Session)**
-
-Epic 01 delivers: (1) the microphone permission request UI, (2) persistence of the permission status in `onboardingStore.micPermissionGranted`, (3) the "Open Settings" button component. Epic 02 reads the stored permission status to enforce recording rules.
-
-### Edge Cases
-
-- Both notifications and microphone denied → continue anyway, app works in listening-only mode (US-6.2 AC1)
-- Microphone already granted from previous app use → show as granted, no prompt needed
-- Microphone permission later revoked via Settings → handle gracefully at practice time (US-6.2 AC2, AC4)
-- "Don't ask again" on iOS → show Settings redirect, never prompt again
-- Permission prompts accumulate → request one at a time (notification first from ReminderSetup, microphone here)
-
-### Acceptance Criteria
-
-- US-6.1 AC1: Clear explanation of why microphone access is needed for shadowing
-- US-6.1 AC2: "Allow" triggers OS permission dialog
-- US-6.1 AC3: Granting permission records status and proceeds to Home
-- US-6.2 AC1: Denied permission → proceeds to Home without recording capability
-- US-6.2 AC2: Later practice attempt shows explanation + settings button
-- US-6.2 AC3: Settings button opens system Settings
-- US-6.2 AC4: Recording blocked without microphone permission
-- Onboarding completion calls PUT /me/onboarding-step with `complete`
-- Onboarding completion calls PUT /me with all profile fields
-
----
-
-## Task 1.11 — Deep-Link Handler for Notification Taps
-
-### Design References
-- **User Story**: US-4.5 (Notification tap deep-link)
-- **LLD Mobile**: Section 3.2 (Deeplink routing — preserve navigation intent even on cold start)
-- **Wireframe**: 3.3 (Local Reminder Notification)
-- **IA Doc**: Deep link navigation from reminder notifications into Home / Daily Practice
-
-### Implementation Tasks
-
-| Sub-task | File | Description |
-|----------|------|-------------|
-| 1.11.1 | `frontend/src/services/notifications/notificationService.ts` | `registerNotificationHandler()`: Register `expo-notifications` foreground handler (show notification silently) and background/click handler. On notification tap, extract notification data (`lessonId`, `screen`). |
-| 1.11.2 | `frontend/src/services/notifications/notificationService.ts` | `getInitialNotification()`: On cold start, check if app was opened from a notification tap. Extract navigation intent. |
-| 1.11.3 | `frontend/src/navigation/RootNavigator.tsx` | Wire deep-link handling: after boot sequence resolves, if initial notification contains a `screen` target, navigate to that screen (e.g., Home, or a specific lesson). Fall back to normal boot flow if no notification. |
-| 1.11.4 | `frontend/src/navigation/deepLinks.ts` | Deep link configuration: define linking config for `@react-navigation/native` `linking` prop. Map notification tap data to navigation state. Include password reset deep-link handling: parse `/reset-password?code=...&email=...` and navigate to ForgotPasswordScreen with code+email pre-filled. |
-
-### Notification Data Shape
+| 1.1.1 | `frontend/src/types/onboarding.ts` | Define `AgeGateState`, `OnboardingStep`, `ConsentState` types. |
+| 1.1.2 | `frontend/src/stores/consentStore.ts` | Zustand store for consent/age-gate state: `ageVerified`, `privacyAccepted`, `adConsent`, `deviceId`, actions. |
+| 1.1.3 | `frontend/src/stores/onboardingStore.ts` | Zustand store for onboarding progress: `currentStep`, `isComplete`, resume logic. |
+| 1.1.4 | `frontend/src/services/deviceIdService.ts` | Generate/retrieve persistent anonymous `deviceId` (UUIDv4 stored in AsyncStorage). Return `X-Device-Id` header value. |
+| 1.1.5 | `frontend/src/services/consentService.ts` | API service: `getConsent(deviceId)`, `saveConsent(deviceId, input)`. Uses `apiGet`, `apiPut` with `X-Device-Id` header. |
+| 1.1.6 | `frontend/src/components/ui/DatePickerInput.tsx` | Reusable date-picker input component: label, native platform picker, inline error. Props interface with `label`, `value`, `onChange`, `error`, `minDate`, `maxDate`. |
+| 1.1.7 | `frontend/src/components/ui/Button.tsx` | Reusable button component: primary, secondary, tertiary variants; loading spinner; disabled state. |
+| 1.1.8 | `frontend/src/components/onboarding/AgeGateScreen.tsx` | Age Gate screen: date-of-birth input, helper copy, Continue + Exit buttons. States: default, validation error (under 13), success. |
+| 1.1.9 | `frontend/src/components/onboarding/AgePolicyBlockScreen.tsx` | Full-screen underage block: explanation text, Exit button. No navigation into core app. |
+| 1.1.10 | `frontend/src/app/(onboarding)/age-gate.tsx` | Expo Router page wrapping `AgeGateScreen`. Handles navigation to consent or policy block. |
+| 1.1.11 | `frontend/src/app/(onboarding)/age-policy-block.tsx` | Expo Router page wrapping `AgePolicyBlockScreen`. |
+
+### TypeScript Interfaces
 
 ```typescript
-// Data attached to scheduled reminder notification
-type ReminderNotificationData = {
-  type: 'daily_reminder';
-  screen: 'Home';
-};
+// frontend/src/types/onboarding.ts
+
+export type OnboardingStep =
+  | null                  // Not started
+  | 'age_gate_done'
+  | 'consent_done'
+  | 'intro_done'
+  | 'level_selected'
+  | 'reminder_set'
+  | 'mic_permission_done'
+  | 'complete';
+
+export interface AgeGateState {
+  dateOfBirth: string | null;     // ISO date string
+  ageVerified: boolean;
+  isUnderage: boolean;
+}
+
+export interface ConsentState {
+  ageVerified: boolean;
+  privacyAccepted: boolean;
+  adConsent: 'unknown' | 'personalized' | 'non_personalized';
+  consentUpdatedAt: string | null;
+}
+
+export interface UpdateConsentInput {
+  ageVerified: boolean;
+  privacyAccepted: boolean;
+  adConsent: 'unknown' | 'personalized' | 'non_personalized';
+}
 ```
 
-### States Table
+### Zustand Store Shape
 
-| State | Behavior |
-|-------|----------|
-| Cold start from notification | Boot sequence runs, then navigates to Home (or specified screen). Notification data processed after auth/onboarding check. |
-| Warm start (app in background) from notification | Navigate to Home (or specified screen) without re-running boot sequence |
-| App in foreground when notification delivered | Show in-app banner (optional), no navigation |
-| Notification dismissed | No navigation, no state change |
-| No notification | Normal boot flow |
+```typescript
+// frontend/src/stores/consentStore.ts
 
-### Edge Cases
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { ConsentState, UpdateConsentInput } from '../types/onboarding';
 
-- User taps notification but is mid-onboarding → complete onboarding first, then navigate to Home
-- User taps notification but is not signed in → navigate to SignIn
-- Notification tapped on lock screen → app must handle authentication (biometric/passcode)
-- Multiple notifications queued → only the last tapped notification triggers navigation
-- Notification data is malformed → fall back to Home, do not crash
+interface ConsentStore extends ConsentState {
+  isLoaded: boolean;
+  isLoading: boolean;
+  error: string | null;
+
+  loadConsent: (deviceId: string) => Promise<void>;
+  saveConsent: (deviceId: string, input: UpdateConsentInput) => Promise<void>;
+  setAgeVerified: (verified: boolean) => void;
+  reset: () => void;
+}
+```
+
+```typescript
+// frontend/src/stores/onboardingStore.ts
+
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { OnboardingStep } from '../types/onboarding';
+
+interface OnboardingStore {
+  currentStep: OnboardingStep;
+  isComplete: boolean;
+
+  setStep: (step: OnboardingStep) => void;
+  completeOnboarding: () => void;
+  getResumeStep: () => OnboardingStep;
+  reset: () => void;
+}
+```
+
+### Device ID Service
+
+```typescript
+// frontend/src/services/deviceIdService.ts
+
+import { v4 as uuidv4 } from 'uuid';
+
+export async function getOrCreateDeviceId(): Promise<string> {
+  const DEVICE_ID_KEY = '@shadowspeak/device_id';
+  let deviceId = await AsyncStorage.getItem(DEVICE_ID_KEY);
+  if (!deviceId) {
+    deviceId = uuidv4();            // crypto.randomUUID() not available in React Native (JSC engine)
+    await AsyncStorage.setItem(DEVICE_ID_KEY, deviceId);
+  }
+  return deviceId;
+}
+```
+
+> **Package dependency:** Add `uuid` and `@types/uuid` to `package.json`. Install via `npx expo install uuid @types/uuid`.
+
+### Validation Rules
+
+- Date of birth must be a valid real date (no future dates, no dates before 1900)
+- Age threshold: 13 years old (user must be 13 or older)
+- Show inline validation error: "You must be at least 13 years old to use ShadowSpeak" when underage
+- Show "Please enter a valid date of birth" when input is incomplete or invalid
+- Continue button disabled until a valid date is entered
 
 ### Acceptance Criteria
 
-- US-4.5: Notification tap routes to Home / Daily Practice
-- Cold start from notification preserves navigation intent (LLD Mobile 3.2)
-- Warm start from notification navigates correctly
-- Malformed notification data does not crash the app
-- Notification tap during onboarding does not interrupt the flow
+- Given a first-time user, when the app launches and no age gate has been completed, then the Age Gate screen is shown before any sign-in or consent screen
+- Given a user on the Age Gate screen, when they select a date indicating they are 13 or older, then age verification is set to true and they proceed to the Consent screen
+- Given a user on the Age Gate screen, when they select a date indicating they are under 13, then the Age Policy Block screen is shown with a clear ineligibility message and an Exit button
+- Given a user is underage, when the block screen is shown, then no account is created and no personal data is stored beyond the device-local age-gate decision
+- Given network failure, when the user taps Continue, then an inline error message is shown and the user can retry
+- Given the user exits the age gate, when they reopen the app, then they are returned to the age gate screen (no progress persisted pre-consent)
+- Given the user has already passed the age gate, when they reopen the app, then they skip directly to the next incomplete step per US-7.2 resume logic
 
 ---
 
-## Task C.5 — AdMob SDK Initialization and Consent-Aware Request
+## 1.2 — Privacy & Ad Consent Screen
 
 ### Design References
-- **LLD Mobile**: Section 6 (Ad Integration Design), Section 6.1 (Initialization Sequence)
-- **User Story**: US-2.1 (ad consent choice)
-- **Consent Store**: Stores `adConsent` value (personalized / non_personalized / unknown)
+- **UI Spec**: Section 1.4 (Privacy and Ad Consent) — screen 1.4
+- **User Stories**: US-2.1 (Consent and Privacy Acknowledgment)
+- **API Spec**: Section 5.3, 5.4 — `GET /consent`, `PUT /consent`
+- **LLD Backend**: ConsentState model, UpdateConsentInput
 
 ### Implementation Tasks
 
 | Sub-task | File | Description |
 |----------|------|-------------|
-| C.5.1 | `frontend/src/services/ads/AdMobService.ts` | `initializeAdMob()`: Initialize react-native-google-mobile-ads SDK. Read `adConsent` from consentStore. If `personalized`, initialize with `CONSENT_PERSONALIZED`. If `non_personalized` or `unknown`, use `CONSENT_NON_PERSONALIZED`. Must be non-blocking — catch and log errors without throwing. |
-| C.5.2 | `frontend/src/services/ads/AdMobService.ts` | `preloadInterstitial()`: Preload an interstitial ad unit. Called after initialization. Non-blocking — catches failures silently. |
-| C.5.3 | `frontend/src/stores/consentStore.ts` | Wire consent changes: when `adConsent` changes, call `AdMobService.initializeAdMob()` with new consent mode. |
-| C.5.4 | `frontend/src/navigation/RootNavigator.tsx` | Trigger AdMob initialization in boot sequence: after consent state is resolved (either age gate passed + consent given, or restored from storage), call `AdMobService.initializeAdMob()` asynchronously and non-blocking. |
+| 1.2.1 | `frontend/src/components/onboarding/ConsentScreen.tsx` | Consent screen: consent explanation, privacy toggle/checkbox, ad preference selector (personalized/non-personalized), Accept + Decline buttons. |
+| 1.2.2 | `frontend/src/components/ui/Checkbox.tsx` | Reusable checkbox component with label and error state. |
+| 1.2.3 | `frontend/src/components/ui/Toggle.tsx` | Reusable toggle/switch component. |
+| 1.2.4 | `frontend/src/app/(onboarding)/consent.tsx` | Expo Router page wrapping `ConsentScreen`. Navigates to sign-in on accept, exits on decline. |
+| 1.2.5 | `frontend/src/services/consentService.ts` | Extend the consent service from task 1.1.5: add authenticated `getConsent()` and `saveConsent()` calling `apiGet('/v1/consent')` and `apiPut('/v1/consent')` with `X-Device-Id` header. |
 
-### Initialization Sequence
+### Consent Store Actions (add to consentStore.ts)
 
+```typescript
+interface ConsentStore extends ConsentState {
+  // ... existing fields
+
+  acceptConsent: (ageVerified: boolean, privacyAccepted: boolean, adConsent: 'personalized' | 'non_personalized') => Promise<void>;
+  declineConsent: () => void;
+}
 ```
-Boot sequence resolves consent state
-  ├─ consent state available
-  │    ├─ adConsent === 'personalized' → init AdMob with personalized
-  │    ├─ adConsent === 'non_personalized' → init AdMob with non-personalized
-  │    └─ adConsent === 'unknown' → init AdMob with non-personalized (safe default)
-  ├─ init success → preload interstitial
-  └─ init failure → log error, continue without ads
-```
 
-### States Table
+### Validation Rules
 
-| State | Behavior |
-|-------|----------|
-| Consent not yet resolved | AdMob not initialized. Defer until consent screen is completed or restored. |
-| Consent resolved, initializing | Async init in background. No UI impact. |
-| Initialized successfully | Ads ready for future session boundaries. |
-| Initialization failed | Log error, continue without ads. Do not retry on every screen change — retry on next app launch. |
-| Consent changes after initialization | Re-initialize AdMob with new consent mode if the SDK supports it; otherwise queue for next app launch. |
-
-### Edge Cases
-
-- User declines consent → `adConsent` stays `non_personalized`, AdMob initialized with non-personalized
-- User has not yet reached consent screen → AdMob not initialized yet
-- AdMob SDK fails to load → non-blocking, app continues normally
-- User withdraws ad consent in Settings later → update AdMob consent mode
-- AdMob initialization is slow → do not block the onboarding flow or navigation
-- Device is offline → AdMob init fails silently, retry on next app launch
+- `privacyAccepted` must be true before proceeding
+- `adConsent` must be one of: `unknown` (default), `personalized`, `non_personalized`
+- Decline of required consent (privacy) blocks progression and shows exit path
+- If `X-Device-Id` is absent, the API call must fail gracefully with a retry option
 
 ### Acceptance Criteria
 
-- AdMob initialized after consent is resolved
-- Consent mode (personalized vs non-personalized) matches user's ad consent choice
-- AdMob initialization does NOT block onboarding flow at any point
-- If AdMob fails, the app continues normally without ads
-- Consent-aware initialization works for both pre-auth (device-based) and authenticated consent
+- Given a user passed the age gate, when they reach the consent screen, then they are shown a privacy policy explanation, a privacy acceptance checkbox, and an ad preference selector
+- Given the user checks privacy acceptance and selects an ad preference, when they tap Accept, then consent is saved via `PUT /consent`, the consent store is updated, and they navigate to sign-in
+- Given the user taps Decline, then the app exits the onboarding flow (navigates to exit path)
+- Given the user tries to tap Accept without checking privacy acceptance, then the button is disabled or an inline validation message is shown
+- Given the network is unreachable when saving consent, then an inline error message is shown with a Retry button
+- Given the user already completed consent on this device, when reopening the app pre-sign-in, then the consent step is skipped and they resume at sign-in (per US-7.2)
+- Given the consent API returns a `VALIDATION_ERROR`, then the specific field error is displayed inline
 
 ---
 
-## Cross-cutting: Reusable UI Components
+## 1.3 — Social Sign-In Buttons (Google/Apple)
 
 ### Design References
-- **UI Spec**: Component Library (Button System, Inputs and Controls)
-- **Existing**: `frontend/App.tsx` has inline PrimaryButton component
+- **UI Spec**: Section 1.5 (Sign In) — social sign-in buttons grouped below credentials
+- **User Stories**: US-3.2 (Social Sign-In)
+- **LLD Mobile**: Section 2 — Zustand auth store; Section 7 — auth flow
+- **API Spec**: Section 2.2 — Cognito JWT authentication
 
 ### Implementation Tasks
 
 | Sub-task | File | Description |
 |----------|------|-------------|
-| UI.1 | `frontend/src/components/ui/PrimaryButton.tsx` | Primary button: filled background (`color-primary`), white text, pressed state (`color-primary-pressed`), disabled state (muted), loading state (spinner), 52pt min height, borderRadius 12. Props: `label`, `onPress`, `disabled`, `isLoading`. |
-| UI.2 | `frontend/src/components/ui/SecondaryButton.tsx` | Secondary button: neutral border, primary text, pressed state (light fill). Props: same as PrimaryButton. |
-| UI.3 | `frontend/src/components/ui/TertiaryButton.tsx` | Tertiary button: text-only, primary color, underlined or tinted on press. Props: same as PrimaryButton. |
-| UI.4 | `frontend/src/components/ui/FormTextInput.tsx` | Text input: 16px body text, 48pt min height, label above, error state (border + error text in `color-error`), helper text below, show/hide toggle for password type. Props: `label`, `value`, `onChangeText`, `error`, `helperText`, `secureTextEntry`, `isPassword`. |
-| UI.5 | `frontend/src/components/ui/Toggle.tsx` | Toggle switch: uses platform-native Switch component. Props: `value`, `onValueChange`, `disabled`, `label`. |
-| UI.6 | `frontend/src/components/ui/LoadingOverlay.tsx` | Full-screen loading overlay with centered spinner and optional message. Used for full-screen loading states during auth operations. |
-| UI.7 | `frontend/src/components/ui/ErrorBanner.tsx` | Inline error banner: red/orange background, error icon, message text, optional dismiss button. Props: `message`, `onDismiss`, `type` (error | warning). |
+| 1.3.1 | `frontend/src/stores/authStore.ts` | Zustand store for auth state: `isAuthenticated`, `isLoading`, `user`, `error`, `tokens`, actions for sign-in/sign-out. |
+| 1.3.2 | `frontend/src/services/socialAuthService.ts` | Social sign-in service: `signInWithGoogle()`, `signInWithApple()`. Uses `expo-auth-session` / `expo-web-browser` for OAuth flow. Returns Cognito JWT tokens. |
+| 1.3.3 | `frontend/src/components/ui/SocialButton.tsx` | Reusable social sign-in button: provider icon (Google/Apple), label, loading state. Props: `provider`, `onPress`, `isLoading`. |
+| 1.3.4 | `frontend/src/components/onboarding/SocialSignInSection.tsx` | Grouped social sign-in buttons section placed below credential fields on both Sign In and Sign Up screens. |
+| 1.3.5 | `frontend/src/hooks/useSocialAuth.ts` | Custom hook: `useSocialAuth()` — wraps social auth flow, handles token extraction, Cognito token exchange, navigation on success. |
+
+### Auth Store Shape
+
+```typescript
+// frontend/src/stores/authStore.ts
+
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { OnboardingStep } from '../types/onboarding';
+
+export interface UserProfile {
+  userId: string;
+  displayName?: string;
+  email?: string;
+  level?: 'beginner' | 'intermediate' | 'advanced';
+  reminderTime?: string;       // HH:MM format
+  onboardingStep?: OnboardingStep;  // import from '../types/onboarding'
+  deletionRequestedAt?: string | null;
+  deletionStatus?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface AuthStore {
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
+  user: UserProfile | null;
+
+  setUser: (user: UserProfile) => void;
+  setAuthenticated: (value: boolean) => void;
+  setLoading: (value: boolean) => void;
+  setError: (error: string | null) => void;
+  signOut: () => void;
+}
+```
 
 ### Acceptance Criteria
 
-- All components accept `accessibilityLabel` and `accessibilityRole` props
-- Minimum 44pt touch targets on all interactive elements (48pt for audio controls where applicable)
-- Components render correctly on both iOS and Android
-- Loading state shows spinner and disables interaction
-- Error state shows clear error text in `color-error`
+- Given a user on the sign-in screen, when they tap "Sign in with Google" or "Sign in with Apple", then the OAuth provider flow is initiated via `expo-auth-session`
+- Given the social authentication succeeds, when the user returns to the app, then the Cognito token exchange completes, `AuthManager` stores the JWT, `authStore` is updated, and the user navigates to the appropriate next step (intro screens if new, home if returning)
+- Given the social authentication is cancelled by the user, when they return to the app, then they remain on the sign-in screen with no account created
+- Given the social authentication fails (network error, provider error), when the user returns, then an inline error is shown with a retry option
+- Given a returning user who previously signed up via a social provider, when they tap that provider's button, then they are authenticated without needing email/password
+
+---
+
+## 1.4 — Email/Password Sign-Up + Validation
+
+### Design References
+- **UI Spec**: Section 1.6 (Sign Up) — screen 1.6
+- **User Stories**: US-3.1 (Email/Password Sign-Up)
+- **LLD Mobile**: Section 2 — state management
+- **API Spec**: Cognito sign-up (client-side via `aws-amplify` or Cognito SDK)
+
+### Implementation Tasks
+
+| Sub-task | File | Description |
+|----------|------|-------------|
+| 1.4.1 | `frontend/src/services/emailAuthService.ts` | Email/password auth service: `signUp(email, password)`, `confirmSignUp(code?)`, `signIn(email, password)`. Uses Cognito SDK (`amazon-cognito-identity-js` or `aws-amplify`). |
+| 1.4.2 | `frontend/src/utils/validators.ts` | Form validation utilities: `isValidEmail()`, `isStrongPassword()`, `doPasswordsMatch()`, `getPasswordStrength()`. |
+| 1.4.3 | `frontend/src/components/ui/PasswordStrengthIndicator.tsx` | Visual password strength bar: weak (red), medium (amber), strong (green). Props: `password: string`. |
+| 1.4.4 | `frontend/src/components/onboarding/SignUpScreen.tsx` | Sign Up screen: email, password, confirm password fields; password strength indicator; terms link; Create Account button. States: default, validation, loading, error (email taken), success. |
+| 1.4.5 | `frontend/src/app/(onboarding)/sign-up.tsx` | Expo Router page wrapping `SignUpScreen`. Navigates to level selection or intro on success. |
+| 1.4.6 | `frontend/src/hooks/useEmailAuth.ts` | Custom hook: `useEmailAuth()` — wraps sign-up/sign-in flows, handles Cognito responses, updates auth store. |
+
+### Password Strength Rules
+
+| Level | Criteria |
+|-------|----------|
+| Weak | `< 8 characters` or all lowercase |
+| Medium | `>= 8 characters`, mixed case |
+| Strong | `>= 8 characters`, mixed case, at least 1 number |
+
+### Validation Rules
+
+- Email: must match standard email regex pattern
+- Password: minimum 8 characters, must contain uppercase and lowercase letters and at least one number
+- Confirm password: must match password exactly
+- Email already registered: show "An account with this email already exists. Sign in instead." with link to sign-in screen
+- All fields required before Create Account is enabled
+- Terms: acceptance implied by tapping Create Account (no separate checkbox for MVP)
+
+### Acceptance Criteria
+
+- Given a user on the Sign Up screen, when they enter a valid email and strong password and tap Create Account, then Cognito sign-up is invoked, the JWT is stored in `AuthManager`, the auth store is updated, and the user navigates to the intro screens (or level selection per flow)
+- Given the user enters an email that is already registered, when they submit, then an inline error is shown: "An account with this email already exists" with a link to Sign In
+- Given the user enters an invalid email format, when they submit, then inline validation error is shown and the account is not created
+- Given the user enters a weak password, when they submit, then the password strength indicator shows "weak" and the Create Account button remains disabled
+- Given the passwords do not match, when they submit, then inline error is shown on the confirm field
+- Given the network fails during sign-up, when they submit, then an inline error is shown with a Retry button
+- Given the user has already completed sign-up, when they reopen the app, then they are authenticated and navigate to the home screen (or resume step)
+
+---
+
+## 1.5 — Returning User Sign-In Screen
+
+### Design References
+- **UI Spec**: Section 1.5 (Sign In) — screen 1.5
+- **User Stories**: US-3.3 (Returning User Sign-In)
+- **API Spec**: Cognito sign-in (client-side via Cognito SDK)
+
+### Implementation Tasks
+
+| Sub-task | File | Description |
+|----------|------|-------------|
+| 1.5.1 | `frontend/src/components/onboarding/SignInScreen.tsx` | Sign In screen: email, password fields; Forgot Password link; social sign-in buttons; Sign In button. States: default, loading, error (bad credentials), success. |
+| 1.5.2 | `frontend/src/app/(onboarding)/sign-in.tsx` | Expo Router page wrapping `SignInScreen`. Navigates to home (returning user) or resume step. |
+| 1.5.3 | `frontend/src/services/emailAuthService.ts` | Add `signIn(email, password)` method — Cognito `UserPool.authenticateUser()`, stores tokens in `AuthManager`. |
+
+### Resume Logic (US-7.2)
+
+The Sign In screen is the first screen shown to returning users who have completed the age gate + consent but not yet signed in. On successful sign-in:
+
+1. Auth tokens are stored in `AuthManager` + `tokenStorage`
+2. `apiGet('/v1/me')` is called to fetch the `UserProfile` including `onboardingStep`
+3. If `onboardingStep` is `complete` or not `null`, the user navigates to the appropriate resume step
+4. If `onboardingStep` is `null` (fresh sign-up), the user navigates to intro screens
+5. Consent re-key happens automatically on the first authenticated API call (backend task 1.16)
+
+### Acceptance Criteria
+
+- Given a returning user with valid credentials, when they enter email/password and tap Sign In, then they are authenticated and navigate to the home screen (if `onboardingStep = complete`) or the appropriate resume step
+- Given a returning user enters an incorrect password, when they submit, then an inline error is shown: "Incorrect email or password" with a "Forgot Password?" link
+- Given a returning user who previously signed up with a social provider, when they use that provider's button, then they are authenticated without email/password
+- Given a user who completed consent but not sign-in (pre-auth state), when they sign in, then consent re-key occurs on the first authenticated API call
+- Given network failure during sign-in, when they submit, then inline error is shown with a Retry button
+- Given a user who has an expired session token, when they open the app, then the 401 interceptor in `client.ts` triggers token refresh; if refresh fails, the user is sent to the sign-in screen
+
+---
+
+## 1.6 — Forgot Password / Reset Flow
+
+### Design References
+- **UI Spec**: Section 1.5 (Sign In) — "Forgot Password?" link below fields
+- **User Stories**: US-3.4 (Forgot Password / Password Reset)
+- **API Spec**: Cognito forgot-password flow (client-side via Cognito SDK)
+
+### Implementation Tasks
+
+| Sub-task | File | Description |
+|----------|------|-------------|
+| 1.6.1 | `frontend/src/components/onboarding/ForgotPasswordScreen.tsx` | Forgot Password screen: email input, "Send Reset Link" button. States: default, loading, success (email sent), error (email not found). |
+| 1.6.2 | `frontend/src/components/onboarding/ResetPasswordScreen.tsx` | Reset Password screen: new password, confirm password fields, password strength indicator, "Reset Password" button. States: default, validation, loading, error (expired link, weak password), success. |
+| 1.6.3 | `frontend/src/app/(onboarding)/forgot-password.tsx` | Expo Router page wrapping `ForgotPasswordScreen`. |
+| 1.6.4 | `frontend/src/app/(onboarding)/reset-password.tsx` | Expo Router page wrapping `ResetPasswordScreen`. Handles deep-link with confirmation code from email. |
+| 1.6.5 | `frontend/src/services/emailAuthService.ts` | Add `forgotPassword(email)`, `confirmPasswordReset(email, code, newPassword)` methods using Cognito SDK. |
+
+### Validation Rules
+
+- Email must be valid format before "Send Reset Link" is enabled
+- New password must meet same strength requirements as sign-up (>= 8 chars, mixed case, numeric)
+- Confirmation code from email: must be 6-digit numeric
+- Expired reset link: show "This reset link has expired. Please request a new one."
+
+### Acceptance Criteria
+
+- Given a user on the sign-in screen, when they tap "Forgot Password?", then they navigate to the forgot password screen
+- Given a user enters their registered email, when they tap "Send Reset Link", then a password reset email is sent via Cognito and a success message is shown
+- Given a user enters an unregistered email, when they tap "Send Reset Link", then an inline error is shown: "No account found with this email address"
+- Given a user receives the reset email and taps the link, when the app opens via deep-link, then they are taken to the reset password screen with the confirmation code pre-filled
+- Given a user enters a valid new password matching strength requirements, when they tap "Reset Password", then the password is updated in Cognito and they navigate to the sign-in screen with a success message
+- Given a user enters a weak password, when they tap "Reset Password", then inline validation error is shown
+- Given the reset link has expired, when the user submits, then they see "This reset link has expired" and are prompted to request a new one
+- Given network failure during any step, then inline error is shown with Retry
+
+---
+
+## 1.7 — Intro Screens (Swipe-Through)
+
+### Design References
+- **UI Spec**: Referenced as "intro onboarding cards" in UX copy, screen sequence after sign-in
+- **User Stories**: US-4.1 (App Introduction Screens)
+- **LLD Mobile**: Section 2 — state management; Section 5 — error handling
+
+### Implementation Tasks
+
+| Sub-task | File | Description |
+|----------|------|-------------|
+| 1.7.1 | `frontend/src/data/introContent.ts` | Static content for intro slides: title, description, illustration reference, image asset key. Array of `IntroSlide` objects. |
+| 1.7.2 | `frontend/src/components/onboarding/IntroSlide.tsx` | Single intro slide: illustration, title, body text. Props: `slide: IntroSlide`, `isActive: boolean`. |
+| 1.7.3 | `frontend/src/components/onboarding/IntroCarousel.tsx` | Swipeable carousel: horizontal pager (`react-native-pager-view`), dot indicators, Next/Get Started buttons. Manages page index state. |
+| 1.7.4 | `frontend/src/app/(onboarding)/intro.tsx` | Expo Router page wrapping `IntroCarousel`. On "Get Started" tap, navigates to level selection. |
+| 1.7.5 | `frontend/src/types/onboarding.ts` | Add `IntroSlide` interface. |
+
+### TypeScript Interfaces
+
+```typescript
+export interface IntroSlide {
+  id: string;
+  title: string;
+  description: string;
+  imageKey: string;       // reference to asset
+  illustrationStyle: 'illustration' | 'animation';
+}
+```
+
+### Acceptance Criteria
+
+- Given a user who has signed in for the first time, when they finish sign-in, then they are shown the intro carousel
+- Given a user is on an intro slide, when they swipe right or tap "Next", then they advance to the next slide
+- Given a user is on the last slide, when they tap "Get Started", then onboarding step is saved as `intro_done` and they navigate to level selection
+- Given a user has completed the intro screens once, when they sign out and sign back in, then they are NOT shown the intro screens again (check `onboardingStep` from `GET /me`)
+- Given the carousel is at the first slide, when the user swipes left, then no action occurs (bounce)
+- Given the user signs out mid-way through intro screens, when they sign back in, then they resume at the first incomplete step after sign-in (level selection per US-7.2)
+
+---
+
+## 1.8 — Level Selection Screen
+
+### Design References
+- **UI Spec**: Section 1.7 (Level Selection) — screen 1.7
+- **User Stories**: US-5.1 (Practice Level Selection)
+- **API Spec**: Section 5.2 — `PUT /me` with `level` field
+- **LLD Backend**: `UpdateProfileInput.level` — one of `beginner`, `intermediate`, `advanced`
+
+### Implementation Tasks
+
+| Sub-task | File | Description |
+|----------|------|-------------|
+| 1.8.1 | `frontend/src/types/onboarding.ts` | Add `Level` type: `'beginner' | 'intermediate' | 'advanced'`. |
+| 1.8.2 | `frontend/src/data/levelContent.ts` | Static level descriptions: title, description, icon for each level. |
+| 1.8.3 | `frontend/src/components/onboarding/LevelSelectionScreen.tsx` | Level selection: guidance text, three level cards (beginner, intermediate, advanced), Continue button. States: default (one selected), selection error (none selected), loading, success. |
+| 1.8.4 | `frontend/src/components/ui/SelectionCard.tsx` | Reusable selection card: title, description, selected state styling, onPress handler. Props: `title`, `description`, `isSelected`, `onPress`. |
+| 1.8.5 | `frontend/src/app/(onboarding)/level-selection.tsx` | Expo Router page wrapping `LevelSelectionScreen`. On Continue: calls `apiPut('/me', { level })` + `apiPut('/v1/me/onboarding-step', { step: 'level_selected' })`, navigates to reminder setup. |
+| 1.8.6 | `frontend/src/services/profileService.ts` | API service: `getProfile()`, `updateProfile(input)`, `updateOnboardingStep(step)`. |
+
+### Profile Service
+
+```typescript
+// frontend/src/services/profileService.ts
+
+import { apiGet, apiPut } from '../api/http';
+import type { UserProfile } from '../stores/authStore';
+
+export interface UpdateProfileInput {
+  displayName?: string;
+  level?: 'beginner' | 'intermediate' | 'advanced';
+  reminderTime?: string; // HH:MM format
+}
+
+export async function getProfile(): Promise<UserProfile> {
+  return apiGet<UserProfile>('/me');
+}
+
+export async function updateProfile(input: UpdateProfileInput): Promise<UserProfile> {
+  return apiPut<UserProfile>('/me', input);
+}
+
+export async function updateOnboardingStep(step: string): Promise<void> {
+  return apiPut<void>('/me/onboarding-step', { step });
+}
+```
+
+### Validation Rules
+
+- Exactly one level must be selected before Continue is enabled
+- Level must be one of: `beginner`, `intermediate`, `advanced`
+- If Continue is tapped without a selection, show inline prompt: "Please select your English level to continue"
+
+### Acceptance Criteria
+
+- Given a user on the level selection screen, when they see the screen, then they are presented with 3 clearly described level options as tappable cards
+- Given a user selects a level, when they tap Continue, then `PUT /me` saves the level to the profile, onboarding step is updated to `level_selected`, and they navigate to reminder setup
+- Given a user does not select any level, when they tap Continue, then an inline prompt is shown: "Please select your English level to continue"
+- Given the API call fails, when the user taps Continue, then an inline error is shown with a Retry button
+- Given the user already selected a level in a previous session, when they reach this screen, then the previous selection is pre-selected
+
+---
+
+## 1.9 — Reminder Setup + Notification Permission
+
+### Design References
+- **UI Spec**: Section 1.8 (Reminder Setup) — screen 1.8, Section 1.9 (Permission Prompts — notification card)
+- **User Stories**: US-5.2 (Reminder Preference Setup)
+- **LLD Mobile**: Section 3.2 — Notification store shape, sequence diagram; `NotificationPreferencesState`
+- **API Spec**: Section 5.2 — `PUT /me` with `reminderTime`
+
+### Implementation Tasks
+
+| Sub-task | File | Description |
+|----------|------|-------------|
+| 1.9.1 | `frontend/src/stores/notificationStore.ts` | Zustand store for notification/preferences state. Shape per LLD Mobile Section 3.2. |
+| 1.9.2 | `frontend/src/services/notificationService.ts` | Notification service: `requestPermission()`, `scheduleReminder(time)`, `cancelReminder()`, `checkPermissionStatus()`. Uses `expo-notifications`. |
+| 1.9.3 | `frontend/src/components/onboarding/ReminderSetupScreen.tsx` | Reminder setup: toggle, time picker (active when enabled), Continue + Skip buttons. States: enabled, disabled, success. |
+| 1.9.4 | `frontend/src/components/ui/TimePicker.tsx` | Reusable time picker component: wraps `@react-native-community/datetimepicker` or Expo's `DateTimePicker`. |
+| 1.9.5 | `frontend/src/app/(onboarding)/reminder-setup.tsx` | Expo Router page wrapping `ReminderSetupScreen`. On Continue: saves reminder to profile via `apiPut`, schedules local notification, navigates to permission prompts. |
+| 1.9.6 | `frontend/src/hooks/useNotificationPermission.ts` | Custom hook: `useNotificationPermission()` — wraps `expo-notifications` permission API, tracks `NotificationPermissionStatus` state machine. |
+
+### Notification Store Shape
+
+```typescript
+// frontend/src/stores/notificationStore.ts
+
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+export type NotificationPermissionStatus =
+  | 'unknown'
+  | 'granted'
+  | 'denied'
+  | 'blocked';
+
+export type NotificationRecoveryState =
+  | 'idle'
+  | 'denied'
+  | 'recovery_prompt'
+  | 'settings_redirect';
+
+export interface NotificationPreferencesState {
+  reminderEnabled: boolean;
+  reminderTime: string;       // HH:MM in device local time
+  permissionStatus: NotificationPermissionStatus;
+  recoveryState: NotificationRecoveryState;
+  scheduledNotificationId?: string;
+}
+
+interface NotificationStore extends NotificationPreferencesState {
+  setReminderEnabled: (enabled: boolean) => void;
+  setReminderTime: (time: string) => void;
+  setPermissionStatus: (status: NotificationPermissionStatus) => void;
+  setRecoveryState: (state: NotificationRecoveryState) => void;
+  setScheduledNotificationId: (id: string | undefined) => void;
+  reset: () => void;
+}
+```
+
+### Permission State Machine (per LLD Mobile Section 3.2)
+
+```
+denied -> recovery_prompt -> settings_redirect (when user refuses at OS level)
+```
+
+### Validation Rules
+
+- Time picker is active and visible only when reminder toggle is enabled
+- Time must be in `HH:MM` format (24h)
+- Reminder time is saved to profile via `PUT /me` with `reminderTime` field
+- If notification permission is denied, the toggle can still be enabled (permission request will trigger on toggle), but a recovery note is shown
+
+### Acceptance Criteria
+
+- Given a user on the reminder setup screen, when they toggle reminders on and select a time, then the time picker is active and visible
+- Given a user selects a time and taps Continue, then `reminderTime` is saved to the profile via `PUT /me`, a local notification is scheduled via `expo-notifications`, and the user navigates to the permission prompts screen
+- Given a user taps Skip, then no reminder is scheduled and the onboarding step is updated to `reminder_set`, and they navigate to permission prompts
+- Given notification permission is denied at the OS level, when the user enables the toggle, then the system permission dialog is shown; if denied again, the recovery path (`recovery_prompt` -> `settings_redirect`) is shown
+- Given a user already has a reminder set, when they reach this screen (resume flow), then the previous settings are pre-populated
+- Given the API call to save `reminderTime` fails, then an inline error is shown with Retry
+
+---
+
+## 1.10 — Microphone Permission Screen
+
+### Design References
+- **UI Spec**: Section 1.9 (Permission Prompts) — screen 1.9, microphone card
+- **User Stories**: US-6.1 (Microphone Permission), US-6.2 (Denied Graceful Handling)
+- **LLD Mobile**: Section 5 — permission recovery states
+
+### Implementation Tasks
+
+| Sub-task | File | Description |
+|----------|------|-------------|
+| 1.10.1 | `frontend/src/components/onboarding/PermissionPromptsScreen.tsx` | Permission prompts screen: two stacked cards (notification + microphone), each with rationale, status badge, and action. Continue + Open Settings buttons. States: granted, denied, blocked. |
+| 1.10.2 | `frontend/src/services/permissionService.ts` | Permission service: `requestMicrophonePermission()`, `checkMicrophonePermission()`, `openAppSettings()`. Uses `expo-av` or `expo-permissions` for mic, `Linking.openSettings()` for settings redirect. |
+| 1.10.3 | `frontend/src/components/ui/PermissionCard.tsx` | Reusable permission status card: title, description, status badge (granted/denied), action button. Props: `title`, `description`, `status: PermissionStatus`, `onAction`, `actionLabel`. |
+| 1.10.4 | `frontend/src/app/(onboarding)/permission-prompts.tsx` | Expo Router page wrapping `PermissionPromptsScreen`. On Continue: finalizes onboarding (`onboardingStep = complete`), navigates to Home. |
+| 1.10.5 | `frontend/src/hooks/useMicrophonePermission.ts` | Custom hook: `useMicrophonePermission()` — wraps `expo-permissions`/`expo-av`, tracks permission state. |
+
+### Permission State Machine
+
+```
+Microphone permission:
+  unknown -> request -> granted (proceed)
+                     -> denied (show recovery card, continue allowed)
+                     -> blocked (show settings redirect card, continue allowed)
+
+Notification permission:
+  (handled in task 1.9, display current status here)
+```
+
+### Acceptance Criteria
+
+- Given a user near the end of onboarding, when they reach the permission prompts screen, then they see two stacked cards: one for notifications and one for microphone, each with a clear explanation
+- Given microphone permission is granted (or user taps "Allow" and grants via OS dialog), then the microphone card shows a "Granted" badge and the user can tap Continue
+- Given microphone permission is denied, then the microphone card shows "Microphone access denied" with an "Open Settings" button; Continue is still enabled
+- Given the user taps "Open Settings", then the OS settings app is opened via `Linking.openSettings()`
+- Given both permissions are handled (granted or acknowledged as denied), when the user taps Continue, then `onboardingStep` is updated to `complete` and the user navigates to the Home screen
+- Given the user has already granted/denied permissions in a previous session, when they reach this screen, then the correct status is displayed immediately without re-prompting
+
+---
+
+## 1.11 — Deep-Link Handler for Notification Taps
+
+### Design References
+- **LLD Mobile**: Section 3.2 — deep-link routing on notification tap, cold-start handling
+- **UI Spec**: Section 3.3 (Local Reminder Notification) — screen 3.3
+- **User Flow**: Returning-User Daily Practice Flow
+
+### Implementation Tasks
+
+| Sub-task | File | Description |
+|----------|------|-------------|
+| 1.11.1 | `frontend/src/services/deepLinkService.ts` | Deep-link handler: `handleNotificationTap(data)`, `handleColdStartNotification()`. Parses notification data, determines target route. |
+| 1.11.2 | `frontend/src/hooks/useNotificationHandler.ts` | Custom hook: `useNotificationHandler()` — registers notification response listener in `expo-notifications`, routes to target screen. |
+| 1.11.3 | `frontend/src/app/_layout.tsx` | Update root layout: register notification handler on mount, initialize deep-link listener, route to Home or appropriate screen based on notification data. |
+
+### Deep-Link Routing Logic
+
+```typescript
+// frontend/src/services/deepLinkService.ts
+
+export type DeepLinkTarget = 'home' | 'lesson' | 'progress';
+
+export interface NotificationData {
+  target: DeepLinkTarget;
+  lessonId?: string;
+}
+
+export function resolveNotificationRoute(data: NotificationData): string {
+  switch (data.target) {
+    case 'home':
+      return '/(tabs)/home';
+    case 'lesson':
+      return `/lesson/${data.lessonId}`;
+    case 'progress':
+      return '/(tabs)/progress';
+    default:
+      return '/(tabs)/home';
+  }
+}
+```
+
+### Cold-Start Handling
+
+- On app launch, check if the app was opened from a notification tap (via `expo-notifications` `getLastNotificationResponseAsync()`)
+- If yes, resolve the deep-link target and navigate after auth check completes
+- If the user is not authenticated, queue the deep-link intent and execute after sign-in
+- If the user is mid-onboarding, defer the deep-link until onboarding completes
+
+### Acceptance Criteria
+
+- Given a local reminder notification is delivered and the user taps it, when the app opens, then the user is navigated to the Home screen
+- Given the app is cold-started from a notification tap, when the app finishes loading, then the deep-link target is resolved and the user is routed accordingly
+- Given the user is not authenticated when a notification tap opens the app, then the deep-link intent is queued and executed after successful sign-in
+- Given the user is mid-onboarding when a notification tap opens the app, then the deep-link is deferred until onboarding completes
+- Given a notification contains a `lessonId` target, when the user taps it, then they are navigated to that lesson's detail screen (requires Epic 02)
+
+---
+
+## C.5 — AdMob SDK Initialization + Consent-Aware Request
+
+### Design References
+- **LLD Mobile**: Section 6.1 — AdMob initialization sequence, `AdConsentMode`, `AdIntegrationController`
+- **UI Spec**: Ad Placement section, Section 1.4 (ad consent choice)
+
+### Implementation Tasks
+
+| Sub-task | File | Description |
+|----------|------|-------------|
+| C.5.1 | `frontend/src/services/adService.ts` | AdMob initialization service: `initializeAdMob(consentMode)`, `preloadInterstitial()`, `canShowAd()`, `showInterstitial()`. Uses `react-native-google-mobile-ads`. |
+| C.5.2 | `frontend/src/stores/adStore.ts` | Zustand store for ad state: `adConsentMode`, `adLifecycleState`, `dailyAdCount`, `lastAdDate`. Persists daily counter for frequency capping. |
+| C.5.3 | `frontend/src/hooks/useAdInitialization.ts` | Custom hook: `useAdInitialization()` — reads consent state, initializes AdMob with correct mode (personalized vs non-personalized), preloads first interstitial. |
+
+### AdMob Initialization Sequence
+
+Per LLD Mobile Section 6.1:
+1. Read consent + ad counters from local store
+2. Resolve consent state (from `consentStore`)
+3. Initialize AdMob SDK with request config (personalized or non-personalized)
+4. Preload next interstitial ad
+
+### Acceptance Criteria
+
+- Given consent allows personalization, when AdMob initializes, then personalized ad requests are configured
+- Given consent is denied or unknown, when AdMob initializes, then non-personalized ad requests are configured
+- Given AdMob initialization, when it completes, then it does not block the app shell or onboarding flow
+- Given the daily ad cap is reached, when a session boundary is eligible for an ad, then `canShowAd()` returns false and the ad is skipped
+- Given an ad fails to load or show, when the failure occurs, then the practice flow continues without interruption
+
+---
+
+## C.8 — Encrypted SQLite Local Store Setup
+
+### Design References
+- **Mobile Storage Design**: Sections 1-4 — table schemas for practice_sessions, progress_snapshots, sync_queue_items, cached_lessons, recording_references, ad_counter
+- **LLD Mobile**: Section 4 — offline storage
+
+### Implementation Tasks
+
+| Sub-task | File | Description |
+|----------|------|-------------|
+| C.8.1 | `frontend/src/storage/database.ts` | Encrypted SQLite database initialization: `initializeDatabase()`, `getDatabase()`. Uses `expo-sqlite` or `react-native-quick-sqlite` with SQLCipher for encryption. |
+| C.8.2 | `frontend/src/storage/migrations.ts` | Database migration runner: versioned schema migrations, creates all tables from Mobile Storage Design. Initial migration creates `practice_sessions`, `progress_snapshots`, `sync_queue_items`, `cached_lessons`, `thumbnail_cache`, `recording_references`, `ad_counter` tables. |
+| C.8.3 | `frontend/src/storage/repositories/sessionRepository.ts` | CRUD for `practice_sessions` table. |
+| C.8.4 | `frontend/src/storage/repositories/syncQueueRepository.ts` | CRUD for `sync_queue_items` table. |
+| C.8.5 | `frontend/src/storage/repositories/adCounterRepository.ts` | CRUD for `ad_counter` table. |
+| C.8.6 | `frontend/src/storage/repositories/cachedLessonRepository.ts` | CRUD for `cached_lessons` table. |
+| C.8.7 | `frontend/src/storage/repositories/progressRepository.ts` | CRUD for `progress_snapshots` table. |
+
+### Database Schema (from Mobile Storage Design)
+
+```sql
+CREATE TABLE practice_sessions (
+    session_id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    lesson_id TEXT NOT NULL,
+    status TEXT NOT NULL CHECK (status IN ('created','active','paused','completed','synced')),
+    started_at TEXT NOT NULL,
+    expires_at TEXT,
+    completed_at TEXT,
+    completion_percent INTEGER,
+    recording_local_uri TEXT,
+    client_mutation_id TEXT
+);
+
+CREATE TABLE sync_queue_items (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    type TEXT NOT NULL,
+    payload_json TEXT NOT NULL,
+    client_mutation_id TEXT NOT NULL,
+    retry_count INTEGER NOT NULL DEFAULT 0,
+    next_retry_at TEXT,
+    status TEXT NOT NULL CHECK (status IN ('pending','processing','failed','synced'))
+);
+
+CREATE TABLE ad_counter (
+    user_id TEXT NOT NULL,
+    date_key TEXT NOT NULL,
+    shown_count INTEGER NOT NULL,
+    updated_at TEXT NOT NULL,
+    PRIMARY KEY (user_id, date_key)
+);
+```
+
+### Acceptance Criteria
+
+- Given the app launches for the first time, when the database initializes, then all tables are created with the correct schema
+- Given the app already has a database from a previous version, when a migration is needed, then the migration runner executes pending migrations
+- Given sensitive data is written to the database, when it is stored, then the SQLite file is encrypted
+- Given a database operation fails, when it occurs, then the error is caught and logged without crashing the app
+- Given the database initialization is complete, when the app accesses any repository, then the queries execute against the correct table schema
+
+---
+
+## C.9 — Zustand Stores (Auth, Consent, Lessons, Session, Sync)
+
+### Design References
+- **LLD Mobile**: Section 2 — Zustand for lightweight global state
+- **Existing**: `frontend/src/state/useAppStore.ts` (AppState template)
+
+### Implementation Tasks
+
+| Sub-task | File | Description |
+|----------|------|-------------|
+| C.9.1 | `frontend/src/stores/authStore.ts` | Auth store (defined in 1.3.1): JWT token state, user profile, authentication status, sign-in/sign-out actions. Persisted to AsyncStorage. |
+| C.9.2 | `frontend/src/stores/consentStore.ts` | Consent store (defined in 1.1.2): age verification, privacy acceptance, ad consent preference. |
+| C.9.3 | `frontend/src/stores/onboardingStore.ts` | Onboarding progress store (defined in 1.1.3): current step, resume logic. Persisted for cold-start resume. |
+| C.9.4 | `frontend/src/stores/notificationStore.ts` | Notification store (defined in 1.9.1): reminder enabled/disabled, time, permission status, recovery state. |
+| C.9.5 | `frontend/src/stores/lessonStore.ts` | Lesson store (placeholder for Epic 02): lesson catalog cache, selected lesson, download progress. |
+| C.9.6 | `frontend/src/stores/sessionStore.ts` | Session store (placeholder for Epic 03): active practice session state, recording status, playback progress. |
+| C.9.7 | `frontend/src/stores/syncStore.ts` | Sync store (placeholder for Epic 04): offline sync queue status, pending mutations count, last sync timestamp. |
+
+### Store Design Rules
+
+1. Use Zustand `persist` middleware with `createJSONStorage(() => AsyncStorage)` for stores that must survive app restarts (auth, consent, onboarding, notification, ad counter)
+2. Use ephemeral Zustand stores (no `persist`) for transient UI state (lesson, session)
+3. Each store should expose a `reset()` action for logout
+4. Store actions should be async where they call services/APIs
+5. Stores should not import from other stores directly — use service layer for inter-store coordination
+
+### Acceptance Criteria
+
+- Given the app launches, when each persisted store initializes, then it hydrates from AsyncStorage automatically
+- Given a user performs an action that updates a store, when the state changes, then all subscribed components re-render with the new state
+- Given the user clears app data or signs out, when `reset()` is called on each store, then the store returns to its initial state
+- Given a store action that calls an API fails, when the error occurs, then the store's `error` field is populated and the action is not committed
+- Given the app is in development, when Zustand devtools are enabled, then state changes are visible in React DevTools/Redux DevTools
+
+---
+
+## C.10 — Global Error Boundary + Unhandled Promise Handler
+
+### Design References
+- **LLD Mobile**: Section 5 (Client Error Handling), Section 8 (NFR-20 — crash rate <= 0.5%)
+- **UI Spec**: Section 5.1 (Retryable Error States)
+
+### Implementation Tasks
+
+| Sub-task | File | Description |
+|----------|------|-------------|
+| C.10.1 | `frontend/src/components/ErrorBoundary.tsx` | React class-based error boundary: catches render errors, shows fallback UI with retry button. Props: `fallback?: ReactNode`, `onError?: (error, info) => void`. |
+| C.10.2 | `frontend/src/components/ErrorFallbackScreen.tsx` | Full-screen error fallback: error icon, "Something went wrong" message, "Try Again" button. States: retryable error, fatal error. Per UI Spec Section 5.1. |
+| C.10.3 | `frontend/src/services/globalErrorHandler.ts` | Global unhandled promise rejection handler: `setupGlobalErrorHandler()` — registers `ErrorUtils.setGlobalHandler` (React Native) and `unhandledrejection` listener. Sends to crash reporting (Sentry/Crashlytics in production). |
+| C.10.4 | `frontend/src/app/_layout.tsx` | Update root layout: wrap with `ErrorBoundary`, call `setupGlobalErrorHandler()` at app bootstrap. Also call `initializeDatabase()` (from C.8.1) before any store hydration to ensure the local DB is ready for persistent data. |
+
+### Error Boundary Design
+
+```typescript
+// frontend/src/components/ErrorBoundary.tsx
+
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+  fallback?: React.ReactNode;
+  onError?: (error: Error, errorInfo: React.ErrorInfo) => void;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+```
+
+### Acceptance Criteria
+
+- Given a rendering error occurs in any component within the boundary, when the error is caught, then the fallback UI is displayed instead of a white screen or crash
+- Given the fallback UI is displayed, when the user taps "Try Again", then the boundary resets and the component tree re-renders
+- Given a render error occurs outside the boundary (root level), when caught, then the root error boundary shows the fatal fallback
+- Given an unhandled promise rejection occurs, when caught by the global handler, then the error is logged to the crash reporting service
+- Given a development build, when an error occurs, then the error message and stack trace are visible in the console
+- Given a production build, when an error occurs, then the error is reported silently and the user sees only the fallback UI
 
 ---
 
 ## Testing Tasks
 
 ### Design Reference
-- **LLD Mobile**: Section 8 (NFR coverage — crash rate, accessibility)
+- **LLD Mobile**: Section 5 — client error handling; Section 8 — NFR coverage
+- **UI Spec**: Screen-by-screen state coverage (default, loading, error, success)
 
-### Implementation Tasks
+### Unit Testing
 
 | Sub-task | File | Description |
 |----------|------|-------------|
-| T.1 | `tests/stores/authStore.test.ts` | Unit tests: sign-in, sign-up, sign-out, restoreSession, token expiry, error states. |
-| T.2 | `tests/stores/consentStore.test.ts` | Unit tests: setAgeVerified, acceptPrivacy, declinePrivacy, submitConsent, restoreConsent, deviceId generation. |
-| T.3 | `tests/stores/notificationStore.test.ts` | Unit tests: enableReminder, disableReminder, permission states, schedule/cancel. |
-| T.4 | `tests/stores/onboardingStore.test.ts` | Unit tests: setStep, completeIntro, setLevel, setMicPermission, step values. |
-| T.5 | `tests/screens/AgeGateScreen.test.tsx` | Component test: age confirmation, underage block, exit flow, re-entry skip. |
-| T.6 | `tests/screens/ConsentScreen.test.tsx` | Component test: accept flow, decline flow, validation, error handling. |
-| T.7 | `tests/screens/SignInScreen.test.tsx` | Component test: email/password sign-in, social sign-in buttons, forgot password link, error states. |
-| T.8 | `tests/screens/SignUpScreen.test.tsx` | Component test: form validation, password strength, existing email error, success flow. |
-| T.9 | `tests/screens/LevelSelectionScreen.test.tsx` | Component test: level selection, validation, save to profile. |
-| T.10 | `tests/screens/ReminderSetupScreen.test.tsx` | Component test: toggle, time picker, skip, permission request. |
-| T.11 | `tests/screens/PermissionPromptsScreen.test.tsx` | Component test: permission cards, granted/denied states, settings redirect. |
-| T.12 | `tests/screens/ForgotPasswordScreen.test.tsx` | Component test: send reset link, reset password, expiration handling. |
-| T.13 | `tests/navigation/RootNavigator.test.tsx` | Integration test: boot sequence routing for all auth/onboarding state combinations. |
-| T.13a | `tests/screens/AppLaunchScreen.test.tsx` | Component test: loading state, error state with retry, success transition. |
-| T.13b | `tests/screens/ExitPathScreen.test.tsx` | Component test: exit message rendered, no navigation into app, safe exit. |
-| T.14 | `tests/services/api/client.test.ts` | Unit tests: apiGet, apiPut, apiPost, auth headers, deviceId headers, error handling, 401 handling. |
-| T.15 | `tests/services/auth/authService.test.ts` | Unit tests (mocked): signIn, signUp, forgotPassword, social sign-in flows. |
-| T.16 | `tests/services/notifications/notificationService.test.ts` | Unit tests (mocked): scheduleReminder, cancelReminder, permission request, deep-link handling. |
-| T.17 | `tests/services/ads/AdMobService.test.ts` | Unit tests (mocked): initialization with consent modes, failure handling, non-blocking behavior. |
+| T.1 | `frontend/src/__tests__/validators.test.ts` | Unit tests: `isValidEmail()`, `isStrongPassword()`, `getPasswordStrength()`, `doPasswordsMatch()`. Test boundary cases, edge cases, and all strength levels. |
+| T.2 | `frontend/src/__tests__/deviceIdService.test.ts` | Unit tests: `getOrCreateDeviceId()` returns consistent ID, persists and retrieves from AsyncStorage. |
+| T.3 | `frontend/src/__tests__/stores/consentStore.test.ts` | Unit tests: consent store actions, state transitions, persist/restore. |
+| T.4 | `frontend/src/__tests__/stores/onboardingStore.test.ts` | Unit tests: onboarding step transitions, resume logic, reset. |
+| T.5 | `frontend/src/__tests__/stores/authStore.test.ts` | Unit tests: auth store sign-in/sign-out, token management, persist/restore. |
+| T.6 | `frontend/src/__tests__/stores/notificationStore.test.ts` | Unit tests: notification preferences persistence, state transitions. |
+| T.7 | `frontend/src/__tests__/deepLinkService.test.ts` | Unit tests: `resolveNotificationRoute()` returns correct routes for each target type. |
+| T.8 | `frontend/src/__tests__/services/consentService.test.ts` | Unit tests: consent API calls with mocked HTTP layer (mock `apiGet`, `apiPut`). |
+
+### Integration Testing
+
+| Sub-task | File | Description |
+|----------|------|-------------|
+| T.9 | `frontend/src/__tests__/services/socialAuthService.test.ts` | Integration tests: social auth flow with mocked Cognito/Google/Apple responses. |
+| T.10 | `frontend/src/__tests__/services/emailAuthService.test.ts` | Integration tests: sign-up, sign-in, forgot-password flows with mocked Cognito SDK. |
+| T.11 | `frontend/src/__tests__/services/profileService.test.ts` | Integration tests: `getProfile()`, `updateProfile()`, `updateOnboardingStep()` with mocked HTTP layer. |
+
+### Component/IUT Tests
+
+| Sub-task | File | Description |
+|----------|------|-------------|
+| T.12 | `frontend/src/__tests__/components/AgeGateScreen.test.tsx` | Component tests: AgeGateScreen renders correctly, validation shows/hides, navigation fires on valid input. Test with React Native Testing Library. |
+| T.13 | `frontend/src/__tests__/components/ConsentScreen.test.tsx` | Component tests: ConsentScreen renders checkboxes, Accept/Decline buttons, validation. |
+| T.14 | `frontend/src/__tests__/components/SignUpScreen.test.tsx` | Component tests: SignUpScreen form fields, password strength indicator, validation errors. |
+| T.15 | `frontend/src/__tests__/components/LevelSelectionScreen.test.tsx` | Component tests: level selection cards, selection state, validation on empty selection. |
+| T.16 | `frontend/src/__tests__/components/ReminderSetupScreen.test.tsx` | Component tests: toggle, time picker visibility, Continue/Skip actions. |
 
 ### Mock Strategy
 
-- Mock `expo-secure-store` for auth token persistence tests
-- Mock `@react-native-async-storage/async-storage` for device ID and consent persistence tests
-- Mock `expo-notifications` for notification scheduling and permission tests
-- Mock `react-native-google-mobile-ads` for AdMob tests
-- Mock `expo-auth-session` for social sign-in tests
-- Use `@testing-library/react-native` for component tests
-- Use `jest.fn()` for navigation mocks
+- Use `jest.mock()` for all native modules: `expo-secure-store`, `expo-notifications`, `expo-auth-session`, `expo-sqlite`, `react-native-google-mobile-ads`
+- Mock the HTTP layer by mocking `frontend/src/api/http.ts` functions (`apiGet`, `apiPut`, etc.)
+- Mock Cognito SDK (`amazon-cognito-identity-js` or `aws-amplify`) for auth service tests
+- Use `@react-native-async-storage/async-storage/jest/async-storage-mock` for AsyncStorage
+- Use Zustand store test utilities: create fresh stores per test via `create()` factory pattern
+- For component tests, use `@testing-library/react-native` with mocked stores
+- Test cold-start resume by populating AsyncStorage with serialized Zustand state before creating stores
 
 ---
 
 ## Task Dependency Graph
 
 ```
-C.Nav (Navigation Architecture)
-├── C.API (API Client Update) ◄── all API tasks
+C.8 (SQLite Setup)
 ├── C.9 (Zustand Stores)
-│    ├── C.9.2a (Device Service) ── ConsentStore
-│    ├── ConsentStore ──── 1.2 (ConsentScreen) ──── C.5 (AdMob)
-│    ├── AuthStore ──────── 1.3 (SocialSignIn) ───┐
-│    │                     ├── 1.4 (SignUp) ──────┤
-│    │                     ├── 1.5 (SignIn) ──────┤
-│    │                     └── 1.6 (ForgotPwd) ───┘
-│    ├── OnboardingStore ── 1.7 (Intro) ── 1.8 (Level) ── 1.9 (Reminder) ── 1.10 (Permission)
-│    └── NotificationStore ── 1.9 (Reminder) ── 1.11 (DeepLink)
-├── UI.1-UI.7 (Shared Components) ◄── all screen tasks
-├── C.Boot (Boot Sequence) ◄── all stores + C.9.2a
-├── C.5 (AdMob) ◄── ConsentStore
-└── T.1-T.17 (Testing) ◄── all implementation tasks
+│     ├── 1.1 (Age Gate)
+│     │     ├── 1.2 (Consent Screen)
+│     │     │     ├── 1.3 (Social Sign-In)
+│     │     │     │     └── 1.7 (Intro Screens)
+│     │     │     │           └── 1.8 (Level Selection)
+│     │     │     │                 └── 1.9 (Reminder Setup)
+│     │     │     │                       ├── 1.10 (Mic Permission)
+│     │     │     │                       └── 1.11 (Deep-Link Handler)
+│     │     │     └── 1.4 (Email Sign-Up)
+│     │     │           └── 1.5 (Returning Sign-In)
+│     │     │                 └── 1.6 (Forgot Password)
+│     │     ├── C.5 (AdMob Init) ◄── consentStore
+│     │     └── C.10 (Error Boundary)
+│     └── T.1–T.16 (Testing) ◄── all implementation tasks
 ```
-
-### Suggested Build Order
-
-| Phase | Tasks | Result |
-|-------|-------|--------|
-| 1 | C.Nav (1-5) + install deps | Navigation shell working with placeholder screens |
-| 2 | C.API (1-5) + UI.1-UI.7 | API client ready + UI kit ready |
-| 3 | C.9 (1-5) + C.Boot (1-3) | All Zustand stores + boot sequence |
-| 4 | 1.1 (AgeGate + AgePolicyBlock) | Age gate flow complete |
-| 5 | 1.2 (ConsentScreen) + C.5 (AdMob) | Consent flow + ad initialization |
-| 6 | 1.3 (SocialSignIn) + 1.4 (SignUp) + 1.5 (SignIn) + 1.6 (ForgotPwd) | Full auth flow |
-| 7 | 1.7 (Intro) + 1.8 (LevelSelection) | Intro + profile setup |
-| 8 | 1.9 (ReminderSetup) + 1.10 (Permission) + 1.11 (DeepLink) | Remaining onboarding + deep links |
-| 9 | T.1-T.17 (All tests) | Full test coverage |
 
 ---
 
-## User Story-to-Task Traceability Matrix
+## Suggested Build Order
 
-| User Story | Primary Task(s) | Supporting Tasks | Key Acceptance Criteria Covered |
-|------------|----------------|------------------|-------------------------------|
-| US-1.1 | 1.1 | C.9.2 (consentStore), C.Boot | Age gate presented first, age-eligible proceeds, store signal shortcut |
-| US-1.2 | 1.1, 1.12 | — | Underage block message, no account creation, no personal data stored, safe exit path |
-| US-2.1 | 1.2 | C.9.2, C.API.3, C.5, 1.12 | Privacy/terms shown, Accept proceeds, Decline navigates to ExitPath, cannot skip |
-| US-3.1 | 1.4 | C.9.1, C.API.2, UI.4, UI.5 | Valid email+password creates account, invalid shows errors, existing email shown |
-| US-3.2 | 1.3 | C.9.1, C.API.2 | Google/Apple redirect, success creates/authenticates, failure returns to sign-in |
-| US-3.3 | 1.5 | C.9.1, C.API.2 | Returning skips age+consent, correct creds go to Home, wrong password shows error |
-| US-3.4 | 1.6 | C.9.1, C.API.2 | Forgot password link, reset email sent, unregistered email error, weak password rejected |
-| US-4.1 | 1.7 | C.9.4 | Intro screens shown after first auth, swipe/Next advances, Get Started proceeds, never shown again |
-| US-5.1 | 1.8 | C.9.4, C.API.4 | 3-4 level options, selection saved, no-selection validation |
-| US-5.2 | 1.9 | C.9.3, C.API.4, notificationService | Time picker, toggle, skip, reminder scheduled, notification delivered |
-| US-6.1 | 1.10 | C.9.4, notificationService | Mic explanation, OS dialog, granted proceeds to Home |
-| US-6.2 | 1.10 | C.9.4, notificationService | Denied proceeds to Home, blocked recording later, settings redirect |
-| US-7.1 | C.Nav, C.Boot | All tasks | Full onboarding completes to Home, preferences persisted |
-| US-7.2 | C.Boot | C.9.1, C.9.4, C.API.4 | Age+consent done → resume at sign-in, signed in → resume at step, complete → Home |
+| Step | Tasks | Result |
+|------|-------|--------|
+| 1 | C.8 (SQLite) + C.9 (Stores) | Data layer ready |
+| 2 | 1.1 (Age Gate) + C.10 (Error Boundary) | First onboarding screen functional |
+| 3 | 1.2 (Consent) + 1.1 | Consent flow connected to API |
+| 4 | 1.3 (Social Sign-In) + 1.4 (Email Sign-Up) + 1.5 (Returning Sign-In) | Auth flow complete |
+| 5 | 1.6 (Forgot Password) | Password recovery complete |
+| 6 | 1.7 (Intro Screens) | Post-auth intro complete |
+| 7 | 1.8 (Level Selection) + 1.9 (Reminder Setup) | Profile setup screens complete |
+| 8 | 1.10 (Mic Permission) + 1.11 (Deep-Link Handler) | Onboarding completion + notification handling |
+| 9 | C.5 (AdMob Init) | Ad initialization wired to consent |
+| 10 | T.1–T.16 (Testing) | All tests passing |
+
+---
+
+## Navigation Design
+
+### Onboarding Route Group
+
+All onboarding screens live under `frontend/src/app/(onboarding)/` as an Expo Router group. The root layout (`frontend/src/app/_layout.tsx`) checks auth state and onboarding progress:
+
+```typescript
+// Routing logic in _layout.tsx
+
+if (!isAuthenticated && !hasConsent) {
+  // Redirect to (onboarding)/age-gate
+} else if (!isAuthenticated && hasConsent) {
+  // Redirect to (onboarding)/sign-in
+} else if (isAuthenticated && onboardingStep !== 'complete') {
+  // Resume at onboardingStep
+} else if (isAuthenticated && onboardingStep === 'complete') {
+  // Redirect to (tabs)/home
+}
+```
+
+### Screen Stack vs Modal
+
+| Screen | Type | Notes |
+|--------|------|-------|
+| Age Gate | Stack | Push navigation, back action |
+| Age Policy Block | Full-screen modal | No back, only exit |
+| Consent | Stack | Push from age gate |
+| Sign In | Stack | Push from consent; back to consent |
+| Sign Up | Stack | Push from sign-in header link |
+| Forgot Password | Stack | Push from sign-in |
+| Reset Password | Stack | Deep-link entry or push |
+| Intro Carousel | Stack | Push after sign-in |
+| Level Selection | Stack | Push from intro |
+| Reminder Setup | Stack | Push from level selection |
+| Permission Prompts | Stack | Push from reminder setup |
+
+### Resume Logic (per US-7.2)
+
+The `onboardingStore` persists `currentStep` to AsyncStorage. On app cold-start:
+
+1. Check if JWT exists in `AuthManager` (via `loadFromStorage()`)
+2. If no JWT: check `consentStore.ageVerified` — if true, resume at sign-in; if false, resume at age gate
+3. If JWT exists: call `GET /me` to fetch `onboardingStep` from backend
+4. Map `onboardingStep` to the correct screen per the resume table in backend task 1.20:
+
+| `onboardingStep` | Resume Screen |
+|---|---|
+| `null` | Age Gate (should not happen with JWT, but fallback safe) |
+| `age_gate_done` | Consent |
+| `consent_done` | Sign In (or skip if JWT exists) |
+| `intro_done` | Level Selection |
+| `level_selected` | Reminder Setup |
+| `reminder_set` | Permission Prompts |
+| `mic_permission_done` | Complete -> Home |
+| `complete` | Home |
 
 ---
 
 ## Revision History
 
-| Version | Date | Author | Description |
-|---------|------|--------|-------------|
-| 1.0 | 2026-05-16 | Solo Dev | Initial technical task breakdown for Epic 01 frontend |
-| 1.1 | 2026-05-16 | Solo Dev | Audit fix: add ExitPathScreen (1.12), AppLaunchScreen task, deviceId service (C.9.2a), US-6.2 cross-epic note, US-3.4 deep-link handling, US-3.3 AC2 routing precision, update traceability matrix and dependency graph |
+| Version | Date       | Author   | Description |
+|---------|-----------|----------|-------------|
+| 1.0     | 2026-06-07 | Solo Dev | Initial frontend technical task breakdown for Epic 01 onboarding |

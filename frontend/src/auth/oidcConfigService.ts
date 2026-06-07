@@ -16,7 +16,7 @@ export interface OidcFetchResult {
  */
 export async function fetchOidcConfigFromBackend(): Promise<OidcFetchResult> {
   try {
-    const response = await apiClient.get<OidcConfig>('/config/runtime');
+    const response = await apiClient.get<OidcConfig>('/v1/config/runtime');
     const config = response.data;
 
     if (!config || !config.issuer) {

@@ -98,7 +98,7 @@ async def client(app_with_deletion, mock_dynamodb_table, settings):
 class TestAccountDeletion:
     @pytest.mark.asyncio
     async def test_delete_account_requires_auth(self, client):
-        resp = await client.delete("/account")
+        resp = await client.delete("/v1/account")
         assert resp.status_code == 401
 
     @pytest.mark.asyncio
@@ -106,7 +106,7 @@ class TestAccountDeletion:
         from app.core.auth import _fetch_jwks
         with patch("app.core.auth._fetch_jwks") as m:
             m.return_value = jwks_response
-            resp = await client.delete("/account", headers=_auth_header(rsa_keys))
+            resp = await client.delete("/v1/account", headers=_auth_header(rsa_keys))
         assert resp.status_code == 403
 
     @pytest.mark.asyncio
@@ -119,7 +119,7 @@ class TestAccountDeletion:
 
         with patch("app.core.auth._fetch_jwks") as m:
             m.return_value = jwks_response
-            resp = await client.delete("/account", headers=_auth_header(rsa_keys))
+            resp = await client.delete("/v1/account", headers=_auth_header(rsa_keys))
         assert resp.status_code == 202
         data = resp.json()["data"]
         assert data["userId"] == "user-123"
@@ -137,7 +137,7 @@ class TestAccountDeletion:
 
         with patch("app.core.auth._fetch_jwks") as m:
             m.return_value = jwks_response
-            await client.delete("/account", headers=_auth_header(rsa_keys))
+            await client.delete("/v1/account", headers=_auth_header(rsa_keys))
 
         profile = profile_repo.get_profile("user-123")
         assert profile is not None
@@ -154,7 +154,7 @@ class TestAccountDeletion:
 
         with patch("app.core.auth._fetch_jwks") as m:
             m.return_value = jwks_response
-            resp = await client.delete("/account", headers=_auth_header(rsa_keys))
+            resp = await client.delete("/v1/account", headers=_auth_header(rsa_keys))
         data = resp.json()["data"]
         from datetime import datetime, timezone
         purge = datetime.fromisoformat(data["purgeAfter"])
@@ -172,7 +172,7 @@ class TestAccountDeletion:
 
         with patch("app.core.auth._fetch_jwks") as m:
             m.return_value = jwks_response
-            resp = await client.get("/me", headers=_auth_header(rsa_keys))
+            resp = await client.get("/v1/me", headers=_auth_header(rsa_keys))
         assert resp.status_code == 200
         data = resp.json()["data"]
         assert data["deletionStatus"] == "deletion_requested"
@@ -188,7 +188,7 @@ class TestAccountDeletion:
 
         with patch("app.core.auth._fetch_jwks") as m:
             m.return_value = jwks_response
-            await client.delete("/account", headers=_auth_header(rsa_keys))
+            await client.delete("/v1/account", headers=_auth_header(rsa_keys))
 
         profile = profile_repo.get_profile("user-123")
         assert profile is not None
@@ -205,6 +205,6 @@ class TestAccountDeletion:
         consent_repo.put_consent(user_id="user-123", ageVerified=True, privacyAccepted=True, adConsent="personalized", locale="en")
         with patch("app.core.auth._fetch_jwks") as m:
             m.return_value = jwks_response
-            resp = await client.delete("/account", headers=_auth_header(rsa_keys))
+            resp = await client.delete("/v1/account", headers=_auth_header(rsa_keys))
         assert resp.status_code == 404
         assert resp.json()["error"]["code"] == "USER_NOT_FOUND"

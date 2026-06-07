@@ -107,7 +107,7 @@ class TestOnboardingEndpoints:
 
         with patch("app.core.auth._fetch_jwks") as m:
             m.return_value = jwks_response
-            resp = await client.get("/me", headers=_auth_header(rsa_keys))
+            resp = await client.get("/v1/me", headers=_auth_header(rsa_keys))
         assert resp.status_code == 200
         data = resp.json()["data"]
         assert data["onboardingStep"] == "consent_done"
@@ -121,7 +121,7 @@ class TestOnboardingEndpoints:
 
         with patch("app.core.auth._fetch_jwks") as m:
             m.return_value = jwks_response
-            resp = await client.put("/me/onboarding-step", json={"step": "invalid_step"}, headers={**_auth_header(rsa_keys), "Content-Type": "application/json"})
+            resp = await client.put("/v1/me/onboarding-step", json={"step": "invalid_step"}, headers={**_auth_header(rsa_keys), "Content-Type": "application/json"})
         assert resp.status_code == 422
 
     @pytest.mark.asyncio
@@ -147,12 +147,12 @@ class TestOnboardingEndpoints:
 
         with patch("app.core.auth._fetch_jwks") as m:
             m.return_value = jwks_response
-            resp = await client.put("/me/onboarding-step", json={"step": "intro_done"}, headers={**_auth_header(rsa_keys), "Content-Type": "application/json"})
+            resp = await client.put("/v1/me/onboarding-step", json={"step": "intro_done"}, headers={**_auth_header(rsa_keys), "Content-Type": "application/json"})
         assert resp.status_code == 200
         data = resp.json()["data"]
         assert data["onboardingStep"] == "intro_done"
 
     @pytest.mark.asyncio
     async def test_put_onboarding_step_requires_auth(self, client):
-        resp = await client.put("/me/onboarding-step", json={"step": "intro_done"})
+        resp = await client.put("/v1/me/onboarding-step", json={"step": "intro_done"})
         assert resp.status_code == 401

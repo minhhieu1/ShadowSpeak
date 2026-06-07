@@ -44,7 +44,7 @@ def _get_profile_service(
     return ProfileService(repo, consent_service, rekey_svc)
 
 
-@router.get("/consent")
+@router.get("/v1/consent")
 async def get_consent(
     request: Request,
     x_device_id: str | None = Header(None),
@@ -67,7 +67,7 @@ async def get_consent(
     return success(state, request_id)
 
 
-@router.put("/consent")
+@router.put("/v1/consent")
 async def put_consent(
     request: Request,
     body: UpdateConsentInput,
@@ -108,7 +108,7 @@ async def put_consent(
     return success(state, request_id)
 
 
-@router.get("/me")
+@router.get("/v1/me")
 async def get_profile_endpoint(
     request: Request,
     auth: AuthContext = Depends(get_auth_context),
@@ -127,7 +127,7 @@ async def get_profile_endpoint(
     return success(profile, request_id)
 
 
-@router.put("/me")
+@router.put("/v1/me")
 async def put_profile_endpoint(
     request: Request,
     body: UpdateProfileInput,
@@ -143,7 +143,7 @@ async def put_profile_endpoint(
     return success(profile, request_id)
 
 
-@router.put("/me/onboarding-step")
+@router.put("/v1/me/onboarding-step")
 async def put_onboarding_step_endpoint(
     request: Request,
     body: UpdateOnboardingStepInput,
@@ -155,7 +155,7 @@ async def put_onboarding_step_endpoint(
     return success(profile, request_id)
 
 
-@router.delete("/account", status_code=202)
+@router.delete("/v1/account", status_code=202)
 async def delete_account_endpoint(
     request: Request,
     auth: AuthContext = Depends(get_auth_context),

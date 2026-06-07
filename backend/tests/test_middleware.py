@@ -152,7 +152,7 @@ async def test_rate_limit_preauth_writes(client):
     last_status = None
     for _ in range(12):
         response = await client.put(
-            "/consent",
+            "/v1/consent",
             json={"ageVerified": True, "privacyAccepted": True, "adConsent": "personalized"},
         )
         last_status = response.status_code
@@ -165,7 +165,7 @@ async def test_rate_limit_authenticated_write_path(client):
     last_status = None
     for _ in range(32):
         response = await client.delete(
-            "/account",
+            "/v1/account",
             headers={"Authorization": "Bearer test-token"},
         )
         last_status = response.status_code

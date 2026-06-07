@@ -24,7 +24,7 @@ import axios, { type AxiosInstance, type InternalAxiosRequestConfig, type AxiosE
  * Pluggable refresh function.
  *
  * Set `AuthManager.getInstance().onTokenRefresh` (in http.ts) to override the
- * default `POST /auth/refresh` call with a Cognito SDK call or similar.
+ * default `POST /v1/auth/refresh` call with a Cognito SDK call or similar.
  */
 export type TokenRefreshFn = () => Promise<{ accessToken: string }>;
 
@@ -89,7 +89,7 @@ export type JsonEnvelope<T> = {
 // ═══════════════════════════════════════════════════════════════════════════
 
 const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://127.0.0.1:8000/v1';
+  process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://127.0.0.1:8000';
 
 /**
  * Singleton Axios instance shared by every API call in the app.
@@ -143,7 +143,7 @@ declare module 'axios' {
  *
  *   1. The app-registered `auth.onTokenRefresh` callback (Cognito SDK, etc.)
  *      OR
- *   2. A default `POST /auth/refresh` with the stored refresh token.
+ *   2. A default `POST /v1/auth/refresh` with the stored refresh token.
  *
  * If the refresh succeeds the original request is retried with the new token.
  * If it fails we clear auth state and call `auth.onAuthExpired()` so the app
@@ -181,7 +181,7 @@ apiClient.interceptors.response.use(
         const result = await auth.onTokenRefresh();
         newToken = result.accessToken;
       } else {
-        // Default: POST /auth/refresh with the stored refresh token.
+        // Default: POST /v1/auth/refresh with the stored refresh token.
         // We use a bare axios instance (no interceptors) so the refresh
         // call itself never triggers this 401 handler.
         const storedRefresh = auth.getRefreshToken();
@@ -192,7 +192,7 @@ apiClient.interceptors.response.use(
         const response = await axios.post<
           JsonEnvelope<{ accessToken: string }>
         >(
-          `${API_BASE_URL}/auth/refresh`,
+          `${API_BASE_URL}/v1/auth/refresh`,
           { refreshToken: storedRefresh },
         );
 

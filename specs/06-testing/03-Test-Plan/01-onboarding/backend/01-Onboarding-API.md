@@ -55,7 +55,7 @@ No JWT; a device-scoped consent record already exists for the device.
 ```bash
 DEVICE_ID="device-$(uuidgen)"
 REQ_ID_SEED="req-$(uuidgen)-seed"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID_SEED" \
@@ -69,14 +69,14 @@ curl -s -X PUT "$BASE_URL/consent" \
 ```bash
 REQ_ID="req-$(uuidgen)"
 # Read the consent record
-curl -s "$BASE_URL/consent" \
+curl -s "$BASE_URL/v1/consent" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID" \
   -w "\nHTTP_STATUS:%{http_code}"
 
 # Check response headers
 echo "---HEADERS---"
-curl -s -D - -o /dev/null "$BASE_URL/consent" \
+curl -s -D - -o /dev/null "$BASE_URL/v1/consent" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID"
 ```
@@ -121,13 +121,13 @@ N/A — brand-new device with no prior consent record.
 ```bash
 DEVICE_ID="device-$(uuidgen)"
 REQ_ID="req-$(uuidgen)"
-curl -s "$BASE_URL/consent" \
+curl -s "$BASE_URL/v1/consent" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID" \
   -w "\nHTTP_STATUS:%{http_code}"
 
 echo "---HEADERS---"
-curl -s -D - -o /dev/null "$BASE_URL/consent" \
+curl -s -D - -o /dev/null "$BASE_URL/v1/consent" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID"
 ```
@@ -172,7 +172,7 @@ DEVICE_ID="device-$(uuidgen)"
 ```bash
 REQ_ID_PUT="req-$(uuidgen)"
 # Write consent with fr-FR locale
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID_PUT" \
@@ -181,7 +181,7 @@ curl -s -X PUT "$BASE_URL/consent" \
   -w "\nHTTP_STATUS:%{http_code}"
 
 echo "---HEADERS---"
-curl -s -D - -o /dev/null -X PUT "$BASE_URL/consent" \
+curl -s -D - -o /dev/null -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID_PUT" \
@@ -190,7 +190,7 @@ curl -s -D - -o /dev/null -X PUT "$BASE_URL/consent" \
 
 echo "---READ_BACK---"
 REQ_ID_GET="req-$(uuidgen)-readback"
-curl -s "$BASE_URL/consent" \
+curl -s "$BASE_URL/v1/consent" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID_GET" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -236,7 +236,7 @@ DEVICE_ID="device-$(uuidgen)"
 ### Test Execution
 ```bash
 REQ_ID_PUT="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID_PUT" \
@@ -245,7 +245,7 @@ curl -s -X PUT "$BASE_URL/consent" \
 
 echo "---READ_BACK---"
 REQ_ID_GET="req-$(uuidgen)-readback"
-curl -s "$BASE_URL/consent" \
+curl -s "$BASE_URL/v1/consent" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID_GET" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -285,13 +285,13 @@ N/A
 ```bash
 REQ_ID_GET="req-$(uuidgen)"
 echo "---GET_NO_DEVICE_ID---"
-curl -s "$BASE_URL/consent" \
+curl -s "$BASE_URL/v1/consent" \
   -H "X-Request-Id: $REQ_ID_GET" \
   -w "\nHTTP_STATUS:%{http_code}"
 
 echo "---PUT_NO_DEVICE_ID---"
 REQ_ID_PUT="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "X-Request-Id: $REQ_ID_PUT" \
   -d '{"ageVerified": true, "privacyAccepted": true, "adConsent": "unknown"}' \
@@ -337,7 +337,7 @@ DEVICE_ID="device-$(uuidgen)"
 ### Test Execution
 ```bash
 REQ_ID="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID" \
@@ -346,7 +346,7 @@ curl -s -X PUT "$BASE_URL/consent" \
 
 echo "---READ_BACK---"
 REQ_ID_GET="req-$(uuidgen)-readback"
-curl -s "$BASE_URL/consent" \
+curl -s "$BASE_URL/v1/consent" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID_GET" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -387,7 +387,7 @@ DEVICE_ID="device-$(uuidgen)"
 # Case 1: Missing required fields (empty body)
 REQ_ID_1="req-$(uuidgen)"
 echo "---CASE_1_EMPTY_BODY---"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID_1" \
@@ -397,7 +397,7 @@ curl -s -X PUT "$BASE_URL/consent" \
 # Case 2: ageVerified=false
 REQ_ID_2="req-$(uuidgen)"
 echo "---CASE_2_AGE_FALSE---"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID_2" \
@@ -438,7 +438,7 @@ AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 
 # Seed user-scoped consent for the authenticated user
 REQ_ID_SEED="req-$(uuidgen)-seed"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_SEED" \
@@ -450,13 +450,13 @@ curl -s -X PUT "$BASE_URL/consent" \
 ### Test Execution
 ```bash
 REQ_ID="req-$(uuidgen)"
-curl -s "$BASE_URL/consent" \
+curl -s "$BASE_URL/v1/consent" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID" \
   -w "\nHTTP_STATUS:%{http_code}"
 
 echo "---HEADERS---"
-curl -s -D - -o /dev/null "$BASE_URL/consent" \
+curl -s -D - -o /dev/null "$BASE_URL/v1/consent" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID"
 ```
@@ -501,7 +501,7 @@ AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 ### Test Execution
 ```bash
 REQ_ID_PUT="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_PUT" \
@@ -511,7 +511,7 @@ curl -s -X PUT "$BASE_URL/consent" \
 
 echo "---READ_BACK---"
 REQ_ID_GET="req-$(uuidgen)-readback"
-curl -s "$BASE_URL/consent" \
+curl -s "$BASE_URL/v1/consent" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_GET" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -554,7 +554,7 @@ AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 
 # Ensure user-scoped consent exists
 REQ_ID_SEED="req-$(uuidgen)-seed"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_SEED" \
@@ -566,7 +566,7 @@ curl -s -X PUT "$BASE_URL/consent" \
 ### Test Execution
 ```bash
 REQ_ID="req-$(uuidgen)"
-curl -s "$BASE_URL/consent" \
+curl -s "$BASE_URL/v1/consent" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Device-Id: device-mismatch-$(uuidgen)" \
   -H "X-Request-Id: $REQ_ID" \
@@ -607,7 +607,7 @@ AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 # Save device-scoped consent (simulating pre-auth)
 DEVICE_ID="device-$(uuidgen)"
 REQ_ID_SEED="req-$(uuidgen)-seed"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID_SEED" \
@@ -621,7 +621,7 @@ curl -s -X PUT "$BASE_URL/consent" \
 ```bash
 # Trigger re-key by calling GET /me with both JWT and the device ID
 REQ_ID="req-$(uuidgen)"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID" \
@@ -657,7 +657,7 @@ AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 
 # Ensure user-scoped consent exists with known values
 REQ_ID_SEED1="req-$(uuidgen)-seed1"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_SEED1" \
@@ -671,7 +671,7 @@ curl -s -X PUT "$BASE_URL/consent" \
 # Trigger re-key (first call)
 REQ_ID_1="req-$(uuidgen)-rekey1"
 DEVICE_ID="device-$(uuidgen)"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID_1" \
@@ -680,7 +680,7 @@ curl -s "$BASE_URL/me" \
 echo "---REKEY_2---"
 # Trigger re-key again (second call)
 REQ_ID_2="req-$(uuidgen)-rekey2"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID_2" \
@@ -688,7 +688,7 @@ curl -s "$BASE_URL/me" \
 
 echo "---READ_CONSENT---"
 REQ_ID_GET="req-$(uuidgen)-readback"
-curl -s "$BASE_URL/consent" \
+curl -s "$BASE_URL/v1/consent" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_GET" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -724,7 +724,7 @@ AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 ### Test Execution
 ```bash
 REQ_ID="req-$(uuidgen)"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -762,7 +762,7 @@ DEVICE_ID="device-$(uuidgen)"
 ```bash
 # Step 1: Direct consent update (authenticated)
 REQ_ID_1="req-$(uuidgen)-update"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_1" \
@@ -772,7 +772,7 @@ curl -s -X PUT "$BASE_URL/consent" \
 echo "---STEP_2---"
 # Step 2: Placeholder — trigger a re-key flow (see TC-ONB-BE-009)
 REQ_ID_2="req-$(uuidgen)-rekey"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID_2" \
@@ -808,13 +808,13 @@ N/A
 ```bash
 echo "---GET_ME---"
 REQ_ID_1="req-$(uuidgen)"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "X-Request-Id: $REQ_ID_1" \
   -w "\nHTTP_STATUS:%{http_code}"
 
 echo "---PUT_ME---"
 REQ_ID_2="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "X-Request-Id: $REQ_ID_2" \
   -d '{"displayName": "Test"}' \
@@ -822,7 +822,7 @@ curl -s -X PUT "$BASE_URL/me" \
 
 echo "---PUT_ONBOARDING_STEP---"
 REQ_ID_3="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/me/onboarding-step" \
+curl -s -X PUT "$BASE_URL/v1/me/onboarding-step" \
   -H "Content-Type: application/json" \
   -H "X-Request-Id: $REQ_ID_3" \
   -d '{"step": "intro_done"}' \
@@ -868,14 +868,14 @@ EXPIRED_TOKEN="<expired-jwt-token>"
 ```bash
 echo "---GET_ME---"
 REQ_ID_1="req-$(uuidgen)"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $EXPIRED_TOKEN" \
   -H "X-Request-Id: $REQ_ID_1" \
   -w "\nHTTP_STATUS:%{http_code}"
 
 echo "---PUT_ME---"
 REQ_ID_2="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $EXPIRED_TOKEN" \
   -H "X-Request-Id: $REQ_ID_2" \
@@ -884,7 +884,7 @@ curl -s -X PUT "$BASE_URL/me" \
 
 echo "---PUT_ONBOARDING_STEP---"
 REQ_ID_3="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/me/onboarding-step" \
+curl -s -X PUT "$BASE_URL/v1/me/onboarding-step" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $EXPIRED_TOKEN" \
   -H "X-Request-Id: $REQ_ID_3" \
@@ -928,14 +928,14 @@ INVALID_SIG_TOKEN="<invalid-signature-jwt-token>"
 ```bash
 echo "---GET_ME---"
 REQ_ID_1="req-$(uuidgen)"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $INVALID_SIG_TOKEN" \
   -H "X-Request-Id: $REQ_ID_1" \
   -w "\nHTTP_STATUS:%{http_code}"
 
 echo "---PUT_ME---"
 REQ_ID_2="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $INVALID_SIG_TOKEN" \
   -H "X-Request-Id: $REQ_ID_2" \
@@ -944,7 +944,7 @@ curl -s -X PUT "$BASE_URL/me" \
 
 echo "---PUT_ONBOARDING_STEP---"
 REQ_ID_3="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/me/onboarding-step" \
+curl -s -X PUT "$BASE_URL/v1/me/onboarding-step" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $INVALID_SIG_TOKEN" \
   -H "X-Request-Id: $REQ_ID_3" \
@@ -989,14 +989,14 @@ AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 ```bash
 echo "---GET_ME---"
 REQ_ID_1="req-$(uuidgen)"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_1" \
   -w "\nHTTP_STATUS:%{http_code}"
 
 echo "---PUT_ME---"
 REQ_ID_2="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_2" \
@@ -1039,7 +1039,7 @@ AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 
 # Ensure consent exists
 REQ_ID_CONSENT="req-$(uuidgen)-seed-consent"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_CONSENT" \
@@ -1048,7 +1048,7 @@ curl -s -X PUT "$BASE_URL/consent" \
 
 # Ensure profile exists
 REQ_ID_PROFILE="req-$(uuidgen)-seed-profile"
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_PROFILE" \
@@ -1060,7 +1060,7 @@ curl -s -X PUT "$BASE_URL/me" \
 ### Test Execution
 ```bash
 REQ_ID="req-$(uuidgen)"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -1105,7 +1105,7 @@ AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 
 # Ensure consent exists but do NOT create a profile
 REQ_ID_CONSENT="req-$(uuidgen)-seed-consent"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_CONSENT" \
@@ -1117,7 +1117,7 @@ curl -s -X PUT "$BASE_URL/consent" \
 ### Test Execution
 ```bash
 REQ_ID="req-$(uuidgen)"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -1155,7 +1155,7 @@ Valid JWT; consent complete; profile exists with `level` and `reminderTime` alre
 AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 
 # Ensure consent exists
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-consent" \
@@ -1164,7 +1164,7 @@ curl -s -X PUT "$BASE_URL/consent" \
 
 # Seed a profile with known values
 DISPLAY_NAME="User-$(uuidgen | head -c8)"
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-profile" \
@@ -1178,7 +1178,7 @@ curl -s -X PUT "$BASE_URL/me" \
 # Read current profile first
 REQ_ID_READ="req-$(uuidgen)-read"
 echo "---BEFORE---"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_READ" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -1186,7 +1186,7 @@ curl -s "$BASE_URL/me" \
 # Update only level
 echo "---UPDATE---"
 REQ_ID_UPDATE="req-$(uuidgen)-update"
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_UPDATE" \
@@ -1196,7 +1196,7 @@ curl -s -X PUT "$BASE_URL/me" \
 # Read again to verify partial update
 echo "---AFTER---"
 REQ_ID_READ2="req-$(uuidgen)-read2"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_READ2" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -1236,7 +1236,7 @@ AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 
 # Ensure consent exists but do NOT create a profile
 REQ_ID_CONSENT="req-$(uuidgen)-seed-consent"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_CONSENT" \
@@ -1248,7 +1248,7 @@ curl -s -X PUT "$BASE_URL/consent" \
 ### Test Execution
 ```bash
 REQ_ID="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID" \
@@ -1285,7 +1285,7 @@ Valid JWT; consent complete; profile exists.
 AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 
 # Ensure consent exists
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-consent" \
@@ -1293,7 +1293,7 @@ curl -s -X PUT "$BASE_URL/consent" \
   -w "\nHTTP_STATUS:%{http_code}"
 
 # Seed initial profile
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-profile" \
@@ -1306,7 +1306,7 @@ curl -s -X PUT "$BASE_URL/me" \
 ```bash
 # Update with whitespace-padded displayName
 REQ_ID_UPDATE="req-$(uuidgen)-update"
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_UPDATE" \
@@ -1315,7 +1315,7 @@ curl -s -X PUT "$BASE_URL/me" \
 
 echo "---READ---"
 REQ_ID_READ="req-$(uuidgen)-read"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_READ" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -1349,14 +1349,14 @@ Valid JWT; consent complete; profile exists.
 AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 
 # Ensure consent and profile exist
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-consent" \
   -d '{"ageVerified": true, "privacyAccepted": true, "adConsent": "personalized"}' \
   -w "\nHTTP_STATUS:%{http_code}"
 
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-profile" \
@@ -1370,7 +1370,7 @@ curl -s -X PUT "$BASE_URL/me" \
 # displayName longer than 80 characters (81 chars)
 LONG_NAME="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 REQ_ID="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID" \
@@ -1407,14 +1407,14 @@ Valid JWT; consent complete; profile exists.
 AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 
 # Ensure consent and profile exist
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-consent" \
   -d '{"ageVerified": true, "privacyAccepted": true, "adConsent": "personalized"}' \
   -w "\nHTTP_STATUS:%{http_code}"
 
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-profile" \
@@ -1426,7 +1426,7 @@ curl -s -X PUT "$BASE_URL/me" \
 ### Test Execution
 ```bash
 REQ_ID="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID" \
@@ -1435,7 +1435,7 @@ curl -s -X PUT "$BASE_URL/me" \
 
 echo "---READ---"
 REQ_ID_READ="req-$(uuidgen)-read"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_READ" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -1470,14 +1470,14 @@ Valid JWT; consent complete; profile exists.
 AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 
 # Ensure consent and profile exist
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-consent" \
   -d '{"ageVerified": true, "privacyAccepted": true, "adConsent": "personalized"}' \
   -w "\nHTTP_STATUS:%{http_code}"
 
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-profile" \
@@ -1489,7 +1489,7 @@ curl -s -X PUT "$BASE_URL/me" \
 ### Test Execution
 ```bash
 REQ_ID="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID" \
@@ -1526,14 +1526,14 @@ Separate profiles exist for two users.
 AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 
 # Ensure consent and profile for the primary user
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-consent" \
   -d '{"ageVerified": true, "privacyAccepted": true, "adConsent": "personalized"}' \
   -w "\nHTTP_STATUS:%{http_code}"
 
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-profile" \
@@ -1545,7 +1545,7 @@ curl -s -X PUT "$BASE_URL/me" \
 ### Test Execution
 ```bash
 REQ_ID="req-$(uuidgen)"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -1582,14 +1582,14 @@ Valid JWT; consent complete; profile exists.
 AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 
 # Ensure consent and profile exist
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-consent" \
   -d '{"ageVerified": true, "privacyAccepted": true, "adConsent": "personalized"}' \
   -w "\nHTTP_STATUS:%{http_code}"
 
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-profile" \
@@ -1605,7 +1605,7 @@ STEPS=("age_gate_done" "consent_done" "intro_done" "level_selected" "reminder_se
 for step in "${STEPS[@]}"; do
   echo "---STEP: $step---"
   REQ_ID="req-$(uuidgen)-$step"
-  curl -s -X PUT "$BASE_URL/me/onboarding-step" \
+  curl -s -X PUT "$BASE_URL/v1/me/onboarding-step" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $AUTH_TOKEN" \
     -H "X-Request-Id: $REQ_ID" \
@@ -1616,7 +1616,7 @@ done
 
 echo "---READ_FINAL---"
 REQ_ID_READ="req-$(uuidgen)-readback"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_READ" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -1653,14 +1653,14 @@ Valid JWT; consent complete; profile exists.
 AUTH_TOKEN="<token-from-keycloak-auth-skill>"
 
 # Ensure consent and profile exist
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-consent" \
   -d '{"ageVerified": true, "privacyAccepted": true, "adConsent": "personalized"}' \
   -w "\nHTTP_STATUS:%{http_code}"
 
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: req-$(uuidgen)-seed-profile" \
@@ -1673,7 +1673,7 @@ curl -s -X PUT "$BASE_URL/me" \
 ```bash
 # Save a known step first
 REQ_ID_BEFORE="req-$(uuidgen)-before"
-curl -s -X PUT "$BASE_URL/me/onboarding-step" \
+curl -s -X PUT "$BASE_URL/v1/me/onboarding-step" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_BEFORE" \
@@ -1682,7 +1682,7 @@ curl -s -X PUT "$BASE_URL/me/onboarding-step" \
 
 echo "---INVALID_STEP---"
 REQ_ID_INVALID="req-$(uuidgen)-invalid"
-curl -s -X PUT "$BASE_URL/me/onboarding-step" \
+curl -s -X PUT "$BASE_URL/v1/me/onboarding-step" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_INVALID" \
@@ -1691,7 +1691,7 @@ curl -s -X PUT "$BASE_URL/me/onboarding-step" \
 
 echo "---READ_AFTER---"
 REQ_ID_READ="req-$(uuidgen)-readafter"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_READ" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -1728,7 +1728,7 @@ N/A
 ### Test Execution
 ```bash
 REQ_ID="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/me/onboarding-step" \
+curl -s -X PUT "$BASE_URL/v1/me/onboarding-step" \
   -H "Content-Type: application/json" \
   -H "X-Request-Id: $REQ_ID" \
   -d '{"step": "intro_done"}' \
@@ -1773,7 +1773,7 @@ DEVICE_ID="device-$(uuidgen)"
 # Step 1: Save pre-auth consent
 echo "---STEP_1_PREAUTH_CONSENT---"
 REQ_ID_1="req-$(uuidgen)-step1"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID_1" \
@@ -1784,7 +1784,7 @@ curl -s -X PUT "$BASE_URL/consent" \
 # Step 2: Authenticate and trigger re-key
 echo "---STEP_2_REKEY---"
 REQ_ID_2="req-$(uuidgen)-step2"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID_2" \
@@ -1793,7 +1793,7 @@ curl -s "$BASE_URL/me" \
 # Step 3: Update profile
 echo "---STEP_3_PROFILE---"
 REQ_ID_3="req-$(uuidgen)-step3"
-curl -s -X PUT "$BASE_URL/me" \
+curl -s -X PUT "$BASE_URL/v1/me" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_3" \
@@ -1803,7 +1803,7 @@ curl -s -X PUT "$BASE_URL/me" \
 # Step 4: Save onboarding step
 echo "---STEP_4_ONBOARDING_STEP---"
 REQ_ID_4="req-$(uuidgen)-step4"
-curl -s -X PUT "$BASE_URL/me/onboarding-step" \
+curl -s -X PUT "$BASE_URL/v1/me/onboarding-step" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_4" \
@@ -1813,7 +1813,7 @@ curl -s -X PUT "$BASE_URL/me/onboarding-step" \
 # Step 5: Read final state
 echo "---STEP_5_READ---"
 REQ_ID_5="req-$(uuidgen)-step5"
-curl -s "$BASE_URL/me" \
+curl -s "$BASE_URL/v1/me" \
   -H "Authorization: Bearer $AUTH_TOKEN" \
   -H "X-Request-Id: $REQ_ID_5" \
   -w "\nHTTP_STATUS:%{http_code}"
@@ -1852,7 +1852,7 @@ DEVICE_ID="device-$(uuidgen)"
 ### Test Execution
 ```bash
 # Send GET /consent without X-Request-Id
-curl -s -D - "$BASE_URL/consent" \
+curl -s -D - "$BASE_URL/v1/consent" \
   -H "X-Device-Id: $DEVICE_ID" \
   -w "\nBODY_STATUS:%{http_code}"
 ```
@@ -1890,7 +1890,7 @@ DEVICE_ID="device-$(uuidgen)"
 # Send a burst of write requests to trigger rate limiting
 for i in $(seq 1 20); do
   REQ_ID="req-$(uuidgen)-burst-$i"
-  curl -s -X PUT "$BASE_URL/consent" \
+  curl -s -X PUT "$BASE_URL/v1/consent" \
     -H "Content-Type: application/json" \
     -H "X-Device-Id: $DEVICE_ID" \
     -H "X-Request-Id: $REQ_ID" \
@@ -1928,7 +1928,7 @@ N/A — simulated backend dependency failure (requires test infrastructure to in
 ```bash
 DEVICE_ID="device-$(uuidgen)"
 REQ_ID="req-$(uuidgen)"
-curl -s -X PUT "$BASE_URL/consent" \
+curl -s -X PUT "$BASE_URL/v1/consent" \
   -H "Content-Type: application/json" \
   -H "X-Device-Id: $DEVICE_ID" \
   -H "X-Request-Id: $REQ_ID" \

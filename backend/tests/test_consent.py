@@ -359,7 +359,7 @@ class TestConsentEndpoints:
             mock_fetch.return_value = jwks_response
             # First, PUT consent with device id
             put_resp = await client.put(
-                "/consent",
+                "/v1/consent",
                 json={
                     "ageVerified": True,
                     "privacyAccepted": True,
@@ -371,7 +371,7 @@ class TestConsentEndpoints:
 
             # Then GET it back
             get_resp = await client.get(
-                "/consent", headers={"X-Device-Id": "test-device"}
+                "/v1/consent", headers={"X-Device-Id": "test-device"}
             )
             assert get_resp.status_code == 200, get_resp.text
             data = get_resp.json()
@@ -388,7 +388,7 @@ class TestConsentEndpoints:
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
             resp = await client.put(
-                "/consent",
+                "/v1/consent",
                 json={
                     "ageVerified": True,
                     "privacyAccepted": True,
@@ -414,7 +414,7 @@ class TestConsentEndpoints:
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
             resp = await client.put(
-                "/consent",
+                "/v1/consent",
                 json={
                     "ageVerified": False,
                     "privacyAccepted": True,
@@ -423,7 +423,7 @@ class TestConsentEndpoints:
                 headers={"X-Device-Id": "device-validation", "Content-Type": "application/json"},
             )
             assert resp.status_code == 422, resp.text
-            follow_up = await client.get("/consent", headers={"X-Device-Id": "device-validation"})
+            follow_up = await client.get("/v1/consent", headers={"X-Device-Id": "device-validation"})
             assert follow_up.status_code == 200
             data = follow_up.json()["data"]
             # The failed PUT must NOT have persisted — default unverified consent.
@@ -440,7 +440,7 @@ class TestConsentEndpoints:
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
             resp = await client.put(
-                "/consent",
+                "/v1/consent",
                 json={
                     "ageVerified": True,
                     "privacyAccepted": True,
@@ -452,14 +452,14 @@ class TestConsentEndpoints:
 
     @pytest.mark.asyncio
     async def test_get_consent_requires_device_id_when_unauthenticated(self, client):
-        resp = await client.get("/consent")
+        resp = await client.get("/v1/consent")
         assert resp.status_code == 422
         assert resp.json()["error"]["code"] == "VALIDATION_ERROR"
 
     @pytest.mark.asyncio
     async def test_put_consent_requires_device_id_when_unauthenticated(self, client):
         resp = await client.put(
-            "/consent",
+            "/v1/consent",
             json={"ageVerified": True, "privacyAccepted": True, "adConsent": "personalized"},
         )
         assert resp.status_code == 422
@@ -468,7 +468,7 @@ class TestConsentEndpoints:
     @pytest.mark.asyncio
     async def test_put_consent_rejects_invalid_optional_auth(self, client):
         resp = await client.put(
-            "/consent",
+            "/v1/consent",
             json={"ageVerified": True, "privacyAccepted": True, "adConsent": "personalized"},
             headers={"Authorization": "Bearer", "X-Device-Id": "device-1"},
         )
@@ -482,7 +482,7 @@ class TestConsentEndpoints:
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
             resp = await client.put(
-                "/consent",
+                "/v1/consent",
                 json={
                     "ageVerified": True,
                     "privacyAccepted": True,
@@ -500,7 +500,7 @@ class TestConsentEndpoints:
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
             resp = await client.put(
-                "/consent",
+                "/v1/consent",
                 json={
                     "ageVerified": True,
                     "privacyAccepted": True,
@@ -520,7 +520,7 @@ class TestConsentEndpoints:
             # Put consent first (needs to go through the repo directly since
             # there's no auth + consent endpoint yet)
             resp = await client.get(
-                "/consent", headers=_auth_header(rsa_keys)
+                "/v1/consent", headers=_auth_header(rsa_keys)
             )
             # No consent stored yet
             assert resp.status_code == 200, resp.text
@@ -536,7 +536,7 @@ class TestConsentEndpoints:
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
             resp = await client.put(
-                "/consent",
+                "/v1/consent",
                 json={
                     "ageVerified": True,
                     "privacyAccepted": True,
@@ -559,7 +559,7 @@ class TestConsentEndpoints:
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
             resp = await client.put(
-                "/consent",
+                "/v1/consent",
                 json={
                     "ageVerified": True,
                     "privacyAccepted": True,
@@ -586,7 +586,7 @@ class TestConsentEndpoints:
         ) as mock_audit:
             mock_fetch.return_value = jwks_response
             resp = await client.put(
-                "/consent",
+                "/v1/consent",
                 json={
                     "ageVerified": True,
                     "privacyAccepted": True,
@@ -605,5 +605,5 @@ class TestConsentEndpoints:
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
             # /me requires consent — without it we should get 403
-            resp = await client.get("/me", headers=_auth_header(rsa_keys))
+            resp = await client.get("/v1/me", headers=_auth_header(rsa_keys))
             assert resp.status_code == 403, resp.text

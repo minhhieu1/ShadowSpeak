@@ -39,7 +39,7 @@ afterEach(() => {
 
 describe('Axios instance (apiClient)', () => {
   it('is created with the default base URL', () => {
-    expect(apiClient.defaults.baseURL).toBe('http://127.0.0.1:8000/v1');
+    expect(apiClient.defaults.baseURL).toBe('http://127.0.0.1:8000');
   });
 
   it('has a 15-second timeout', () => {

@@ -167,7 +167,7 @@ class TestFullOnboardingFlow:
         """Device-based onboarding: set consent, then sign in, see profile."""
         # Step 1: Pre-auth consent via device
         resp = await client.put(
-            "/consent",
+            "/v1/consent",
             json={"ageVerified": True, "privacyAccepted": True, "adConsent": "personalized"},
             headers={"X-Device-Id": "device-abc", "Content-Type": "application/json"},
         )
@@ -175,7 +175,7 @@ class TestFullOnboardingFlow:
         assert resp.json()["ok"] is True
 
         # Step 2: Verify device consent is readable
-        resp = await client.get("/consent", headers={"X-Device-Id": "device-abc"})
+        resp = await client.get("/v1/consent", headers={"X-Device-Id": "device-abc"})
         assert resp.status_code == 200
         assert resp.json()["data"]["ageVerified"] is True
 
@@ -194,7 +194,7 @@ class TestFullOnboardingFlow:
 
             # Step 1: PUT consent
             resp = await client.put(
-                "/consent",
+                "/v1/consent",
                 json={"ageVerified": True, "privacyAccepted": True, "adConsent": "personalized"},
                 headers=headers,
             )
@@ -202,7 +202,7 @@ class TestFullOnboardingFlow:
             assert resp.json()["data"]["ageVerified"] is True
 
             # Step 2: GET consent
-            resp = await client.get("/consent", headers=_auth_header(rsa_keys))
+            resp = await client.get("/v1/consent", headers=_auth_header(rsa_keys))
             assert resp.status_code == 200
             assert resp.json()["data"]["ageVerified"] is True
 
@@ -220,7 +220,7 @@ class TestFullOnboardingFlow:
                 )
             )
             resp = await client.put(
-                "/me",
+                "/v1/me",
                 json={"displayName": "Integration User", "level": "beginner"},
                 headers=headers,
             )
@@ -233,7 +233,7 @@ class TestFullOnboardingFlow:
             assert data["level"] == "beginner"
 
             # Step 4: GET profile
-            resp = await client.get("/me", headers=_auth_header(rsa_keys))
+            resp = await client.get("/v1/me", headers=_auth_header(rsa_keys))
             assert resp.status_code == 200
             data = resp.json()["data"]
             assert data["displayName"] == "Integration User"
@@ -241,7 +241,7 @@ class TestFullOnboardingFlow:
 
             # Step 5: Update onboarding step
             resp = await client.put(
-                "/me/onboarding-step",
+                "/v1/me/onboarding-step",
                 json={"step": "consent_done"},
                 headers=headers,
             )
@@ -251,9 +251,9 @@ class TestFullOnboardingFlow:
     @pytest.mark.asyncio
     async def test_unauthenticated_access_blocked(self, client):
         """All authenticated endpoints return 401 without JWT."""
-        assert (await client.get("/me")).status_code == 401
-        assert (await client.put("/me", json={})).status_code == 401
-        assert (await client.delete("/account")).status_code == 401
+        assert (await client.get("/v1/me")).status_code == 401
+        assert (await client.put("/v1/me", json={})).status_code == 401
+        assert (await client.delete("/v1/account")).status_code == 401
 
 
 # ===========================================================================
@@ -273,7 +273,7 @@ class TestConsentRekeyFlow:
 
         # Step 1: Set consent via device (pre-auth)
         resp = await client.put(
-            "/consent",
+            "/v1/consent",
             json={"ageVerified": True, "privacyAccepted": True, "adConsent": "non_personalized"},
             headers={"X-Device-Id": "device-rekey", "Content-Type": "application/json"},
         )
@@ -304,7 +304,7 @@ class TestConsentRekeyFlow:
             headers["X-Device-Id"] = "device-rekey"
             headers["Content-Type"] = "application/json"
             resp = await client.put(
-                "/me",
+                "/v1/me",
                 json={"displayName": "Rekeyed User"},
                 headers=headers,
             )
@@ -315,7 +315,7 @@ class TestConsentRekeyFlow:
             mock_fetch.return_value = jwks_response
             headers = _auth_header(rsa_keys, sub="user-rekeyed")
             headers["X-Device-Id"] = "device-rekey"
-            resp = await client.get("/me", headers=headers)
+            resp = await client.get("/v1/me", headers=headers)
             assert resp.status_code == 200, resp.text
 
         # Step 6: Consent should now be accessible under USER# key
@@ -361,7 +361,7 @@ class TestAccountDeletionLifecycle:
         # Step 2: Soft-delete via endpoint
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
-            resp = await client.delete("/account", headers=_auth_header(rsa_keys, sub=user_id))
+            resp = await client.delete("/v1/account", headers=_auth_header(rsa_keys, sub=user_id))
         assert resp.status_code == 202
         data = resp.json()["data"]
         assert data["status"] == "deletion_requested"

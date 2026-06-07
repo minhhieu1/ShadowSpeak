@@ -67,7 +67,7 @@ The `/v1` prefix is the logical API version for this MVP contract.
 - Protected endpoints require a Cognito JWT in the `Authorization` header.
 - The bearer token format is `Authorization: Bearer <jwt>`.
 - The backend validates JWTs server-side.
-- `GET /consent` and `PUT /consent` are the only pre-auth onboarding exceptions in this MVP API surface.
+- `GET /v1/consent` and `PUT /v1/consent` are the only pre-auth onboarding exceptions in this MVP API surface.
 - `JsonEnvelope<T>` is the REST-facing alias for the LLD's `ApiResult<T>` wrapper; the wire shape is identical.
 - For pre-auth consent flows, clients should send `X-Device-Id` with a device-generated anonymous identifier so the server can store consent state before Cognito sign-in and re-key it to the canonical `userId` after authentication completes.
 
@@ -108,7 +108,7 @@ All endpoints return a `JsonEnvelope<T>` shape.
 - Query parameters use `cursor` and `limit`.
 - Default page sizes should remain small.
 - `limit` must be bounded server-side.
-- `GET /lessons` and `GET /progress/history` use cursor pagination.
+- `GET /v1/lessons` and `GET /v1/progress/history` use cursor pagination.
 
 ### 2.7 Rate Limiting
 
@@ -197,16 +197,16 @@ Notes:
 
 - `SyncQueueItemInput` is the client-submitted shape for offline sync. The server assigns `retryCount`, `nextRetryAt`, and `status`; clients must not submit those fields.
 - `SyncResult.synced` and `SyncResult.failed` contain `clientMutationId` values, not server-assigned `SyncQueueItem.id` values, so the client can match results back to its local queue.
-- `ProgressSnapshot.lessonId` is optional on the aggregate snapshot returned by `GET /progress`; the history view always populates it for completed lesson sessions.
+- `ProgressSnapshot.lessonId` is optional on the aggregate snapshot returned by `GET /v1/progress`; the history view always populates it for completed lesson sessions.
 
 ## 5. Auth / Profile / Consent
 
-### 5.1 GET /me
+### 5.1 GET /v1/me
 
 | Item                 | Details                                                                   |
 | -------------------- | ------------------------------------------------------------------------- |
 | Method               | `GET`                                                                     |
-| Path                 | `/me`                                                                     |
+| Path                 | `/v1/me`                                                                     |
 | Description          | Fetch the current authenticated user profile and settings                 |
 | Authentication       | Required                                                                  |
 | Request headers      | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended                 |
@@ -222,12 +222,12 @@ Notes:
 - The response returns the current `UserProfile` record for the authenticated user.
 - The `deletionRequestedAt` and `deletionStatus` fields are part of the `UserProfile` schema and should be included when present.
 
-### 5.2 PUT /me
+### 5.2 PUT /v1/me
 
 | Item                 | Details                                                                                       |
 | -------------------- | --------------------------------------------------------------------------------------------- |
 | Method               | `PUT`                                                                                         |
-| Path                 | `/me`                                                                                         |
+| Path                 | `/v1/me`                                                                                         |
 | Description          | Update profile and account preference fields                                                  |
 | Authentication       | Required                                                                                      |
 | Request headers      | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended   |
@@ -245,12 +245,12 @@ Notes:
 - `displayName` must be trimmed and length-limited.
 - `reminderTime` must follow the `HH:MM` local-time format when present.
 
-### 5.3 GET /consent
+### 5.3 GET /v1/consent
 
 | Item                 | Details                                                                       |
 | -------------------- | ----------------------------------------------------------------------------- |
 | Method               | `GET`                                                                         |
-| Path                 | `/consent`                                                                    |
+| Path                 | `/v1/consent`                                                                    |
 | Description          | Read the current consent state for the onboarding or authenticated user flow  |
 | Authentication       | Not required for onboarding; JWT accepted if already available                |
 | Request headers      | `X-Device-Id` required for pre-auth consent flows, `X-Request-Id` recommended |
@@ -268,12 +268,12 @@ Notes:
 - The response schema remains `ConsentState`; the implementation should bind the record to the device-scoped anonymous identifier from `X-Device-Id` before authentication and re-key it to the eventual authenticated identity after sign-in without changing the contract.
 - If `X-Device-Id` is absent during a pre-auth request, the backend should reject the request as `VALIDATION_ERROR`.
 
-### 5.4 PUT /consent
+### 5.4 PUT /v1/consent
 
 | Item                 | Details                                                                                                         |
 | -------------------- | --------------------------------------------------------------------------------------------------------------- |
 | Method               | `PUT`                                                                                                           |
-| Path                 | `/consent`                                                                                                      |
+| Path                 | `/v1/consent`                                                                                                      |
 | Description          | Save age gate and consent decisions                                                                             |
 | Authentication       | Not required for onboarding; JWT accepted if already available                                                  |
 | Request headers      | `Content-Type: application/json`, `X-Device-Id` required for pre-auth consent flows, `X-Request-Id` recommended |
@@ -294,12 +294,12 @@ Notes:
 - The server keys pre-auth consent writes by `X-Device-Id` and re-keys the consent record to the authenticated `userId` when Cognito sign-in completes.
 - If `X-Device-Id` is absent during a pre-auth request, the backend should reject the request as `VALIDATION_ERROR`.
 
-### 5.5 DELETE /account
+### 5.5 DELETE /v1/account
 
 | Item                 | Details                                                                   |
 | -------------------- | ------------------------------------------------------------------------- |
 | Method               | `DELETE`                                                                  |
-| Path                 | `/account`                                                                |
+| Path                 | `/v1/account`                                                                |
 | Description          | Request account deletion using the MVP soft-delete lifecycle              |
 | Authentication       | Required                                                                  |
 | Request headers      | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended                 |
@@ -316,16 +316,16 @@ Notes:
 - The response includes `deletionRequestedAt` and `purgeAfter` so the client can show the 30-day grace period.
 - The `status` field should indicate `deletion_requested` on the initial response.
 - The deletion cascade order in the LLD is profile, consent, session records, sync queue items, then local device data.
-- This endpoint uses the `/account` path rather than `/me` to signal a destructive, irreversible action distinct from profile updates.
+- This endpoint uses the `/v1/account` path rather than `/me` to signal a destructive, irreversible action distinct from profile updates.
 
 ## 6. Content / Downloads
 
-### 6.1 GET /lessons
+### 6.1 GET /v1/lessons
 
 | Item                 | Details                                                                     |
 | -------------------- | --------------------------------------------------------------------------- |
 | Method               | `GET`                                                                       |
-| Path                 | `/lessons`                                                                  |
+| Path                 | `/v1/lessons`                                                                  |
 | Description          | Fetch a paginated lesson catalog with filters                               |
 | Authentication       | Required                                                                    |
 | Request headers      | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended                   |
@@ -343,12 +343,12 @@ Notes:
 - `durationMin` must be less than or equal to `durationMax` when both are present.
 - This endpoint uses cursor-based pagination.
 
-### 6.2 GET /lessons/{id}
+### 6.2 GET /v1/lessons/{id}
 
 | Item                 | Details                                                                                             |
 | -------------------- | --------------------------------------------------------------------------------------------------- |
 | Method               | `GET`                                                                                               |
-| Path                 | `/lessons/{id}`                                                                                     |
+| Path                 | `/v1/lessons/{id}`                                                                                     |
 | Description          | Fetch a single lesson detail record                                                                 |
 | Authentication       | Required                                                                                            |
 | Request headers      | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended                                           |
@@ -364,12 +364,12 @@ Notes:
 - The response must include the lesson script and asset references through the `Lesson` schema.
 - Hidden or unpublished content is returned as `404` in the MVP to keep client behavior consistent.
 
-### 6.3 GET /home/recommendation
+### 6.3 GET /v1/home/recommendation
 
 | Item                 | Details                                                                     |
 | -------------------- | --------------------------------------------------------------------------- |
 | Method               | `GET`                                                                       |
-| Path                 | `/home/recommendation`                                                      |
+| Path                 | `/v1/home/recommendation`                                                      |
 | Description          | Fetch the daily recommended lesson for the home surface                     |
 | Authentication       | Required                                                                    |
 | Request headers      | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended                   |
@@ -386,12 +386,12 @@ Notes:
 - The API contract remains `Lesson`; no separate recommendation object is introduced in the MVP.
 - If no eligible published lesson exists for recommendation, the server returns `LESSON_NOT_FOUND` (`404`). The client should fall back to displaying the lesson catalog.
 
-### 6.4 POST /downloads/{lessonId}/url
+### 6.4 POST /v1/downloads/{lessonId}/url
 
 | Item                 | Details                                                                                                                |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Method               | `POST`                                                                                                                 |
-| Path                 | `/downloads/{lessonId}/url`                                                                                            |
+| Path                 | `/v1/downloads/{lessonId}/url`                                                                                            |
 | Description          | Generate a signed asset URL for lesson download or playback                                                            |
 | Authentication       | Required                                                                                                               |
 | Request headers      | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended                            |
@@ -410,12 +410,12 @@ Notes:
 - `DownloadUrlResponse.sizeBytes` is required so the client can perform quota checks before the fetch.
 - The asset bytes are delivered from S3 or CloudFront, not through the API response.
 
-### 6.5 POST /downloads/{lessonId}/verify
+### 6.5 POST /v1/downloads/{lessonId}/verify
 
 | Item                 | Details                                                                                                                |
 | -------------------- | ---------------------------------------------------------------------------------------------------------------------- |
 | Method               | `POST`                                                                                                                 |
-| Path                 | `/downloads/{lessonId}/verify`                                                                                         |
+| Path                 | `/v1/downloads/{lessonId}/verify`                                                                                         |
 | Description          | Confirm download integrity and offline availability for the lesson                                                     |
 | Authentication       | Required                                                                                                               |
 | Request headers      | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended                            |
@@ -431,16 +431,16 @@ Notes:
 - The server-side response includes `expectedChecksum`.
 - The backend should validate the matching `DownloadGrant` before returning verification.
 - The client compares its local checksum against `expectedChecksum` after the download completes.
-- `assetType` identifies which downloaded asset is being verified, consistent with the `assetType` used in `POST /downloads/{lessonId}/url`. The `expectedChecksum` in the response corresponds to the requested asset.
+- `assetType` identifies which downloaded asset is being verified, consistent with the `assetType` used in `POST /v1/downloads/{lessonId}/url`. The `expectedChecksum` in the response corresponds to the requested asset.
 
 ## 7. Session / Progress
 
-### 7.1 GET /sessions/{id}
+### 7.1 GET /v1/sessions/{id}
 
 | Item                 | Details                                                                      |
 | -------------------- | ---------------------------------------------------------------------------- |
 | Method               | `GET`                                                                        |
-| Path                 | `/sessions/{id}`                                                             |
+| Path                 | `/v1/sessions/{id}`                                                             |
 | Description          | Fetch the current state of a practice session                                |
 | Authentication       | Required                                                                     |
 | Request headers      | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended                    |
@@ -456,12 +456,12 @@ Notes:
 - This endpoint lets the client recover session state after an app restart or crash.
 - The server only returns sessions that belong to the authenticated user.
 
-### 7.2 POST /sessions
+### 7.2 POST /v1/sessions
 
 | Item                 | Details                                                                                     |
 | -------------------- | ------------------------------------------------------------------------------------------- |
 | Method               | `POST`                                                                                      |
-| Path                 | `/sessions`                                                                                 |
+| Path                 | `/v1/sessions`                                                                                 |
 | Description          | Start a new practice session                                                                |
 | Authentication       | Required                                                                                    |
 | Request headers      | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended |
@@ -476,15 +476,15 @@ Notes:
 
 - Session creation should write a server-side record immediately.
 - The returned `PracticeSession` initial `status` is `created`.
-- `POST /sessions` is not idempotent in the MVP; repeated client retries can create duplicate sessions if the caller resubmits the request. Clients should only call it once per visible session start.
+- `POST /v1/sessions` is not idempotent in the MVP; repeated client retries can create duplicate sessions if the caller resubmits the request. Clients should only call it once per visible session start.
 - If the `lessonId` is invalid, the session module may surface `VALIDATION_ERROR` rather than `LESSON_NOT_FOUND` because lesson existence is validated at the module boundary.
 
-### 7.3 PATCH /sessions/{id}
+### 7.3 PATCH /v1/sessions/{id}
 
 | Item                 | Details                                                                                                                   |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------- |
 | Method               | `PATCH`                                                                                                                   |
-| Path                 | `/sessions/{id}`                                                                                                          |
+| Path                 | `/v1/sessions/{id}`                                                                                                          |
 | Description          | Update an active session state                                                                                            |
 | Authentication       | Required                                                                                                                  |
 | Request headers      | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended                               |
@@ -500,14 +500,14 @@ Notes:
 - This endpoint is for active-session lifecycle changes such as pause and resume.
 - `completionPercent` must remain between `0` and `100`.
 - `recordingLocalUri` may be included when the client needs to persist a local recording reference.
-- `completed` is not a valid value for `status` on this endpoint. Session completion must go through `POST /sessions/{id}/complete`, and submitting `status: completed` must return `VALIDATION_ERROR`.
+- `completed` is not a valid value for `status` on this endpoint. Session completion must go through `POST /v1/sessions/{id}/complete`, and submitting `status: completed` must return `VALIDATION_ERROR`.
 
-### 7.4 POST /sessions/{id}/complete
+### 7.4 POST /v1/sessions/{id}/complete
 
 | Item                 | Details                                                                                                                                    |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | Method               | `POST`                                                                                                                                     |
-| Path                 | `/sessions/{id}/complete`                                                                                                                  |
+| Path                 | `/v1/sessions/{id}/complete`                                                                                                                  |
 | Description          | Finalize a completed lesson and persist the completion payload                                                                             |
 | Authentication       | Required                                                                                                                                   |
 | Request headers      | `Authorization: Bearer <jwt>`, `Content-Type: application/json`, `X-Request-Id` recommended                                                |
@@ -526,12 +526,12 @@ Notes:
 - `completionPercent` must be between `0` and `100`.
 - `durationSeconds` must be positive.
 
-### 7.5 GET /progress
+### 7.5 GET /v1/progress
 
 | Item                 | Details                                                   |
 | -------------------- | --------------------------------------------------------- |
 | Method               | `GET`                                                     |
-| Path                 | `/progress`                                               |
+| Path                 | `/v1/progress`                                               |
 | Description          | Fetch the current progress summary                        |
 | Authentication       | Required                                                  |
 | Request headers      | `Authorization: Bearer <jwt>`, `X-Request-Id` recommended |
@@ -547,7 +547,7 @@ Notes:
 - The response represents the latest aggregate progress snapshot for the authenticated user.
 - `ProgressSnapshot` includes streak and minutes-practiced totals.
 
-### 7.6 GET /progress/history
+### 7.6 GET /v1/progress/history
 
 | Item                 | Details                                                   |
 | -------------------- | --------------------------------------------------------- |
@@ -567,9 +567,9 @@ Notes:
 
 - The endpoint uses cursor-based pagination.
 - The `items` collection contains `ProgressSnapshot` records ordered reverse-chronologically by `completedAt`.
-- Each `ProgressSnapshot` in the history `items` list will always have `lessonId` populated because it represents a completed lesson session. The aggregate snapshot returned by `GET /progress` may have `lessonId` absent.
+- Each `ProgressSnapshot` in the history `items` list will always have `lessonId` populated because it represents a completed lesson session. The aggregate snapshot returned by `GET /v1/progress` may have `lessonId` absent.
 
-### 7.7 POST /progress/sync
+### 7.7 POST /v1/progress/sync
 
 | Item                 | Details                                                                                      |
 | -------------------- | -------------------------------------------------------------------------------------------- |
@@ -629,23 +629,23 @@ This module summary shows the API surface at a glance.
 
 | Endpoint                            | Functional Requirement(s) | Use Case(s)  | LLD Component            |
 | ----------------------------------- | ------------------------- | ------------ | ------------------------ |
-| `GET /me`                           | FR-8                      | UC-10        | Auth / Profile / Consent |
-| `PUT /me`                           | FR-8                      | UC-07, UC-10 | Auth / Profile / Consent |
-| `GET /consent`                      | FR-9                      | UC-11        | Auth / Profile / Consent |
-| `PUT /consent`                      | FR-9                      | UC-01, UC-11 | Auth / Profile / Consent |
-| `DELETE /account`                   | FR-8                      | UC-10        | Auth / Profile / Consent |
-| `GET /lessons`                      | FR-2                      | UC-02, UC-05 | Content / Downloads      |
-| `GET /lessons/{id}`                 | FR-2                      | UC-02        | Content / Downloads      |
-| `GET /home/recommendation`          | FR-2                      | UC-02, UC-05 | Content / Downloads      |
-| `POST /downloads/{lessonId}/url`    | FR-7                      | UC-06        | Content / Downloads      |
-| `POST /downloads/{lessonId}/verify` | FR-7                      | UC-06        | Content / Downloads      |
-| `GET /sessions/{id}`                | FR-5                      | UC-08        | Session / Progress       |
-| `POST /sessions`                    | FR-3                      | UC-03        | Session / Progress       |
-| `PATCH /sessions/{id}`              | FR-3                      | UC-03        | Session / Progress       |
-| `POST /sessions/{id}/complete`      | FR-3, FR-4, FR-5          | UC-03, UC-08 | Session / Progress       |
-| `GET /progress`                     | FR-5                      | UC-08        | Session / Progress       |
-| `GET /progress/history`             | FR-5                      | UC-08        | Session / Progress       |
-| `POST /progress/sync`               | FR-5                      | UC-08        | Session / Progress       |
+| `GET /v1/me`                           | FR-8                      | UC-10        | Auth / Profile / Consent |
+| `PUT /v1/me`                           | FR-8                      | UC-07, UC-10 | Auth / Profile / Consent |
+| `GET /v1/consent`                      | FR-9                      | UC-11        | Auth / Profile / Consent |
+| `PUT /v1/consent`                      | FR-9                      | UC-01, UC-11 | Auth / Profile / Consent |
+| `DELETE /v1/account`                   | FR-8                      | UC-10        | Auth / Profile / Consent |
+| `GET /v1/lessons`                      | FR-2                      | UC-02, UC-05 | Content / Downloads      |
+| `GET /v1/lessons/{id}`                 | FR-2                      | UC-02        | Content / Downloads      |
+| `GET /v1/home/recommendation`          | FR-2                      | UC-02, UC-05 | Content / Downloads      |
+| `POST /v1/downloads/{lessonId}/url`    | FR-7                      | UC-06        | Content / Downloads      |
+| `POST /v1/downloads/{lessonId}/verify` | FR-7                      | UC-06        | Content / Downloads      |
+| `GET /v1/sessions/{id}`                | FR-5                      | UC-08        | Session / Progress       |
+| `POST /v1/sessions`                    | FR-3                      | UC-03        | Session / Progress       |
+| `PATCH /v1/sessions/{id}`              | FR-3                      | UC-03        | Session / Progress       |
+| `POST /v1/sessions/{id}/complete`      | FR-3, FR-4, FR-5          | UC-03, UC-08 | Session / Progress       |
+| `GET /v1/progress`                     | FR-5                      | UC-08        | Session / Progress       |
+| `GET /v1/progress/history`             | FR-5                      | UC-08        | Session / Progress       |
+| `POST /v1/progress/sync`               | FR-5                      | UC-08        | Session / Progress       |
 
 Excluded from backend REST traceability because they are client-side or managed-service concerns in the MVP:
 

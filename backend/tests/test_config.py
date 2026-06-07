@@ -141,6 +141,7 @@ def test_app_exposes_runtime_config() -> None:
 
     assert "/health" in routes
     assert "/v1/config/runtime" in routes
+    assert "/v1/me" in routes
 
 
 def test_load_settings_from_env_overrides(monkeypatch) -> None:
