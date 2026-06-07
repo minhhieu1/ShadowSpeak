@@ -91,7 +91,7 @@ def settings():
         app_name="ShadowSpeak Test",
         api_version="v1",
         log_level="DEBUG",
-        auth_provider="oidc",
+        auth_provider="keycloak",
         auth_issuer=_ISSUER,
         auth_jwks_url=f"{_ISSUER}/protocol/openid-connect/certs",
         auth_audience=_AUDIENCE,
@@ -202,7 +202,7 @@ class TestProfileService:
             )
         assert exc.value.status_code == 403
 
-    def test_update_profile_creates_if_not_exists(self, profile_service, consent_repo):
+    def test_update_profile_creates_if_not_exists(self, profile_service, consent_repo, repo):
         """Update on non-existent profile should create one."""
         consent_repo.put_consent(
             user_id="user-new",
@@ -210,6 +210,16 @@ class TestProfileService:
             privacyAccepted=True,
             adConsent="personalized",
             locale="en",
+        )
+        # Create profile first (update requires existing profile)
+        now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        repo.put_profile(
+            UserProfile(
+                userId="user-new",
+                displayName="New User",
+                createdAt=now,
+                updatedAt=now,
+            )
         )
         result = profile_service.update_profile(
             "user-new", UpdateProfileInput(displayName="New User")

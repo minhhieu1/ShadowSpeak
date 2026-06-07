@@ -9,12 +9,15 @@ def test_dev_settings_load_keycloak_and_local_dynamodb() -> None:
         app_name="ShadowSpeak API",
         api_version="v1",
         log_level="DEBUG",
-        auth_provider="oidc",
+        auth_provider="keycloak",
         auth_issuer="http://localhost:8080/realms/shadowspeak",
         auth_jwks_url="http://localhost:8080/realms/shadowspeak/protocol/openid-connect/certs",
         auth_audience="shadowspeak-api",
         auth_user_id_claim="sub",
         auth_roles_claim="realm_access.roles",
+        auth_client_id="shadowspeak-client",
+        auth_redirect_uri="shadowspeak://callback",
+        auth_scopes=["openid", "profile", "email"],
         dynamodb_table_name="shadowspeak-dev",
         dynamodb_region="us-east-1",
         dynamodb_endpoint="http://localhost:8000",
@@ -34,7 +37,7 @@ def test_prod_settings_use_cognito_groups_claim() -> None:
         app_name="ShadowSpeak API",
         api_version="v1",
         log_level="INFO",
-        auth_provider="oidc",
+        auth_provider="cognito",
         auth_issuer="https://cognito-idp.ap-southeast-1.amazonaws.com/ap-southeast-1_xxxxx",
         auth_jwks_url=(
             "https://cognito-idp.ap-southeast-1.amazonaws.com/"
@@ -43,6 +46,9 @@ def test_prod_settings_use_cognito_groups_claim() -> None:
         auth_audience="prod-client-id",
         auth_user_id_claim="sub",
         auth_roles_claim="cognito:groups",
+        auth_client_id="shadowspeak-client",
+        auth_redirect_uri="shadowspeak://callback",
+        auth_scopes=["openid", "profile"],
         dynamodb_table_name="shadowspeak-prod",
         dynamodb_region="ap-southeast-1",
         aws_default_region="ap-southeast-1",
@@ -63,12 +69,15 @@ def test_prod_settings_reject_static_aws_credentials() -> None:
             app_name="ShadowSpeak API",
             api_version="v1",
             log_level="INFO",
-            auth_provider="oidc",
+            auth_provider="keycloak",
             auth_issuer="https://issuer.example.com",
             auth_jwks_url="https://issuer.example.com/jwks",
             auth_audience="prod-client-id",
             auth_user_id_claim="sub",
             auth_roles_claim="groups",
+            auth_client_id="shadowspeak-client",
+            auth_redirect_uri="shadowspeak://callback",
+            auth_scopes=["openid", "profile"],
             dynamodb_table_name="shadowspeak-prod",
             dynamodb_region="ap-southeast-1",
             aws_access_key_id="dummy",
@@ -87,12 +96,15 @@ def test_settings_require_both_static_aws_credential_fields() -> None:
             app_name="ShadowSpeak API",
             api_version="v1",
             log_level="DEBUG",
-            auth_provider="oidc",
+            auth_provider="keycloak",
             auth_issuer="http://localhost:8080/realms/shadowspeak",
             auth_jwks_url="http://localhost:8080/realms/shadowspeak/protocol/openid-connect/certs",
             auth_audience="shadowspeak-api",
             auth_user_id_claim="sub",
             auth_roles_claim="realm_access.roles",
+            auth_client_id="shadowspeak-client",
+            auth_redirect_uri="shadowspeak://callback",
+            auth_scopes=["openid", "profile", "email"],
             dynamodb_table_name="shadowspeak-dev",
             dynamodb_region="us-east-1",
             aws_access_key_id="dummy",
@@ -107,12 +119,15 @@ def test_app_exposes_runtime_config() -> None:
         app_name="ShadowSpeak API",
         api_version="v1",
         log_level="DEBUG",
-        auth_provider="oidc",
+        auth_provider="keycloak",
         auth_issuer="http://localhost:8080/realms/shadowspeak",
         auth_jwks_url="http://localhost:8080/realms/shadowspeak/protocol/openid-connect/certs",
         auth_audience="shadowspeak-api",
         auth_user_id_claim="sub",
         auth_roles_claim="realm_access.roles",
+        auth_client_id="shadowspeak-client",
+        auth_redirect_uri="shadowspeak://callback",
+        auth_scopes=["openid", "profile", "email"],
         dynamodb_table_name="shadowspeak-dev",
         dynamodb_region="us-east-1",
         dynamodb_endpoint="http://localhost:8000",
@@ -125,7 +140,7 @@ def test_app_exposes_runtime_config() -> None:
     routes = {route.path for route in app.routes}
 
     assert "/health" in routes
-    assert "/config/runtime" in routes
+    assert "/v1/config/runtime" in routes
 
 
 def test_load_settings_from_env_overrides(monkeypatch) -> None:
@@ -133,7 +148,7 @@ def test_load_settings_from_env_overrides(monkeypatch) -> None:
     monkeypatch.setenv("APP_NAME", "ShadowSpeak API")
     monkeypatch.setenv("API_VERSION", "v1")
     monkeypatch.setenv("LOG_LEVEL", "WARNING")
-    monkeypatch.setenv("AUTH_PROVIDER", "oidc")
+    monkeypatch.setenv("AUTH_PROVIDER", "keycloak")
     monkeypatch.setenv("AUTH_ISSUER", "http://localhost:8080/realms/shadowspeak")
     monkeypatch.setenv(
         "AUTH_JWKS_URL",

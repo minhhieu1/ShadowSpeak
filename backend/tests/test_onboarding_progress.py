@@ -57,7 +57,7 @@ def _auth_header(rsa_keys) -> dict:
 
 @pytest.fixture
 def settings():
-    return Settings(_env_file=None, app_env="test", app_name="Test", api_version="v1", log_level="DEBUG", auth_provider="oidc", auth_issuer=_ISSUER, auth_jwks_url=f"{_ISSUER}/certs", auth_audience=_AUDIENCE, auth_user_id_claim="sub", auth_roles_claim="groups", dynamodb_table_name="test-table", dynamodb_region="us-east-1", dynamodb_endpoint="http://localhost:8000", aws_access_key_id="dummy", aws_secret_access_key="dummy", aws_default_region="us-east-1")
+    return Settings(_env_file=None, app_env="test", app_name="Test", api_version="v1", log_level="DEBUG", auth_provider="keycloak", auth_issuer=_ISSUER, auth_jwks_url=f"{_ISSUER}/certs", auth_audience=_AUDIENCE, auth_user_id_claim="sub", auth_roles_claim="groups", dynamodb_table_name="test-table", dynamodb_region="us-east-1", dynamodb_endpoint="http://localhost:8000", aws_access_key_id="dummy", aws_secret_access_key="dummy", aws_default_region="us-east-1")
 
 
 @pytest.fixture

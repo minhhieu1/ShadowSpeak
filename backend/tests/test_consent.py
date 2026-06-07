@@ -282,7 +282,7 @@ def settings():
         app_name="ShadowSpeak Test",
         api_version="v1",
         log_level="DEBUG",
-        auth_provider="oidc",
+        auth_provider="keycloak",
         auth_issuer=_ISSUER,
         auth_jwks_url=f"{_ISSUER}/protocol/openid-connect/certs",
         auth_audience=_AUDIENCE,
@@ -403,7 +403,12 @@ class TestConsentEndpoints:
 
     @pytest.mark.asyncio
     async def test_put_consent_validates_age_gate(self, client, jwks_response):
-        """PUT /consent with ageVerified=False should return 422."""
+        """PUT /consent with ageVerified=False should return 422.
+
+        The invalid consent must NOT be persisted — the subsequent GET
+        should return the default unverified consent state, not the
+        rejected input.
+        """
         from app.core.auth import _fetch_jwks
 
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
@@ -420,7 +425,12 @@ class TestConsentEndpoints:
             assert resp.status_code == 422, resp.text
             follow_up = await client.get("/consent", headers={"X-Device-Id": "device-validation"})
             assert follow_up.status_code == 200
-            assert follow_up.json()["data"] is None
+            data = follow_up.json()["data"]
+            # The failed PUT must NOT have persisted — default unverified consent.
+            assert data is not None
+            assert data["ageVerified"] is False
+            assert data["privacyAccepted"] is False
+            assert data["adConsent"] == "unknown"
 
     @pytest.mark.asyncio
     async def test_put_consent_validates_ad_consent(self, client, jwks_response):

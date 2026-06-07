@@ -1,7 +1,9 @@
+import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
+import { AuthManager } from './src/api/http';
 import { assets } from './src/assets';
 import { demoLessons, demoProgress } from './src/data/demoData';
 import { useAppStore, type TabKey } from './src/state/useAppStore';
@@ -18,6 +20,12 @@ const tabs: Array<{ key: TabKey; label: string; icon: string }> = [
 export default function App() {
   const activeTab = useAppStore((state) => state.activeTab);
   const setActiveTab = useAppStore((state) => state.setActiveTab);
+
+  // Bootstrap: hydrate the auth token from persistent storage so the first
+  // API call (if authenticated) already has a Bearer token available.
+  useEffect(() => {
+    AuthManager.getInstance().loadFromStorage();
+  },[]);
 
   return (
     <SafeAreaProvider>

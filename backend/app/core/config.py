@@ -8,7 +8,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 AppEnv = Literal["dev", "prod", "test"]
-AuthProvider = Literal["oidc"]
+AuthProvider = Literal["keycloak", "cognito"]
 
 
 def _env_file_path() -> str | None:
@@ -38,6 +38,17 @@ class Settings(BaseSettings):
     auth_issuer: str
     auth_jwks_url: str
     auth_audience: str
+    auth_client_id: str = "shadowspeak-client"
+    auth_redirect_uri: str = "shadowspeak://callback"
+    auth_scopes: list[str] = ["openid", "profile", "email"]
+
+    # OIDC endpoints — configurable per provider.
+    # Keycloak defaults are provided; override for Cognito or other providers.
+    auth_authorization_endpoint: str = ""
+    auth_token_endpoint: str = ""
+    auth_revocation_endpoint: str = ""
+    auth_end_session_endpoint: str = ""
+
     auth_user_id_claim: str
     auth_roles_claim: str
     auth_jwt_leeway: int = 30

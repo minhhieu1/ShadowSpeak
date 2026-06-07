@@ -26,12 +26,32 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     def health() -> dict[str, str]:
         return {"status": "ok", "env": settings.app_env}
 
-    @app.get("/config/runtime")
-    def runtime_config(request: Request) -> dict[str, str | None]:
+    @app.get("/v1/config/runtime")
+    def runtime_config(request: Request) -> dict[str, object]:
+        """OIDC configuration for the mobile app.
+
+        Returns enough information for the frontend to initialise the
+        authentication flow (discovery URL, client ID, scopes, redirect
+        URI) without hard-coding any provider-specific details.  The
+        frontend uses this to configure the auth SDK at boot time.
+
+        The four endpoint fields map to provider-specific URLs:
+          - Keycloak: issuer + "protocol/openid-connect/{auth,token,revoke,logout}"
+          - Cognito:  domain + "/oauth2/{authorize,token,...}"
+        They are set via env vars and can differ per provider without
+        any code change.
+        """
         return {
-            "appEnv": settings.app_env,
-            "authIssuer": settings.auth_issuer,
-            "authAudience": settings.auth_audience,
+            "version": 1,
+            "provider": settings.auth_provider,
+            "issuer": settings.auth_issuer,
+            "clientId": settings.auth_client_id,
+            "redirectUri": settings.auth_redirect_uri,
+            "scopes": settings.auth_scopes,
+            "authorizationEndpoint": settings.auth_authorization_endpoint or None,
+            "tokenEndpoint": settings.auth_token_endpoint or None,
+            "revocationEndpoint": settings.auth_revocation_endpoint or None,
+            "endSessionEndpoint": settings.auth_end_session_endpoint or None,
         }
 
     return app

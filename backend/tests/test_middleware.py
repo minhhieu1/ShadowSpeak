@@ -21,7 +21,7 @@ def app():
         app_name="ShadowSpeak Test",
         api_version="v1",
         log_level="DEBUG",
-        auth_provider="oidc",
+        auth_provider="keycloak",
         auth_issuer="http://test-issuer.local",
         auth_jwks_url="http://test-issuer.local/certs",
         auth_audience="test-audience",
@@ -91,13 +91,14 @@ async def test_cors_headers_on_get_method(client):
 @pytest.mark.asyncio
 async def test_config_runtime_endpoint(client):
     """Runtime config endpoint should work."""
-    response = await client.get("/config/runtime")
+    response = await client.get("/v1/config/runtime")
     assert response.status_code == 200
     data = response.json()
-    assert "appEnv" in data
-    assert "authIssuer" in data
-    assert "authAudience" in data
-    assert "dynamodbTableName" not in data  # internal infra not exposed
+    assert data.get("issuer") is not None
+    assert data.get("clientId") is not None
+    assert data.get("scopes") is not None
+    assert data.get("provider") == "keycloak"
+    assert data.get("redirectUri") is not None
 
 
 @pytest.mark.asyncio

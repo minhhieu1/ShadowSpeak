@@ -74,7 +74,7 @@ def _auth_header(rsa_keys, **jwt_overrides) -> dict:
 def settings():
     return Settings(
         _env_file=None, app_env="test", app_name="IntegrationTest", api_version="v1",
-        log_level="DEBUG", auth_provider="oidc", auth_issuer=_ISSUER,
+        log_level="DEBUG", auth_provider="keycloak", auth_issuer=_ISSUER,
         auth_jwks_url=f"{_ISSUER}/certs", auth_audience=_AUDIENCE,
         auth_user_id_claim="sub", auth_roles_claim="groups",
         dynamodb_table_name="test-table", dynamodb_region="us-east-1",
@@ -206,13 +206,28 @@ class TestFullOnboardingFlow:
             assert resp.status_code == 200
             assert resp.json()["data"]["ageVerified"] is True
 
-            # Step 3: PUT profile
+            # Step 3: Create a profile record in the repository first,
+            # then PUT /me to update it (update_profile requires the
+            # profile to already exist). The JWT sub is "user-int-123".
+            repo = ProfileRepository(dynamodb_table)
+            now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+            repo.put_profile(
+                UserProfile(
+                    userId="user-int-123",
+                    displayName="Temporary",
+                    createdAt=now,
+                    updatedAt=now,
+                )
+            )
             resp = await client.put(
                 "/me",
                 json={"displayName": "Integration User", "level": "beginner"},
                 headers=headers,
             )
             assert resp.status_code == 200, resp.text
+            data = resp.json()["data"]
+            assert data["displayName"] == "Integration User"
+            assert data["level"] == "beginner"
             data = resp.json()["data"]
             assert data["displayName"] == "Integration User"
             assert data["level"] == "beginner"
@@ -270,7 +285,32 @@ class TestConsentRekeyFlow:
         assert device is not None
         assert device.ageVerified is True
 
-        # Step 3: GET /me as authenticated user with X-Device-Id — triggers rekey
+        # Step 3: Create a profile in the repository so PUT /me can update it.
+        repo = ProfileRepository(dynamodb_table)
+        now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+        repo.put_profile(
+            UserProfile(
+                userId="user-rekeyed",
+                displayName="Temporary",
+                createdAt=now,
+                updatedAt=now,
+            )
+        )
+
+        # Step 4: PUT /me to update the profile
+        with patch("app.core.auth._fetch_jwks") as mock_fetch:
+            mock_fetch.return_value = jwks_response
+            headers = _auth_header(rsa_keys, sub="user-rekeyed")
+            headers["X-Device-Id"] = "device-rekey"
+            headers["Content-Type"] = "application/json"
+            resp = await client.put(
+                "/me",
+                json={"displayName": "Rekeyed User"},
+                headers=headers,
+            )
+            assert resp.status_code == 200, resp.text
+
+        # Step 5: GET /me as authenticated user with X-Device-Id — triggers rekey
         with patch("app.core.auth._fetch_jwks") as mock_fetch:
             mock_fetch.return_value = jwks_response
             headers = _auth_header(rsa_keys, sub="user-rekeyed")
@@ -278,13 +318,13 @@ class TestConsentRekeyFlow:
             resp = await client.get("/me", headers=headers)
             assert resp.status_code == 200, resp.text
 
-        # Step 4: Consent should now be accessible under USER# key
+        # Step 6: Consent should now be accessible under USER# key
         user_consent = consent_repo.get_consent("user-rekeyed")
         assert user_consent is not None
         assert user_consent.ageVerified is True
         assert user_consent.adConsent == "non_personalized"
 
-        # Step 5: Device consent should be deleted after rekey
+        # Step 7: Device consent should be deleted after rekey
         device_gone = consent_repo.get_device_consent("device-rekey")
         assert device_gone is None
 
