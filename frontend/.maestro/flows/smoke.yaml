@@ -1,0 +1,29 @@
+appId: com.shadowspeak.app
+---
+- launchApp:
+    appId: "com.shadowspeak.app"
+    clearState: false
+- assertVisible:
+    text: "ShadowSpeak"
+- assertVisible:
+    text: "Start daily practice"
+- tapOn:
+    text: "Book, Lessons"
+- assertVisible:
+    text: "Beginner"
+- tapOn:
+    text: "Down, Downloads"
+- tapOn:
+    text: "Chart, Progress"
+- assertVisible:
+    text: "Day streak"
+- tapOn:
+    text: "Gear, Settings"
+- assertVisible:
+    text: "Playback"
+- assertVisible:
+    text: "Reminder settings"
+- tapOn:
+    text: "Home, Home"
+- assertVisible:
+    text: "Cafe Small Talk"

@@ -1,0 +1,11 @@
+# =============================================================================
+# Maestro Configuration
+# =============================================================================
+# Maestro reads this file from the root of the test directory.
+# The `flows` key with "**" glob enables recursive subdirectory discovery.
+# =============================================================================
+
+appId: "com.shadowspeak.app"
+name: "ShadowSpeak E2E Tests"
+flows:
+  - "**"

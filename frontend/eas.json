@@ -1,0 +1,7 @@
+{
+  "cli": {
+    "version": ">= 14.10.0",
+    "requireCommit": false
+  },
+  "build": {}
+}

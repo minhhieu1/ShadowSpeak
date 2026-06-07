@@ -1,20 +1,27 @@
-import { useEffect } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { useEffect } from "react";
+import { StatusBar } from "expo-status-bar";
+import {
+  Image,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
-import { AuthManager } from './src/api/http';
-import { assets } from './src/assets';
-import { demoLessons, demoProgress } from './src/data/demoData';
-import { useAppStore, type TabKey } from './src/state/useAppStore';
-import { colors, radii, spacing, typography } from './src/theme';
+import { AuthManager } from "./src/api/http";
+import { assets } from "./src/assets";
+import { demoLessons, demoProgress } from "./src/data/demoData";
+import { useAppStore, type TabKey } from "./src/state/useAppStore";
+import { colors, radii, spacing, typography } from "./src/theme";
 
 const tabs: Array<{ key: TabKey; label: string; icon: string }> = [
-  { key: 'home', label: 'Home', icon: 'Home' },
-  { key: 'lessons', label: 'Lessons', icon: 'Book' },
-  { key: 'downloads', label: 'Downloads', icon: 'Down' },
-  { key: 'progress', label: 'Progress', icon: 'Chart' },
-  { key: 'settings', label: 'Settings', icon: 'Gear' },
+  { key: "home", label: "Home", icon: "Home" },
+  { key: "lessons", label: "Lessons", icon: "Book" },
+  { key: "downloads", label: "Downloads", icon: "Down" },
+  { key: "progress", label: "Progress", icon: "Chart" },
+  { key: "settings", label: "Settings", icon: "Gear" },
 ];
 
 export default function App() {
@@ -25,7 +32,7 @@ export default function App() {
   // API call (if authenticated) already has a Bearer token available.
   useEffect(() => {
     AuthManager.getInstance().loadFromStorage();
-  },[]);
+  }, []);
 
   return (
     <SafeAreaProvider>
@@ -33,12 +40,15 @@ export default function App() {
         <StatusBar style="dark" />
         <View style={styles.shell}>
           <AppHeader />
-          <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-            {activeTab === 'home' && <HomeScreen />}
-            {activeTab === 'lessons' && <LessonCatalog />}
-            {activeTab === 'downloads' && <DownloadsScreen />}
-            {activeTab === 'progress' && <ProgressScreen />}
-            {activeTab === 'settings' && <SettingsScreen />}
+          <ScrollView
+            contentContainerStyle={styles.content}
+            showsVerticalScrollIndicator={false}
+          >
+            {activeTab === "home" && <HomeScreen />}
+            {activeTab === "lessons" && <LessonCatalog />}
+            {activeTab === "downloads" && <DownloadsScreen />}
+            {activeTab === "progress" && <ProgressScreen />}
+            {activeTab === "settings" && <SettingsScreen />}
           </ScrollView>
           <BottomTabs activeTab={activeTab} onChange={setActiveTab} />
         </View>
@@ -51,7 +61,11 @@ function AppHeader() {
   return (
     <View style={styles.header}>
       <View style={styles.brandRow}>
-        <Image source={assets.logos.brandWaveformMark} style={styles.brandMark} resizeMode="contain" />
+        <Image
+          source={assets.logos.brandWaveformMark}
+          style={styles.brandMark}
+          resizeMode="contain"
+        />
         <View>
           <Text style={styles.brandName}>ShadowSpeak</Text>
           <Text style={styles.brandCaption}>Listen. Shadow. Improve.</Text>
@@ -73,9 +87,15 @@ function HomeScreen() {
         <View style={styles.heroCopy}>
           <Text style={styles.eyebrow}>Recommended</Text>
           <Text style={styles.heroTitle}>{lesson.title}</Text>
-          <Text style={styles.heroBody}>{lesson.durationMinutes} min audio-first practice</Text>
+          <Text style={styles.heroBody}>
+            {lesson.durationMinutes} min audio-first practice
+          </Text>
         </View>
-        <Image source={assets.badges.brandWaveformNeutral} style={styles.heroArt} resizeMode="contain" />
+        <Image
+          source={assets.badges.brandWaveformNeutral}
+          style={styles.heroArt}
+          resizeMode="contain"
+        />
       </View>
       <SectionTitle title="Today" action="View plan" />
       <View style={styles.metricGrid}>
@@ -97,7 +117,7 @@ function LessonCatalog() {
     <View style={styles.screenStack}>
       <SectionTitle title="Lessons" action="Filter" />
       <View style={styles.chipRow}>
-        {['Beginner', 'Travel', '5-10 min'].map((chip) => (
+        {["Beginner", "Travel", "5-10 min"].map((chip) => (
           <View key={chip} style={styles.chip}>
             <Text style={styles.chipText}>{chip}</Text>
           </View>
@@ -132,8 +152,14 @@ function ProgressScreen() {
       <SectionTitle title="Progress" action="History" />
       <View style={styles.metricGrid}>
         <MetricCard value={`${demoProgress.streakDays}`} label="Day streak" />
-        <MetricCard value={`${demoProgress.minutesPracticed}`} label="Minutes" />
-        <MetricCard value={`${demoProgress.completedLessonCount}`} label="Lessons" />
+        <MetricCard
+          value={`${demoProgress.minutesPracticed}`}
+          label="Minutes"
+        />
+        <MetricCard
+          value={`${demoProgress.completedLessonCount}`}
+          label="Lessons"
+        />
       </View>
       <InfoCard
         image={assets.badges.successStar}
@@ -154,7 +180,12 @@ function SettingsScreen() {
         title="Playback"
         body="Speed, pause timing, and screen-off practice preferences."
       />
-      {['Reminder settings', 'Consent settings', 'Recording library', 'Account management'].map((item) => (
+      {[
+        "Reminder settings",
+        "Consent settings",
+        "Recording library",
+        "Account management",
+      ].map((item) => (
         <View key={item} style={styles.settingsRow}>
           <Text style={styles.settingsLabel}>{item}</Text>
           <Text style={styles.settingsChevron}>›</Text>
@@ -174,7 +205,9 @@ function LessonCard({
   return (
     <View style={styles.lessonCard}>
       <View style={styles.lessonThumb}>
-        <Text style={styles.lessonThumbText}>{lesson.topic.slice(0, 2).toUpperCase()}</Text>
+        <Text style={styles.lessonThumbText}>
+          {lesson.topic.slice(0, 2).toUpperCase()}
+        </Text>
       </View>
       <View style={styles.lessonBody}>
         <Text style={styles.lessonTitle}>{lesson.title}</Text>
@@ -231,7 +264,12 @@ function SectionTitle({ title, action }: { title: string; action?: string }) {
 
 function PrimaryButton({ label }: { label: string }) {
   return (
-    <Pressable style={({ pressed }) => [styles.primaryButton, pressed && styles.primaryButtonPressed]}>
+    <Pressable
+      style={({ pressed }) => [
+        styles.primaryButton,
+        pressed && styles.primaryButtonPressed,
+      ]}
+    >
       <Text style={styles.primaryButtonText}>{label}</Text>
     </Pressable>
   );
@@ -245,7 +283,10 @@ function WaveformPreview() {
       <Text style={styles.infoTitle}>Practice waveform</Text>
       <View style={styles.waveform}>
         {bars.map((height, index) => (
-          <View key={`${height}-${index}`} style={[styles.waveformBar, { height }]} />
+          <View
+            key={`${height}-${index}`}
+            style={[styles.waveformBar, { height }]}
+          />
         ))}
       </View>
     </View>
@@ -269,9 +310,14 @@ function BottomTabs({
             style={styles.tabButton}
             onPress={() => onChange(tab.key)}
             accessibilityRole="button"
-            accessibilityState={{ selected: isActive }}>
-            <Text style={[styles.tabIcon, isActive && styles.tabIconActive]}>{tab.icon}</Text>
-            <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>{tab.label}</Text>
+            accessibilityState={{ selected: isActive }}
+          >
+            <Text style={[styles.tabIcon, isActive && styles.tabIconActive]}>
+              {tab.icon}
+            </Text>
+            <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>
+              {tab.label}
+            </Text>
           </Pressable>
         );
       })}
@@ -292,13 +338,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing[4],
     paddingBottom: spacing[3],
     paddingTop: spacing[3],
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   brandRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing[3],
   },
   brandMark: {
@@ -312,7 +358,7 @@ const styles = StyleSheet.create({
   brandCaption: {
     ...typography.caption,
     color: colors.textMuted,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   },
   streakPill: {
     backgroundColor: colors.surface,
@@ -340,9 +386,9 @@ const styles = StyleSheet.create({
     borderRadius: radii.card,
     borderWidth: 1,
     padding: spacing[4],
-    flexDirection: 'row',
-    alignItems: 'center',
-    overflow: 'hidden',
+    flexDirection: "row",
+    alignItems: "center",
+    overflow: "hidden",
   },
   heroCopy: {
     flex: 1,
@@ -351,7 +397,7 @@ const styles = StyleSheet.create({
   eyebrow: {
     ...typography.captionEmphasis,
     color: colors.secondary,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   },
   heroTitle: {
     ...typography.display,
@@ -366,9 +412,9 @@ const styles = StyleSheet.create({
     height: 118,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   sectionTitle: {
     ...typography.h2,
@@ -379,7 +425,7 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   metricGrid: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: spacing[3],
   },
   metricCard: {
@@ -402,8 +448,8 @@ const styles = StyleSheet.create({
     minHeight: 52,
     borderRadius: radii.control,
     backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingHorizontal: spacing[4],
   },
   primaryButtonPressed: {
@@ -414,8 +460,8 @@ const styles = StyleSheet.create({
     color: colors.surface,
   },
   chipRow: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: spacing[2],
   },
   chip: {
@@ -436,8 +482,8 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: radii.card,
     borderWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing[3],
     padding: spacing[3],
   },
@@ -445,9 +491,9 @@ const styles = StyleSheet.create({
     width: 58,
     height: 58,
     borderRadius: radii.card,
-    backgroundColor: '#F4E7D5',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#F4E7D5",
+    alignItems: "center",
+    justifyContent: "center",
   },
   lessonThumbText: {
     ...typography.bodyEmphasis,
@@ -464,10 +510,10 @@ const styles = StyleSheet.create({
   lessonMeta: {
     ...typography.caption,
     color: colors.textMuted,
-    textTransform: 'capitalize',
+    textTransform: "capitalize",
   },
   smallBadge: {
-    backgroundColor: '#E8F4F0',
+    backgroundColor: "#E8F4F0",
     borderRadius: radii.full,
     paddingHorizontal: spacing[2],
     paddingVertical: spacing[1],
@@ -477,8 +523,8 @@ const styles = StyleSheet.create({
     color: colors.success,
   },
   infoCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing[3],
     backgroundColor: colors.surface,
     borderColor: colors.border,
@@ -508,9 +554,9 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     borderRadius: radii.card,
     borderWidth: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: spacing[4],
   },
   settingsLabel: {
@@ -531,9 +577,9 @@ const styles = StyleSheet.create({
   },
   waveform: {
     height: 72,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   waveformBar: {
     width: 14,
@@ -541,7 +587,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   bottomTabs: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
@@ -549,13 +595,13 @@ const styles = StyleSheet.create({
     backgroundColor: colors.surface,
     borderTopColor: colors.border,
     borderTopWidth: 1,
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingHorizontal: spacing[2],
     paddingTop: spacing[2],
   },
   tabButton: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
     gap: spacing[1],
   },
   tabIcon: {

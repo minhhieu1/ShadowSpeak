@@ -1,0 +1,11 @@
+# Helpers Directory
+
+Reserved for custom Maestro helper JavaScript/flow utilities.
+
+Potential future contents:
+- `scrollUntilVisible.js` — scroll until an element is visible
+- `waitForNetwork.js` — wait for network requests to complete
+- Custom Maestro JavaScript extensions for complex interactions
+
+These helpers are NOT Maestro flow files — they are reusable utilities
+called from within flows (e.g., via `runScript`).

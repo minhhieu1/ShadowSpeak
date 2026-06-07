@@ -1,0 +1,34 @@
+{
+  "_comment": "ShadowSpeak app metadata for Maestro E2E tests",
+
+  "appId": "com.shadowspeak.app",
+  "appName": "ShadowSpeak",
+  "version": "1.0.0",
+  "buildNumber": 1,
+
+  "orientations": ["portrait"],
+  "platforms": ["ios", "android"],
+
+  "screens": {
+    "root": "screen-root",
+    "splash": "screen-splash",
+    "onboarding": {
+      "screen": "screen-onboarding",
+      "pages": 3,
+      "pagePrefix": "onboarding-page-"
+    },
+    "auth": {
+      "login": "screen-login",
+      "register": "screen-register",
+      "oidcRedirect": "screen-oidc-redirect"
+    },
+    "home": "screen-home",
+    "practice": "screen-practice",
+    "profile": "screen-profile"
+  },
+
+  "navigation": {
+    "tabs": ["home", "practice", "profile"],
+    "tabPrefix": "tab-"
+  }
+}

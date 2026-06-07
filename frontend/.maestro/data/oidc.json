@@ -1,0 +1,30 @@
+{
+  "_comment": "OIDC configuration for Maestro E2E authentication tests",
+  "_warning": "Update these values to match your Keycloak/Cognito setup",
+
+  "issuer": "http://localhost:8080/realms/shadowspeak",
+  "clientId": "shadowspeak-mobile",
+  "scopes": ["openid", "profile", "email", "offline_access"],
+  "redirectUri": "com.shadowspeak.app:/oauthredirect",
+
+  "endpoints": {
+    "authorization": "{issuer}/protocol/openid-connect/auth",
+    "token": "{issuer}/protocol/openid-connect/token",
+    "logout": "{issuer}/protocol/openid-connect/logout",
+    "userinfo": "{issuer}/protocol/openid-connect/userinfo",
+    "jwks": "{issuer}/protocol/openid-connect/certs"
+  },
+
+  "test_users": {
+    "valid": {
+      "username": "testuser@shadowspeak.test",
+      "password": "TestPass123!",
+      "expected_groups": ["users"]
+    },
+    "admin": {
+      "username": "admin@shadowspeak.test",
+      "password": "AdminPass123!",
+      "expected_groups": ["users", "admins"]
+    }
+  }
+}

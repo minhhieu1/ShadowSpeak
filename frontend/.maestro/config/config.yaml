@@ -1,0 +1,64 @@
+# =============================================================================
+# Maestro E2E Configuration
+# =============================================================================
+# MAESTRO-NATIVE PROPERTIES:
+#   Maestro only reads: appId, name, tags, env, timeouts
+#   https://maestro.mobile.dev/api-reference/configuration
+#
+# REFERENCE-ONLY PROPERTIES (not read by Maestro):
+#   environments, android, ios, retries, reporting
+#   These exist for developer reference and CI environment setup.
+#   They are consumed by .maestro_env.sh and ci-reference.md, NOT by Maestro.
+#
+# =============================================================================
+
+# ---- Maestro-native properties ----
+appId: "com.shadowspeak.app"
+name: "ShadowSpeak E2E Tests"
+
+# Maestro-native timeouts
+timeouts:
+  launch: 30000
+  element: 10000
+  navigation: 15000
+  animation: 5000
+  network: 20000
+
+# ---- Reference-only properties (NOT read by Maestro) ----
+# These are used by .maestro_env.sh for environment setup.
+# See config/.maestro_env.sh and config/ci-reference.md.
+
+appName: "ShadowSpeak"
+
+environments:
+  dev:
+    baseUrl: "http://localhost:3000"
+    apiUrl: "http://localhost:8080"
+    oidc:
+      issuer: "http://localhost:8080/realms/shadowspeak"
+  staging:
+    baseUrl: "https://staging.shadowspeak.app"
+    apiUrl: "https://api.staging.shadowspeak.app"
+    oidc:
+      issuer: "https://auth.staging.shadowspeak.app/realms/shadowspeak"
+  production:
+    baseUrl: "https://shadowspeak.app"
+    apiUrl: "https://api.shadowspeak.app"
+    oidc:
+      issuer: "https://auth.shadowspeak.app/realms/shadowspeak"
+
+android:
+  appPath: "./android/app/build/outputs/apk/debug/app-debug.apk"
+  launchTimeoutMs: 45000
+
+ios:
+  appPath: "./ios/build/Build/Products/Debug-iphonesimulator/ShadowSpeak.app"
+  launchTimeoutMs: 45000
+
+retries:
+  flakyTestRetries: 2
+  networkRetries: 3
+
+reporting:
+  screenshotsDir: "~/.maestro/screenshots"
+  reportsDir: "./reports/maestro"

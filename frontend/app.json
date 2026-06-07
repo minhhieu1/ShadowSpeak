@@ -13,9 +13,11 @@
       "backgroundColor": "#F7F5F0"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.shadowspeak.app"
     },
     "android": {
+      "package": "com.shadowspeak.app",
       "adaptiveIcon": {
         "foregroundImage": "./assets/app/adaptive-icon.png",
         "backgroundColor": "#F7F5F0"
@@ -25,6 +27,15 @@
     },
     "web": {
       "favicon": "./assets/app/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-secure-store",
+      [
+        "expo-dev-client",
+        {
+          "launchMode": "most-recent"
+        }
+      ]
+    ]
   }
 }

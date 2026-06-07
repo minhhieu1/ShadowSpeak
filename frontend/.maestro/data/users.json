@@ -1,0 +1,35 @@
+{
+  "_comment": "Test user accounts for Maestro E2E tests",
+  "_warning": "Do NOT use real credentials. These are placeholder/test accounts only.",
+
+  "standard": {
+    "email": "testuser@shadowspeak.test",
+    "password": "TestPass123!",
+    "name": "Test User",
+    "type": "standard"
+  },
+  "onboarded": {
+    "email": "onboarded@shadowspeak.test",
+    "password": "TestPass123!",
+    "name": "Onboarded User",
+    "type": "onboarded"
+  },
+  "premium": {
+    "email": "premium@shadowspeak.test",
+    "password": "TestPass123!",
+    "name": "Premium User",
+    "type": "premium"
+  },
+  "invalid": {
+    "email": "invalid@test",
+    "password": "wrong",
+    "name": "Invalid User",
+    "type": "invalid"
+  },
+  "oidc_sso": {
+    "email": "oidcuser@shadowspeak.test",
+    "password": "OIDCPass123!",
+    "name": "OIDC SSO User",
+    "type": "oidc"
+  }
+}
