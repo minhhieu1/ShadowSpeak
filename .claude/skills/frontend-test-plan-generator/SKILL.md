@@ -118,6 +118,31 @@ The directory hierarchy is: **epic-name** → **frontend** → **numbered-plan-f
 
 Check existing content in `specs/06-testing/03-Test-Plan/` first to identify the correct epic number/name. Each epic folder contains a `backend/` and/or `frontend/` subdirectory.
 
+### Step F: Session-Size Planning — Split Large Epics
+
+Before proceeding to test case generation, assess whether the epic is too large for a single execution session.
+
+**Session size rule:** A single test plan file MUST contain **no more than 15 test cases**. One test case may span 40–70 lines (preconditions, steps, assertion tables), so 15 cases produces roughly 600–1000 lines — the upper limit a single `frontend-test-executor` session can handle reliably.
+
+**How to split:**
+- Group test cases by **logical sub-area** (e.g., "age gate" vs "consent" vs "sign-in/sign-up", or "design matching" vs "screen functioning")
+- Each sub-area becomes its own numbered plan file
+- Number the plan files sequentially across the epic
+- Reference the same epic name, but scope each file to its specific sub-area
+
+**Example split for a large onboarding epic:**
+```
+specs/06-testing/03-Test-Plan/01-onboarding/frontend/
+├── 01-Age-Gate-Consent.md         ← screens 1.2–1.4 (TC-ONB-FE-001–008)
+├── 02-SignIn-SignUp.md             ← screens 1.5–1.6 (TC-ONB-FE-009–018)
+├── 03-Onboarding-Remainder.md      ← screens 1.7–1.9 (TC-ONB-FE-019–031)
+├── 01-Age-Gate-Consent.review.json
+├── 02-SignIn-SignUp.review.json
+└── 03-Onboarding-Remainder.review.json
+```
+
+If the TCS has ≤ 15 test cases in scope, use a single file — no split needed.
+
 ## Workflow
 
 ### Phase 1: Read and Analyze All Input Documents
@@ -152,34 +177,107 @@ The header MUST contain:
    ```
    > **Execution:** This test plan is designed to be executed by the **frontend-test-plan-executor** and **ios-simulator-skill** tools. Do NOT use raw xcrun commands or coordinate tapping.
    ```
-2. Title and document metadata table
-3. Base configuration block with simulator info, app launch instructions
-4. Environment pre-requisites and setup steps
+2. The review status line (line 3, after a blank line):
+   ```
+   > **Review Status:** 🔴 Pending Review — not yet sign-off ready
+   ```
+3. Title and document metadata table
+4. Base configuration block with simulator info, app launch instructions
+5. Environment pre-requisites and setup steps
 
-### Phase 5: Generate Test Cases One-by-One
+The status will be updated to ✅ Reviewed — Sign-off Ready after all files pass review.
 
-After the header is written, generate each test case **one at a time, sequentially**. Do NOT batch multiple test cases in a single write step.
+### Phase 5: Generate All Test Cases for This File
 
-**Why one-by-one:** Test Case Specifications can be large. Writing all test cases at once risks exceeding output limits and losing partial work. By writing one test case at a time, if an error occurs mid-way, all previously written test cases are already saved in the file.
+After the header is written, generate all test cases for this file. Write every test case **one by one** (to avoid losing partial work), but do NOT review them yet — all generation happens first.
 
-For each test case from the TCS:
-
-1. Read the next test case from the TCS (ID, title, objective, preconditions, test data, steps, expected result)
-2. Determine if this test case is primarily a **design matching** test or a **screen functioning** test (or both)
+For each test case from the TCS scope of this file:
+1. Read the test case (ID, title, objective, preconditions, test data, steps, expected result)
+2. Determine if it's a **design matching** or **screen functioning** test (or both)
 3. Generate the full structured test case entry (following the format below)
 4. Append it to the output file
 5. Proceed to the next test case
 
-### Phase 6: Output Completion Marker
-
-After ALL test cases have been generated and written, append the completion marker at the end of the file:
+Continue until all test cases for this file are written. Then append a draft completion marker:
 
 ```
 === Test Plan Complete ===
 Total Test Cases: <count>
 ```
 
-The generated plan is compatible with the **frontend-test-plan-executor** skill, which reads the plan, executes ios-simulator-skill commands, and writes results to a separate result file without modifying the plan.
+### Phase 6: Review Gate — One File at a Time
+
+After ALL test cases for this file are generated, review the entire file as a single unit. This is a RED/GREEN gate — the file must pass before it's shown to the user.
+
+Add the draft review status at the top of the file (if not already there):
+
+```markdown
+> **Review Status:** 🔴 Pending Review — not yet sign-off ready
+```
+
+#### Step A: Review This File — One Agent per File
+
+**CRITICAL:** Spawn ONE dedicated reviewer subagent per file. That agent MUST only review this single file. Do NOT spawn one agent for multiple files — each file gets its own independent reviewer.
+
+```
+You are a Frontend Test Plan Reviewer. Review ONLY the file at [path-to-file].
+
+Read these source documents (these are the same for every file from this epic):
+1. <list input docs — User Story, Frontend TCS, UX design docs>
+
+For this file, check EVERY test case:
+1. **Source Alignment** — Does each TC correctly map to its TCS entry?
+2. **Accuracy** — Are execution steps correct and actionable? Are screen names correct per the Wireframe?
+3. **Design Matching Validity** — Do DM assertions reference proper UI Spec sections? Are color tokens / typography correct?
+4. **Screen Functioning Validity** — Do SF tests verify real user-visible behavior? Are expected results clear?
+5. **Format Compliance** — Does every TC follow the required format (Test Type, Related Screens, Preconditions, Steps, Expected Result, assertions)? Is the completion marker present?
+6. **Completeness** — Are all TCs from the TCS scope for this file present?
+
+Respond with exactly this JSON — nothing else:
+{"verdict": "APPROVED"|"REJECTED", "test_cases_checked": <N>, "issues": [{"test_case": "<TC-ID>", "severity": "critical"|"major"|"minor", "description": "...", "expected_fix": "..."}], "summary": "..."}
+```
+
+Rules:
+- This agent ONLY sees this one file. It knows nothing about other files in the epic.
+- APPROVED → this file is done. Close this agent. Update status. Move to the next file.
+- REJECTED with any issues → close this agent, fix ALL issues in the file, then spawn a NEW agent for the same file (Step A again). Loop until APPROVED.
+- NEVER reuse an agent across files. NEVER review two files in one agent call.
+
+#### Step B: Process the Verdict
+
+**If APPROVED:** Update the status block at the top:
+```markdown
+> **Review Status:** ✅ Reviewed — Sign-off Ready
+```
+
+Add a review completion notice after the completion marker:
+```
+---
+## Review Gate
+
+**Status:** ✅ APPROVED
+**Verdict:** All <N> test cases validated. File is sign-off ready.
+```
+
+Save a `.review.json` alongside the file. Then move to the next file (if any) and go back to Phase 5.
+
+**If REJECTED:** Keep the status as 🔴 Pending Review. For each issue in the report:
+1. Fix the affected test case(s) in the file
+2. After ALL fixes are applied, re-spawn the reviewer for the same file (back to Step A)
+3. Never skip a rejection. If the same file is rejected 3 times, stop and escalate.
+
+#### Step C: File Loop
+- Start: Phase 5 → generate file
+- Gate: Phase 6 Step A → review file
+- Outcome: APPROVED → done with file. Next file.
+- Outcome: REJECTED → fix file → re-review file (same file) → loop until APPROVED
+- After 3 rejections on the same file: "Review gate exceeded 3 iterations for [file]. Manual intervention required."
+
+## Stop Condition
+
+After the review gate for the last file returns APPROVED (GREEN) and all status blocks are updated, stop. Do NOT execute any tests. The generated plans are for the **frontend-test-plan-executor** skill to run.
+
+Never show a plan to the user while it still has 🔴 review status. Only present files after the review gate has produced ✅ Reviewed — Sign-off Ready.
 
 ## Test Case Format
 
@@ -375,7 +473,3 @@ Examples:
 The directory hierarchy is: `epic-name` → `frontend` → `numbered-plan-file`.
 
 Consult the existing structure at `specs/06-testing/03-Test-Plan/` for the correct epic number and name before choosing the output path.
-
-## Stop Condition
-
-After writing the completion marker, stop. Do NOT execute any tests. The generated plan is for the **frontend-test-plan-executor** skill to run.

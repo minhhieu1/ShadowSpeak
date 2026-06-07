@@ -54,7 +54,30 @@ Input validation rule: If you do not receive all 3 documents, respond with:
   - Steps
   - Expected result
 
-### Phase 2: Determine Output Path
+### Phase 2: Session-Size Planning — Split Large Epics
+
+Before determining output paths, assess whether the epic is too large for a single execution session.
+
+**Session size rule:** A single test plan file MUST contain no more than **15 test cases**. One test case may span 40–70 lines (header, preconditions, setup commands, execution, assertions), so 15 cases produces roughly 600–1000 lines — the upper limit a single executor session can handle reliably.
+
+**How to split:**
+- Group test cases by **logical sub-domain** (e.g., "consent endpoints" vs "profile endpoints", or "pre-auth flows" vs "authenticated flows")
+- Each sub-domain becomes its own numbered plan file
+- Number the plan files sequentially across the epic
+- Reference the full epic name, but scope each file to its specific sub-area
+
+**Example split for a large onboarding epic:**
+```
+specs/06-testing/03-Test-Plan/01-onboarding/backend/
+├── 01-Consent-API.md          ← pre-auth consent (TC-ONB-BE-001–008)
+├── 02-Auth-Profile-API.md     ← authenticated endpoints (TC-ONB-BE-009–015)
+├── 01-Consent-API.review.json
+└── 02-Auth-Profile-API.review.json
+```
+
+If the TCS has ≤ 15 test cases in scope, use a single file — no split needed.
+
+### Phase 3: Determine Output Path
 
 Determine the output file path based on the project's spec directory structure. The pattern is:
 
@@ -69,7 +92,7 @@ The directory hierarchy is: **epic-name** → **backend** → **numbered-plan-fi
 
 Check existing content in `specs/06-testing/03-Test-Plan/` first to find the correct epic number and name.
 
-### Phase 3: Generate Test Plan Header First
+### Phase 4: Generate Test Plan Header First
 
 Generate the test plan header first — this includes the executor notice, title, document metadata, and base configuration. Write this to the output file before proceeding to any test cases.
 
@@ -78,32 +101,106 @@ The header MUST contain:
    ```
    > **Execution:** This test plan is designed to be executed by the **backend-test-plan-executor** skill. Do NOT run curl commands manually — use that skill.
    ```
-2. Title and document metadata table
-3. Base configuration block
-4. Auth token setup section (if any endpoint requires authentication)
+2. The review status line (line 3, after a blank line):
+   ```
+   > **Review Status:** 🔴 Pending Review — not yet sign-off ready
+   ```
+3. Title and document metadata table
+4. Base configuration block
+5. Auth token setup section (if any endpoint requires authentication)
 
-### Phase 4: Generate Test Cases One-by-One
+The status will be updated to ✅ Reviewed — Sign-off Ready after all files pass review.
 
-After the header is written, generate each test case **one at a time, sequentially**. Do NOT batch multiple test cases in a single write step.
+### Phase 5: Generate All Test Cases
 
-**Why one-by-one:** Test Case Specifications can be large. Writing all test cases at once risks exceeding output limits and losing partial work. By writing one test case at a time, if an error occurs mid-way, all previously written test cases are already saved in the file.
+After the header is written, generate all test cases for this file. Write every test case **one by one** (to avoid losing partial work), but do NOT review them yet — all generation happens first.
 
-For each test case:
-1. Read the next test case from the TCS (ID, title, objective, preconditions, test data, steps, expected result)
-2. Generate the full structured test case entry (following the format in the next section)
+For each test case from the TCS scope of this file:
+1. Read the test case (ID, title, objective, preconditions, test data, steps, expected result)
+2. Generate the full structured test case entry (following the format below)
 3. Append it to the output file
 4. Proceed to the next test case
 
-### Phase 5: Output Completion Marker
-
-After ALL test cases have been generated and written, append the completion marker at the end of the file:
+Continue until all test cases for this file are written. Then append a draft completion marker:
 
 ```
 === Test Plan Complete ===
 Total Test Cases: <count>
 ```
 
-The generated plan is compatible with the **backend-test-plan-executor** skill, which reads the plan, executes curl commands, and writes results to a separate `.result.md` file without modifying the plan.
+### Phase 6: Review Gate — One File at a Time
+
+After ALL test cases for this file are generated, review the entire file as a single unit. This is a RED/GREEN gate — the file must pass before it's shown to the user.
+
+Add the draft review status at the top of the file (if not already there):
+
+```markdown
+> **Review Status:** 🔴 Pending Review — not yet sign-off ready
+```
+
+#### Step A: Review This File — One Agent per File
+
+**CRITICAL:** Spawn ONE dedicated reviewer subagent per file. That agent MUST only review this single file. Do NOT spawn one agent for multiple files — each file gets its own independent reviewer.
+
+```
+You are a Backend API Test Plan Reviewer. Review ONLY the file at [path-to-file].
+
+Read these source documents (these are the same for every file from this epic):
+1. <list input docs — API Design, User Story, TCS>
+
+For this file, check EVERY test case:
+1. **Source Alignment** — Does each TC correctly map to its TCS entry?
+2. **Accuracy** — Are HTTP status codes, response schemas, and error codes correct per the API Design?
+3. **Precondition Correctness** — Is auth handled? Are seed commands using unique identifiers?
+4. **Assertion Validity** — Do assertion tables check all required fields?
+5. **Format Compliance** — Does every TC follow the required format? Is the completion marker present?
+6. **Completeness** — Are all TCs from the TCS scope for this file present?
+
+Respond with exactly this JSON — nothing else:
+{"verdict": "APPROVED"|"REJECTED", "test_cases_checked": <N>, "issues": [{"test_case": "<TC-ID>", "severity": "critical"|"major"|"minor", "description": "...", "expected_fix": "..."}], "summary": "..."}
+```
+
+Rules:
+- This agent ONLY sees this one file. It knows nothing about other files in the epic.
+- APPROVED → this file is done. Close this agent. Update status. Move to the next file.
+- REJECTED with any issues → close this agent, fix ALL issues in the file, then spawn a NEW agent for the same file (Step A again). Loop until APPROVED.
+- NEVER reuse an agent across files. NEVER review two files in one agent call.
+
+#### Step B: Process the Verdict
+
+**If APPROVED:** Update the status block at the top:
+```markdown
+> **Review Status:** ✅ Reviewed — Sign-off Ready
+```
+
+Add a review completion notice after the completion marker:
+```
+---
+## Review Gate
+
+**Status:** ✅ APPROVED
+**Verdict:** All <N> test cases validated. File is sign-off ready.
+```
+
+Save a `.review.json` alongside the file. Then move to the next file (if any) and go back to Phase 5.
+
+**If REJECTED:** Keep the status as 🔴 Pending Review. For each issue in the report:
+1. Fix the affected test case(s) in the file
+2. After ALL fixes are applied, re-spawn the reviewer for the same file (back to Step A)
+3. Never skip a rejection. If the same file is rejected 3 times, stop and escalate.
+
+#### Step C: File Loop
+- Start: Phase 5 → generate file
+- Gate: Phase 6 Step A → review file
+- Outcome: APPROVED → done with file. Next file.
+- Outcome: REJECTED → fix file → re-review file (same file) → loop until APPROVED
+- After 3 rejections on the same file: "Review gate exceeded 3 iterations for [file]. Manual intervention required."
+
+## Stop Condition
+
+After the review gate for the last file returns APPROVED (GREEN) and all status blocks are updated, stop. Do NOT execute any tests. The generated plans are for the **backend-test-plan-executor** skill to run.
+
+Never show a plan to the user while it still has 🔴 review status. Only present files after the review gate has produced ✅ Reviewed — Sign-off Ready.
 
 ## Test Case Format
 
@@ -261,7 +358,3 @@ Examples:
 The directory hierarchy is: `epic-name` → `backend` → `numbered-plan-file`.
 
 Consult the existing structure at `specs/06-testing/03-Test-Plan/` for the correct epic number and name.
-
-## Stop Condition
-
-After writing the completion marker, stop. Do NOT execute any tests. The generated plan is for the **backend-test-plan-executor** skill to run.
