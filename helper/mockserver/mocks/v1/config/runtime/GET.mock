@@ -1,0 +1,4 @@
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{"version":1,"provider":"keycloak","issuer":"https://mock-idp.shadowspeak.local","clientId":"shadowspeak-app","redirectUri":"shadowspeak://callback","scopes":["openid","email","profile"],"authorizationEndpoint":"https://mock-idp.shadowspeak.local/auth","tokenEndpoint":"https://mock-idp.shadowspeak.local/token"}

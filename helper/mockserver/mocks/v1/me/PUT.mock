@@ -1,20 +1,4 @@
 HTTP/1.1 200 OK
-Content-Type: application/json; charset=utf-8
-X-Request-Id: req-mock-001
+Content-Type: application/json
 
-{
-  "requestId": "req-mock-001",
-  "ok": true,
-  "data": {
-    "userId": "user-abc-123",
-    "displayName": "Alex Johnson",
-    "email": "alex.johnson@example.com",
-    "level": "intermediate",
-    "reminderTime": "08:00",
-    "deletionRequestedAt": null,
-    "deletionStatus": "active",
-    "createdAt": "2026-01-15T10:30:00Z",
-    "updatedAt": "2026-05-14T09:00:00Z"
-  },
-  "error": null
-}
+{"requestId":"mock-req-9","ok":true,"data":{"userId":"mock-user-001","displayName":"Test User","email":"test@example.com","level":"beginner","onboardingStep":"level_selected","createdAt":"2026-06-08T00:00:00Z","updatedAt":"2026-06-08T00:00:00Z"}}
