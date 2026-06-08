@@ -2,8 +2,9 @@
  * Token persistence layer.
  *
  * Persists the access token to Expo Secure Store (native devices) with a graceful
- * fallback to AsyncStorage when SecureStore is unavailable (Expo Go on web, or
- * environments without the native SecureStore module).
+ * fallback to AsyncStorage when SecureStore is unavailable — BUT ONLY in dev
+ * builds. In production, SecureStore unavailability throws so tokens are never
+ * persisted unencrypted.
  *
  * We use module-level functions (not a class) so consumers only import what they
  * need and tree-shaking works naturally.
@@ -11,6 +12,8 @@
 
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+declare const __DEV__: boolean;
 
 const SECURE_STORE_KEY = 'auth_token';
 const ASYNC_STORAGE_KEY = '@shadowspeak/auth_token';
@@ -21,8 +24,9 @@ const ASYNC_REFRESH_KEY = '@shadowspeak/refresh_token';
 // -- Helpers ------------------------------------------------------------------
 
 /**
- * Attempt to use SecureStore. Returns true on success, false if the native
- * module is unavailable (e.g. Expo Go web, SSR, or a misconfigured dev client).
+ * Attempt to use SecureStore. Falls back to AsyncStorage in dev builds only.
+ * In production, SecureStore unavailability throws so tokens are never stored
+ * unencrypted on disk.
  */
 async function withSecureStoreFallback<T>(
   secureAction: () => Promise<T>,
@@ -34,25 +38,29 @@ async function withSecureStoreFallback<T>(
     try {
       return await secureAction();
     } catch {
-      // SecureStore can still fail at runtime (keychain locked, device storage full).
-      // Fall through to AsyncStorage rather than crash.
-      console.warn(
-        '[tokenStorage] SecureStore operation failed, falling back to AsyncStorage',
-      );
+      if (__DEV__) {
+        console.warn(
+          '[tokenStorage] SecureStore operation failed, falling back to AsyncStorage',
+        );
+      }
     }
   }
 
-  return await fallbackAction();
+  // In dev, fall back to AsyncStorage for Expo Go compatibility.
+  // In production, fail hard — unencrypted token storage is not acceptable.
+  if (__DEV__) {
+    return await fallbackAction();
+  }
+  throw new Error(
+    'SecureStore unavailable — cannot store auth token securely in production. ' +
+      'Ensure the expo-secure-store native module is available.',
+  );
 }
 
 // -- Public API ---------------------------------------------------------------
 
 /**
  * Persist the access token to secure storage.
- *
- * We save eagerly on every `setAccessToken` call so the token survives app
- * restarts and background kills. The storage key is namespaced with the project
- * name to avoid collisions if other apps share the same keychain.
  */
 export async function saveToken(token: string): Promise<void> {
   return withSecureStoreFallback(

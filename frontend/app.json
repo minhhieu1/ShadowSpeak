@@ -12,6 +12,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#F7F5F0"
     },
+    "scheme": "shadowspeak",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.shadowspeak.app"
@@ -22,11 +23,11 @@
         "foregroundImage": "./assets/app/adaptive-icon.png",
         "backgroundColor": "#F7F5F0"
       },
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "favicon": "./assets/app/favicon.png"
+      "favicon": "./assets/app/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
       "expo-secure-store",
@@ -35,7 +36,12 @@
         {
           "launchMode": "most-recent"
         }
-      ]
-    ]
+      ],
+      "expo-status-bar",
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }

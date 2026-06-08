@@ -88,8 +88,20 @@ export type JsonEnvelope<T> = {
 //  Axios instance
 // ═══════════════════════════════════════════════════════════════════════════
 
+declare const __DEV__: boolean;
+
+const FALLBACK_DEV_URL = 'http://127.0.0.1:8000';
+
 const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://127.0.0.1:8000';
+  process.env.EXPO_PUBLIC_API_BASE_URL ??
+  (__DEV__
+    ? FALLBACK_DEV_URL
+    : (() => {
+        throw new Error(
+          'EXPO_PUBLIC_API_BASE_URL must be set in production builds. ' +
+            'Use an HTTPS URL pointing to the production API server.',
+        );
+      })());
 
 /**
  * Singleton Axios instance shared by every API call in the app.
