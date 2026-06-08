@@ -1,0 +1,49 @@
+appId: com.shadowspeak.app
+tags:
+  - all
+---
+- launchApp:
+    clearState: true
+
+- assertVisible: "How old are you?"
+- tapOn:
+    text: "Continue"
+- assertVisible: "Privacy & Consent"
+- tapOn:
+    text: "I have read and accept the Privacy Policy"
+- tapOn:
+    text: "Accept & Continue"
+- assertVisible: "Welcome Back"
+- tapOn:
+    text: "Sign Up"
+- assertVisible: "Create Account"
+- tapOn:
+    text: "Email"
+- inputText: "e2e-test@example.com"
+- tapOn:
+    text: "Password"
+- inputText: "E2eTest123"
+- tapOn:
+    text: "Confirm Password"
+- inputText: "E2eTest123"
+- tapOn:
+    text: "Create Account"
+- tapOn:
+    text: "Next"
+- tapOn:
+    text: "Next"
+- tapOn:
+    text: "Get Started"
+- assertVisible: "What's your level?"
+- tapOn:
+    text: "Beginner"
+- tapOn:
+    text: "Continue"
+- assertVisible: "Daily Reminder"
+- tapOn:
+    text: "Continue"
+
+- assertVisible: "Almost Done!"
+- assertVisible: "Notifications"
+- assertVisible: "Microphone"
+- assertVisible: "Continue"

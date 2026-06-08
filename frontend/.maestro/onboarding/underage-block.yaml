@@ -1,0 +1,14 @@
+appId: com.shadowspeak.app
+tags:
+  - all
+---
+- launchApp:
+    clearState: true
+
+- assertVisible: "How old are you?"
+- tapOn:
+    text: "Continue"
+
+- assertVisible: "Age Restriction"
+- assertVisible:
+    text: "Exit"

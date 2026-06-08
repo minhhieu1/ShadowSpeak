@@ -1,0 +1,18 @@
+appId: com.shadowspeak.app
+tags:
+  - all
+---
+# Resume Flow: Returning user sign-in
+# Tests that a user who has completed age gate + consent sees the sign-in screen
+
+- launchApp:
+    clearState: false
+
+- assertVisible: "Welcome Back"
+- assertVisible: "Email"
+- assertVisible: "Password"
+- assertVisible: "Sign In"
+- assertVisible: "Forgot Password?"
+- assertVisible: "Continue with Google"
+- assertVisible: "Continue with Apple"
+- assertVisible: "Sign Up"

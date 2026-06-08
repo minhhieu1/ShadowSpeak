@@ -1,0 +1,73 @@
+appId: com.shadowspeak.app
+tags:
+  - all
+---
+# Email Signup: Validation and Error Flow
+# Tests form validation feedback: invalid email, weak password, mismatch
+
+- launchApp:
+    clearState: true
+
+- assertVisible: "How old are you?"
+- tapOn:
+    text: "Continue"
+
+- assertVisible: "Privacy & Consent"
+- tapOn:
+    text: "I have read and accept the Privacy Policy"
+- tapOn:
+    text: "Accept & Continue"
+
+- assertVisible: "Welcome Back"
+- tapOn:
+    text: "Sign Up"
+
+- assertVisible: "Create Account"
+
+# Test invalid email validation
+- tapOn:
+    text: "Email"
+- inputText: "invalid-email"
+- tapOn:
+    text: "Password"
+- inputText: "Weak"
+- tapOn:
+    text: "Confirm Password"
+- inputText: "Weak"
+- tapOn:
+    text: "Create Account"
+- assertVisible: "Please enter a valid email address"
+
+# Clear and test weak password validation
+- tapOn:
+    text: "Email"
+- eraseText: 15
+- inputText: "e2e-test@example.com"
+- tapOn:
+    text: "Password"
+- eraseText: 5
+- inputText: "short"
+- tapOn:
+    text: "Create Account"
+- assertVisible: "Password must be at least 8 characters"
+
+# Clear and test password mismatch
+- tapOn:
+    text: "Password"
+- eraseText: 6
+- inputText: "StrongPass1"
+- tapOn:
+    text: "Confirm Password"
+- eraseText: 5
+- inputText: "StrongPass2"
+- tapOn:
+    text: "Create Account"
+- assertVisible: "Passwords do not match"
+
+# Fix all fields and submit
+- tapOn:
+    text: "Confirm Password"
+- eraseText: 12
+- inputText: "StrongPass1"
+- tapOn:
+    text: "Create Account"

@@ -1,0 +1,61 @@
+appId: com.shadowspeak.app
+tags:
+  - all
+---
+# Onboarding: Fresh Install Flow
+
+- launchApp:
+    clearState: true
+
+- assertVisible: "How old are you?"
+- tapOn:
+    text: "Continue"
+
+- assertVisible: "Privacy & Consent"
+- tapOn:
+    text: "I have read and accept the Privacy Policy"
+- tapOn:
+    text: "Accept & Continue"
+
+- assertVisible: "Welcome Back"
+- tapOn:
+    text: "Sign Up"
+
+- assertVisible: "Create Account"
+- tapOn:
+    text: "Email"
+- inputText: "test-user@shadowspeak-test.com"
+- tapOn:
+    text: "Password"
+- inputText: "StrongPass1"
+- tapOn:
+    text: "Confirm Password"
+- inputText: "StrongPass1"
+- tapOn:
+    text: "Create Account"
+
+- assertVisible: "Listen & Repeat"
+- tapOn:
+    text: "Next"
+
+- assertVisible: "Daily Practice"
+- tapOn:
+    text: "Next"
+
+- assertVisible: "Track Progress"
+- tapOn:
+    text: "Get Started"
+
+- assertVisible: "What's your level?"
+- tapOn:
+    text: "Beginner"
+- tapOn:
+    text: "Continue"
+
+- assertVisible: "Daily Reminder"
+- tapOn:
+    text: "Skip"
+
+- assertVisible: "Almost Done!"
+- tapOn:
+    text: "Continue"
