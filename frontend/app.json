@@ -6,12 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/app/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/app/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#F7F5F0"
-    },
     "scheme": "shadowspeak",
     "ios": {
       "supportsTablet": true,
@@ -38,7 +32,8 @@
         }
       ],
       "expo-status-bar",
-      "expo-router"
+      "expo-router",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
