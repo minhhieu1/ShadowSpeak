@@ -28,47 +28,74 @@ Expo + React Native + TypeScript mobile app for the ShadowSpeak MVP.
 
 ## Structure
 
+The project follows a **Feature-based / Domain-driven** pattern. Every business domain is an independent module under `src/features/`, owning its own types, services, state, and UI. The remaining folders (`app/`, `api/`) are shared infrastructure used by all features.
+
 ```text
 frontend/
-├── assets/                 # Bundled app assets and Expo app icons
-├── scripts/                # Build & automation scripts
+├── assets/                          # Bundled app assets and Expo app icons
+├── scripts/                         # Build & automation scripts
 ├── src/
-│   ├── app/                # Expo Router route files
-│   │   ├── _layout.tsx         # Root layout (PaperProvider + SafeAreaProvider + Stack)
-│   │   └── (tabs)/             # Tab navigator group
-│   │       ├── _layout.tsx         # Tab bar layout (5 tabs)
-│   │       ├── index.tsx           # Home screen
-│   │       ├── lessons.tsx         # Lessons catalog
-│   │       ├── downloads.tsx       # Offline library
-│   │       ├── progress.tsx        # Progress tracking
-│   │       └── settings.tsx        # Settings
-│   ├── components/         # Reusable UI components
-│   │   ├── AppHeader.tsx
-│   │   ├── InfoCard.tsx
-│   │   ├── LessonCard.tsx
-│   │   ├── MetricCard.tsx
-│   │   ├── PrimaryButton.tsx
-│   │   ├── SectionTitle.tsx
-│   │   └── WaveformPreview.tsx
-│   ├── api/                # API client boundary (axios)
-│   ├── auth/               # OIDC config & bootstrap
-│   ├── data/               # Local demo data
-│   ├── state/              # Zustand stores
-│   ├── storage/            # Token storage (SecureStore + AsyncStorage)
-│   ├── assets.ts           # Static asset registry
-│   └── theme.ts            # Design tokens (legacy, replaced by Tailwind config)
-├── .maestro/               # Maestro E2E test flows
-├── global.css              # Tailwind directives (@tailwind base/components/utilities)
-├── tailwind.config.js      # Tailwind theme with custom colors/borders
-├── babel.config.js         # Babel with nativewind + babel-preset-expo + react-native-paper production plugin
-├── metro.config.js         # Metro with withNativeWind plugin
-├── nativewind-env.d.ts     # NativeWind + CSS module TypeScript declarations
-├── App.tsx.old             # Legacy single-file app (preserved for reference)
-├── index.ts.old            # Legacy entry point (preserved for reference)
-├── app.json                # Expo config (scheme, plugins, typedRoutes)
-├── tsconfig.json           # TypeScript config with @/* path alias
+│   ├── app/                         # [Expo Router] Route files only — thin bridge layer
+│   │   ├── _layout.tsx                  # Root layout (PaperProvider + SafeAreaProvider + Stack)
+│   │   └── (tabs)/                      # Tab navigator group
+│   │       ├── _layout.tsx              # Tab bar layout
+│   │       └── index.tsx                # Home route — imports + renders <HomeScreen/>
+│   │
+│   ├── api/                         # [Shared Infrastructure] HTTP transport layer
+│   │   ├── client.ts                    # Axios instance + interceptors (Bearer token, 401 refresh)
+│   │   └── http.ts                      # Typed helpers: apiGet, apiPost, apiPut, apiPatch, apiDelete
+│   │
+│   ├── features/                    # ⬅ Business/domain modules — actual code lives here
+│   │   └── <feature-name>/          #    e.g. auth, lessons, practice, progress, profile
+│   │       ├── types/               #    Feature-specific types & interfaces
+│   │       ├── lib/                 #    Utility functions, helpers, config logic
+│   │       ├── services/            #    API calls, business logic orchestration
+│   │       ├── store/               #    Zustand stores, class-based managers
+│   │       ├── screens/             #    ⬅ Full-page screen components (imported by app/ routes)
+│   │       ├── components/          #    Feature-private UI components
+│   │       └── hooks/               #    Custom React hooks
+│   │
+│   ├── types/                       # [Shared] Global type declarations (.d.ts)
+│   └── assets.ts                    # [Shared] Static asset registry
+│
+├── .maestro/                        # Maestro E2E test flows
+├── global.css                       # Tailwind directives (@tailwind base/components/utilities)
+├── tailwind.config.js               # Tailwind theme with custom colors/borders
+├── babel.config.js
+├── metro.config.js
+├── app.json                         # Expo config (scheme, plugins, typedRoutes)
+├── tsconfig.json                    # TypeScript config with @/* path alias
 └── thumbnails-caching-guide.md
 ```
+
+### Adding a new feature
+
+1. **Route file in `src/app/`** — Expo Router maps file paths to routes. Create a `.tsx` file for your route path.
+   - The route file is **only a bridge**: it imports the screen component from the feature module and renders it. No business logic, no direct API calls.
+2. **Feature module in `src/features/<name>/`** — create the subdirectories you need (`types/`, `services/`, `store/`, `screens/`, `components/`, `hooks/`, `lib/`).
+3. **Screen component in `screens/`** — the actual full-page UI lives here, NOT in `app/`. The route file imports from `features/<name>/screens/`.
+4. **Truly shared UI components** — if multiple features need the same component, extract it to `src/components/` (project doesn't have this yet).
+
+### Anatomy of a feature
+
+```
+src/features/<feature-name>/
+├── types/              # Types & interfaces
+├── lib/                # Utilities, helpers, config
+├── services/           # API calls via typed helpers from src/api/http.ts
+├── store/              # Zustand store or class manager
+├── screens/            # ⬅ Full-page screens (imported by app/ route files)
+├── components/         # Feature-private UI components
+└── hooks/              # Custom hooks
+```
+
+### Rules
+
+- **`src/app/` is a routing layer only** — route files are thin bridges. They import a screen from the feature and render it. No business logic, no API calls.
+- **Actual screens live in `features/<name>/screens/`** — the full-page component exported here is what the route file imports and renders.
+- **`src/api/` is shared** — all features call the backend through `apiGet<T>()`, `apiPost<T>()` from `src/api/http.ts`. Never create a separate Axios instance.
+- **Features don't import each other** — if feature A needs a type or component from feature B, first consider moving it to a shared layer (`src/types/`, `src/components/`).
+- **Subdirectories are optional** — a small feature with 1-2 files doesn't need all 7 folders. Create them only when there's content to put in them.
 
 ## Local Setup
 
