@@ -3,10 +3,6 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 
 const tabs = [
   { name: "index", title: "Home", icon: "home" as const },
-  { name: "lessons", title: "Lessons", icon: "book-open-variant" as const },
-  { name: "downloads", title: "Downloads", icon: "cloud-download-outline" as const },
-  { name: "progress", title: "Progress", icon: "chart-line" as const },
-  { name: "settings", title: "Settings", icon: "cog-outline" as const },
 ] as const;
 
 export default function TabLayout() {

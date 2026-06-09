@@ -1,4 +1,4 @@
-import type { OidcConfig, OidcProvider } from './oidcConfigTypes';
+import type { OidcConfig, OidcProvider } from '../types/oidcConfig';
 
 export interface ValidationResult {
   valid: boolean;

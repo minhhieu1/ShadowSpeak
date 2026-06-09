@@ -10,7 +10,7 @@ import { StatusBar } from "expo-status-bar";
 import { PaperProvider } from "react-native-paper";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import { AuthManager } from "@/api/http";
+import { AuthManager } from "@/features/auth/store/AuthManager";
 
 export default function RootLayout() {
   // Bootstrap: hydrate the auth token from persistent storage so the first

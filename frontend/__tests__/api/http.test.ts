@@ -2,7 +2,6 @@ import MockAdapter from 'axios-mock-adapter';
 import * as SecureStore from 'expo-secure-store';
 import { apiClient } from '../../src/api/client';
 import {
-  AuthManager,
   apiGet,
   apiPost,
   apiPut,
@@ -10,6 +9,7 @@ import {
   apiDelete,
   type ApiError,
 } from '../../src/api/http';
+import { AuthManager } from '../../src/features/auth/store/AuthManager';
 
 let mock: MockAdapter;
 

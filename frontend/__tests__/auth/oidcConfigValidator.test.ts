@@ -1,5 +1,5 @@
-import { validateOidcConfig } from '../../src/auth/oidcConfigValidator';
-import type { OidcConfig } from '../../src/auth/oidcConfigTypes';
+import { validateOidcConfig } from '../../src/features/auth/lib/oidcConfigValidator';
+import type { OidcConfig } from '../../src/features/auth/types/oidcConfig';
 
 const validConfig: OidcConfig = {
   version: 1,

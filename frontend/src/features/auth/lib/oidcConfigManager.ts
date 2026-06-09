@@ -1,4 +1,4 @@
-import type { OidcConfig } from './oidcConfigTypes';
+import type { OidcConfig } from '../types/oidcConfig';
 
 export class OidcConfigManager {
   private static instance: OidcConfigManager | undefined;

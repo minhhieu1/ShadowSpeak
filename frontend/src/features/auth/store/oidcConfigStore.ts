@@ -1,6 +1,6 @@
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import type { OidcConfig } from './oidcConfigTypes';
+import type { OidcConfig } from '../types/oidcConfig';
 
 const SECURE_STORE_KEY = 'oidc_config';
 const ASYNC_STORAGE_KEY = '@shadowspeak/oidc_config';
@@ -15,7 +15,7 @@ async function withSecureStoreFallback<T>(
     try {
       return await secureAction();
     } catch {
-      console.warn('[oidcConfigStorage] SecureStore failed, falling back to AsyncStorage');
+      console.warn('[oidcConfigStore] SecureStore failed, falling back to AsyncStorage');
     }
   }
 

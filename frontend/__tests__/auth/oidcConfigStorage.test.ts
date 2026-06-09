@@ -4,8 +4,8 @@ import {
   saveOidcConfig,
   loadOidcConfig,
   clearOidcConfig,
-} from '../../src/auth/oidcConfigStorage';
-import type { OidcConfig } from '../../src/auth/oidcConfigTypes';
+} from '../../src/features/auth/store/oidcConfigStore';
+import type { OidcConfig } from '../../src/features/auth/types/oidcConfig';
 
 const sampleConfig: OidcConfig = {
   version: 1,

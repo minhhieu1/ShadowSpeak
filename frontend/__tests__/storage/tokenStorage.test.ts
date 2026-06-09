@@ -7,7 +7,7 @@ import {
   saveRefreshToken,
   getRefreshToken,
   clearRefreshToken,
-} from '../../src/storage/tokenStorage';
+} from '../../src/features/auth/store/tokenStore';
 
 // ---------------------------------------------------------------------------
 // Helpers to reset mock state between tests

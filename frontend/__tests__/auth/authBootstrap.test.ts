@@ -1,10 +1,10 @@
 import MockAdapter from 'axios-mock-adapter';
 import * as SecureStore from 'expo-secure-store';
 import { apiClient, __setAuthDelegate } from '../../src/api/client';
-import { authBootstrap } from '../../src/auth/authBootstrap';
-import { OidcConfigManager } from '../../src/auth/oidcConfigManager';
-import { saveOidcConfig } from '../../src/auth/oidcConfigStorage';
-import type { OidcConfig } from '../../src/auth/oidcConfigTypes';
+import { authBootstrap } from '../../src/features/auth/services/authBootstrap';
+import { OidcConfigManager } from '../../src/features/auth/lib/oidcConfigManager';
+import { saveOidcConfig } from '../../src/features/auth/store/oidcConfigStore';
+import type { OidcConfig } from '../../src/features/auth/types/oidcConfig';
 
 let mock: MockAdapter;
 
@@ -67,7 +67,7 @@ describe('authBootstrap', () => {
 
     await authBootstrap();
 
-    const { loadOidcConfig } = await import('../../src/auth/oidcConfigStorage');
+    const { loadOidcConfig } = await import('../../src/features/auth/store/oidcConfigStore');
     const stored = await loadOidcConfig();
     expect(stored).toEqual(backendConfig);
   });

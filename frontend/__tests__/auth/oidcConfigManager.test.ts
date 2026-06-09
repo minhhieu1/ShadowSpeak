@@ -1,5 +1,5 @@
-import { OidcConfigManager } from '../../src/auth/oidcConfigManager';
-import type { OidcConfig } from '../../src/auth/oidcConfigTypes';
+import { OidcConfigManager } from '../../src/features/auth/lib/oidcConfigManager';
+import type { OidcConfig } from '../../src/features/auth/types/oidcConfig';
 
 const sampleConfig: OidcConfig = {
   version: 1,

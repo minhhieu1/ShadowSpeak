@@ -17,6 +17,7 @@
     "maestro": "maestro test --format junit --output reports/maestro/maestro-report.xml .maestro"
   },
   "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
     "axios": "^1.17.0",
     "babel-preset-expo": "^56.0.14",

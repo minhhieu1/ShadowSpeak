@@ -1,6 +1,6 @@
-import { apiClient } from '../api/client';
-import { validateOidcConfig } from './oidcConfigValidator';
-import type { OidcConfig } from './oidcConfigTypes';
+import { apiClient } from '../../../api/client';
+import { validateOidcConfig } from '../lib/oidcConfigValidator';
+import type { OidcConfig } from '../types/oidcConfig';
 
 export interface OidcFetchResult {
   ok: boolean;

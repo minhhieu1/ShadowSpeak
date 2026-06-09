@@ -1,5 +1,5 @@
 /**
- * Token persistence layer.
+ * Token persistence layer — persisted to `auth_tokens` record in SecureStore.
  *
  * Persists the access token to Expo Secure Store (native devices) with a graceful
  * fallback to AsyncStorage when SecureStore is unavailable — BUT ONLY in dev
@@ -40,7 +40,7 @@ async function withSecureStoreFallback<T>(
     } catch {
       if (__DEV__) {
         console.warn(
-          '[tokenStorage] SecureStore operation failed, falling back to AsyncStorage',
+          '[tokenStore] SecureStore operation failed, falling back to AsyncStorage',
         );
       }
     }

@@ -1,7 +1,7 @@
-import { OidcConfigManager } from './oidcConfigManager';
-import { loadOidcConfig, saveOidcConfig } from './oidcConfigStorage';
+import { OidcConfigManager } from '../lib/oidcConfigManager';
+import { loadOidcConfig, saveOidcConfig } from '../store/oidcConfigStore';
 import { fetchOidcConfigFromBackend } from './oidcConfigService';
-import { validateOidcConfig } from './oidcConfigValidator';
+import { validateOidcConfig } from '../lib/oidcConfigValidator';
 
 export interface BootstrapResult {
   ok: boolean;
