@@ -31,6 +31,7 @@
     ├── CLAUDE.md                           # This file — project rules
     └── skills/                             # Custom skills
         ├── document-generator/             # Document generation workflow
+        ├── screen-analysis/                # Screen UX analysis → Screen Contract
         └── ...                             # Other project skills
 ```
 
@@ -47,6 +48,7 @@ When the user describes a task, scan this table to pick the right skill. **If no
 | **frontend-test-plan-executor** | "test frontend", "execute frontend test plan", "run frontend tests", "check UI", "launch the app", "verify the frontend", "test the app", or any simulator/testing request. | Reads `.md` test plan, runs ios-simulator-skill scripts, writes to `.result/` directory. NEVER modifies the test plan. This is the ONLY skill that executes frontend tests — do NOT run ios-simulator-skill scripts manually. |
 | **backend-test-plan-generator** | "generate a test plan", "create API test cases", "write tests for the backend API", "produce an executable test plan" — after writing API specs, user stories, or test case specs. | Requires all 3 inputs: API Design, User Story, Test Case Specification. Reads spec docs only (.md), never source code. Generated test plans MUST include a notice directing execution to `backend-test-plan-executor`. **Has a RED/GREEN review gate** — after generation, an independent reviewer agent validates the plan; only APPROVED plans are shown to the user. |
 | **frontend-test-plan-generator** | "generate a frontend test plan", "create UI test cases", "write tests for the screens", "produce an executable test plan for the frontend", "test the app screens", "verify the UI" — after writing UX specs, generated screen designs, user stories, or frontend test case documents. | Requires User Story + Frontend Test Case Specification. Reads UX design docs (.md) and generated screen images (.png) only — never source code. Generated test plans MUST include both Design Matching and Screen Functioning tests, and direct execution to `frontend-test-executor`. **Has a RED/GREEN review gate** — after generation, an independent reviewer agent validates the plan; only APPROVED plans are shown to the user. |
+| **screen-analysis** | "analyze screen", "analyze [screen name]", "implement [screen name]", "build [screen name]", "create [screen name] screen", "plan [screen name]", or any frontend work for a specific screen. | **MUST execute before frontend coding or frontend task breakdown.** No screen code may be written before this skill completes. Reads UX docs + PNG, produces a Screen Contract specifying navigation, layout, components, assets, states, and responsive rules. |
 | **ios-simulator-skill** | Interact with the iOS simulator: launch apps, map screens, tap/type/swipe, compare current screen with designs, take screenshots, run accessibility audits, check app state, manage device lifecycle. Use when saying "see my simulator", "compare screen with design", "test on simulator", "launch the app", "navigate the app", or any simulator interaction request. | Plugin: `ios-simulator-skill@conorluddy`. Scripts located in plugin cache under `skills/ios-simulator-skill/`. Key scripts: `screen_mapper.py` (map UI elements), `navigator.py` (tap/type), `app_launcher.py` (launch/manage apps), `app_state_capture.py` (screenshot + app state), `accessibility_audit.py` (WCAG checks). **Load this skill BEFORE any simulator interaction.** |
 
 ## Project Context
@@ -57,3 +59,13 @@ When the user describes a task, scan this table to pick the right skill. **If no
 - Ad-supported monetization only (no subscriptions in MVP)
 - Target: iOS + Android (cross-platform recommended)
 - Backend: AWS serverless (or Firebase for MVP simplicity)
+
+## Frontend Workflow
+
+Before any frontend implementation or task breakdown, the `screen-analysis` skill MUST be loaded. This skill produces a Screen Contract (navigation, layout, components, assets, states, responsive rules) that drives all subsequent work. The workflow is:
+
+1. **Load `screen-analysis` skill** → reads UX specs + PNG → produces Screen Contract
+2. **Frontend planning / task decomposition** — guided by the Screen Contract
+3. **Component generation / screen implementation** — per the contract
+
+**Hard rule: No screen code is written before the Screen Contract exists.**
