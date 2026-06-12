@@ -7,6 +7,7 @@ export default function ErrorLayout() {
       <Stack.Screen name="session-expired" />
       <Stack.Screen name="generic-fallback-error" />
       <Stack.Screen name="network-loss" />
+      <Stack.Screen name="permission-recovery" />
     </Stack>
   );
 }

@@ -48,11 +48,14 @@ export default function LaunchScreen() {
         >
           generic-fallback-error
         </Button>
+        <Button mode="contained" onPress={() => router.push("/network-loss")}>
+          network-loss
+        </Button>
         <Button
           mode="contained"
-          onPress={() => router.push("/network-loss")}
+          onPress={() => router.push("/permission-recovery")}
         >
-          network-loss
+          permission-recovery
         </Button>
       </View>
     </SafeScreen>

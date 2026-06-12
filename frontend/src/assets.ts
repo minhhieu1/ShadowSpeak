@@ -27,6 +27,7 @@ export const assets = {
     adTravelSuitcase: require('../assets/illustrations/ad_travel_suitcase_creative.webp'),
     sessionExpired: require('../assets/illustrations/hero_auth_expired_shield.webp'),
     genericFallback: require('../assets/illustrations/hero_generic_fallback_error.webp'),
+    permissionRecovery: require('../assets/illustrations/hero_permission_recovery_cards.webp'),
   },
   ui: {
     sparkleLeaf: require('../assets/ui/decor_sparkle_leaf_soft_01.webp'),
