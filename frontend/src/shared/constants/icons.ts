@@ -16,6 +16,7 @@ export const icons = {
   CLOUD_OFF_OUTLINE: "cloud-off-outline",
   TRASH_CAN_OUTLINE: "trash-can-outline",
   TUNE: "tune",
+  BOOKMARK: "bookmark",
 } as const;
 
 export type ErrorIcon = (typeof icons)[keyof typeof icons];

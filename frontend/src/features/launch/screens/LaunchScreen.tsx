@@ -66,6 +66,12 @@ export default function LaunchScreen() {
         <Button mode="contained" onPress={() => router.push("/storage-full")}>
           storage-full
         </Button>
+        <Button
+          mode="contained"
+          onPress={() => router.push("/retryable-error")}
+        >
+          retryable-error
+        </Button>
       </View>
     </SafeScreen>
   );

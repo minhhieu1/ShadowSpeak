@@ -10,6 +10,7 @@ export default function ErrorLayout() {
       <Stack.Screen name="permission-recovery" />
       <Stack.Screen name="recording-unavailable" />
       <Stack.Screen name="storage-full" />
+      <Stack.Screen name="retryable-error" />
     </Stack>
   );
 }
