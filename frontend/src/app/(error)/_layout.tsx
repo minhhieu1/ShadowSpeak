@@ -8,6 +8,7 @@ export default function ErrorLayout() {
       <Stack.Screen name="generic-fallback-error" />
       <Stack.Screen name="network-loss" />
       <Stack.Screen name="permission-recovery" />
+      <Stack.Screen name="recording-unavailable" />
     </Stack>
   );
 }

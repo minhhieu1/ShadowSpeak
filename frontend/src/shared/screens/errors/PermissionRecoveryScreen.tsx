@@ -4,18 +4,48 @@ import { shadowspeakTheme } from "@/theme";
 import { assets } from "@/assets";
 import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
 import ErrorActions from "@/shared/components/errors/ErrorActions";
-import StatusCard from "@/shared/components/errors/StatusCard";
+import StatusCards from "@/shared/components/errors/StatusCards";
 
 export type PermissionRecoveryScreenProps = {
   onOpenSettings?: () => void;
   onNotNow?: () => void;
 };
 
-export default function PermissionRecoveryScreen({
-  onOpenSettings,
-  onNotNow,
-}: PermissionRecoveryScreenProps) {
+export default function PermissionRecoveryScreen({}: PermissionRecoveryScreenProps) {
   const { colors } = shadowspeakTheme;
+
+  const cards = [
+    {
+      icon: "microphone" as const,
+      iconColor: colors.onBackground,
+      title: "Microphone: needed for recording",
+      subtitle: "Denied",
+    },
+    {
+      icon: "bell-outline" as const,
+      iconColor: colors.onBackground,
+      title: "Notifications: needed for reminders",
+      subtitle: "Denied",
+    },
+  ];
+
+  const actions = [
+    {
+      label: "Open Settings",
+      onPress: () => console.log("[PermissionRecovery] Open Settings pressed"),
+      icon: "cog" as const,
+      className: "bg-primary rounded-card",
+    },
+    {
+      label: "Not now",
+      onPress: () => console.log("[PermissionRecovery] Not now pressed"),
+      icon: "close" as const,
+      className: "border border-primary rounded-card bg-transparent",
+      labelStyle: {
+        color: colors.primary,
+      },
+    },
+  ];
 
   return (
     <ErrorScreenLayout
@@ -24,42 +54,9 @@ export default function PermissionRecoveryScreen({
       illustration={assets.illustrations.permissionRecovery}
     >
       <View className="flex-1 justify-between">
-        <View className="mt-6 gap-3">
-          <StatusCard
-            icon="microphone"
-            iconColor={colors.onBackground}
-            iconContainerClassName="bg-surface-alt p-2 rounded-full"
-            title="Microphone: needed for recording"
-            subtitle="Denied"
-          />
-          <StatusCard
-            icon="bell-outline"
-            iconColor={colors.onBackground}
-            iconContainerClassName="bg-surface-alt p-2 rounded-full"
-            title="Notifications: needed for reminders"
-            subtitle="Denied"
-          />
-        </View>
+        <StatusCards wrapperClassName="mt-6 gap-3" cards={cards} />
 
-        <ErrorActions
-          actions={[
-            {
-              label: "Open Settings",
-              onPress: onOpenSettings,
-              icon: "cog",
-              className: "bg-primary rounded-card",
-            },
-            {
-              label: "Not now",
-              onPress: onNotNow,
-              className:
-                "border border-primary rounded-card bg-transparent",
-              labelStyle: {
-                color: colors.primary,
-              },
-            },
-          ]}
-        />
+        <ErrorActions actions={actions} />
       </View>
     </ErrorScreenLayout>
   );

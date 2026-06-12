@@ -57,6 +57,12 @@ export default function LaunchScreen() {
         >
           permission-recovery
         </Button>
+        <Button
+          mode="contained"
+          onPress={() => router.push("/recording-unavailable")}
+        >
+          recording-unavailable
+        </Button>
       </View>
     </SafeScreen>
   );

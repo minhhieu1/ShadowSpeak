@@ -4,7 +4,7 @@ import { shadowspeakTheme } from "@/theme";
 import { assets } from "@/assets";
 import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
 import ErrorActions from "@/shared/components/errors/ErrorActions";
-import StatusCard from "@/shared/components/errors/StatusCard";
+import StatusCards from "@/shared/components/errors/StatusCards";
 
 export type GenericFallbackErrorScreenProps = {
   onRetry?: () => void | Promise<void>;
@@ -14,12 +14,35 @@ export type GenericFallbackErrorScreenProps = {
 };
 
 export default function GenericFallbackErrorScreen({
-  onRetry,
-  onReturnHome,
   errorCode = "0x000F",
-  supportEmail = "support@shadowspeak.app",
 }: GenericFallbackErrorScreenProps) {
   const { colors } = shadowspeakTheme;
+
+  const cards = [
+    {
+      icon: "bug-outline" as const,
+      iconColor: colors.secondary,
+      title: `Error ${errorCode}`,
+    },
+  ];
+
+  const actions = [
+    {
+      label: "Try again",
+      onPress: () => console.log("[GenericFallback] Try again pressed"),
+      icon: "refresh" as const,
+      className: "bg-primary rounded-card",
+    },
+    {
+      label: "Return home",
+      onPress: () => console.log("[GenericFallback] Return home pressed"),
+      icon: "home-outline" as const,
+      className: "border border-primary rounded-card bg-transparent",
+      labelStyle: {
+        color: colors.primary,
+      },
+    },
+  ];
 
   return (
     <ErrorScreenLayout
@@ -28,33 +51,8 @@ export default function GenericFallbackErrorScreen({
       illustration={assets.illustrations.genericFallback}
     >
       <View className="flex-1 justify-between">
-        {/* Error code card */}
-        <StatusCard
-          icon="bug-outline"
-          iconColor={colors.secondary}
-          title={`Error ${errorCode}`}
-          containerClassName="mt-6"
-        />
-
-        <ErrorActions
-          actions={[
-            {
-              label: "Try again",
-              onPress: onRetry,
-              icon: "refresh",
-              className: "bg-primary rounded-card",
-            },
-            {
-              label: "Return home",
-              onPress: onReturnHome,
-              icon: "home-outline",
-              className: "border border-primary rounded-card bg-transparent",
-              labelStyle: {
-                color: colors.primary,
-              },
-            },
-          ]}
-        />
+        <StatusCards wrapperClassName="mt-6 gap-3" cards={cards} />
+        <ErrorActions actions={actions} />
       </View>
     </ErrorScreenLayout>
   );

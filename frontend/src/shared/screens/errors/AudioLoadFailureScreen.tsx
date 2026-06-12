@@ -7,9 +7,6 @@ import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
 import ErrorActions from "@/shared/components/errors/ErrorActions";
 
 export type AudioLoadFailureScreenProps = {
-  onRetry: () => void | Promise<void>;
-  onReturnToLesson: () => void;
-  onBack?: () => void;
   lessonTitle: string;
   lessonDuration: string;
   lessonThumbnail: { uri: string };
@@ -17,8 +14,6 @@ export type AudioLoadFailureScreenProps = {
 };
 
 export default function AudioLoadFailureScreen({
-  onRetry,
-  onReturnToLesson,
   lessonTitle,
   lessonDuration,
   lessonThumbnail,
@@ -28,13 +23,29 @@ export default function AudioLoadFailureScreen({
   const { colors } = shadowspeakTheme;
   const compact = width < 360;
   const thumbSize = compact ? 78 : 92;
+  const actions = [
+    {
+      label: "Retry audio",
+      onPress: () => console.log("[AudioLoadFailure] Retry audio pressed"),
+      icon: "refresh",
+      className: "bg-primary",
+    },
+    {
+      label: "Return to lesson",
+      onPress: () => console.log("[AudioLoadFailure] Return to lesson pressed"),
+      icon: "arrow-left",
+      className: "border border-primary bg-transparent",
+      labelStyle: {
+        color: colors.primary,
+      },
+    },
+  ];
 
   return (
     <ErrorScreenLayout
       illustration={assets.illustrations.audioLoadFailure}
       title="Audio couldn't load"
-      description={`We kept your place in the lesson.
-Try loading the track again.`}
+      description={`We kept your place in the lesson.\nTry loading the track again.`}
     >
       {/* Lesson context card */}
       <View className="bg-white border border-gray-200 rounded-2xl p-4 flex-row items-center gap-3">
@@ -54,37 +65,17 @@ Try loading the track again.`}
                 {lessonDuration}
               </Text>
             </View>
-            {progressSaved && (
-              <View className="flex-row items-center gap-1">
-                <Icon source="check-circle" size={14} color={colors.success} />
-                <Text className="text-success text-xs font-medium">
-                  Position saved
-                </Text>
-              </View>
-            )}
+            <View className="flex-row items-center gap-1">
+              <Icon source="check-circle" size={14} color={colors.success} />
+              <Text className="text-success text-xs font-medium">
+                Position saved
+              </Text>
+            </View>
           </View>
         </View>
       </View>
 
-      <ErrorActions
-        actions={[
-          {
-            label: "Retry audio",
-            onPress: onRetry,
-            icon: "refresh",
-            className: "bg-primary",
-          },
-          {
-            label: "Return to lesson",
-            onPress: onReturnToLesson,
-            icon: "arrow-left",
-            className: "border border-primary bg-transparent",
-            labelStyle: {
-              color: colors.primary,
-            },
-          },
-        ]}
-      />
+      <ErrorActions actions={actions} />
     </ErrorScreenLayout>
   );
 }
