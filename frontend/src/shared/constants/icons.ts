@@ -17,6 +17,7 @@ export const icons = {
   TRASH_CAN_OUTLINE: "trash-can-outline",
   TUNE: "tune",
   BOOKMARK: "bookmark",
+  CLOCK: "clock",
 } as const;
 
 export type ErrorIcon = (typeof icons)[keyof typeof icons];

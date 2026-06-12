@@ -31,6 +31,7 @@ export const assets = {
     recordingUnavailable: require("../assets/illustrations/hero_recording_unavailable_mic_off.webp"),
     storageFull: require("../assets/illustrations/hero_storage_full_box.webp"),
     retryableError: require("../assets/illustrations/hero_retryable_audio_error_badge.webp"),
+    launchError: require("../assets/illustrations/hero_startup_failure_broken_waveform.webp"),
   },
   ui: {
     sparkleLeaf: require("../assets/ui/decor_sparkle_leaf_soft_01.webp"),

@@ -72,6 +72,9 @@ export default function LaunchScreen() {
         >
           retryable-error
         </Button>
+        <Button mode="contained" onPress={() => router.push("/launch-error")}>
+          launch-error
+        </Button>
       </View>
     </SafeScreen>
   );
