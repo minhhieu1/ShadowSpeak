@@ -75,6 +75,9 @@ export default function LaunchScreen() {
         <Button mode="contained" onPress={() => router.push("/launch-error")}>
           launch-error
         </Button>
+        <Button mode="contained" onPress={() => router.push("/safe-exit")}>
+          safe-exit
+        </Button>
       </View>
     </SafeScreen>
   );

@@ -18,6 +18,8 @@ export const icons = {
   TUNE: "tune",
   BOOKMARK: "bookmark",
   CLOCK: "clock",
+  SHIELD_CHECK: "shield-check",
+  INFO_OUTLINE: "information-outline",
 } as const;
 
 export type ErrorIcon = (typeof icons)[keyof typeof icons];
