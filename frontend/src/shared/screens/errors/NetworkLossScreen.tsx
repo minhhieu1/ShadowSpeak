@@ -5,7 +5,7 @@ import { shadowspeakTheme } from "@/theme";
 import { assets } from "@/assets";
 import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
 import ErrorActions from "@/shared/components/errors/ErrorActions";
-import StatusCard from "@/shared/components/commons/StatusCard";
+import StatusCard from "@/shared/components/errors/StatusCard";
 
 export type NetworkLossScreenProps = {
   downloadCount?: number;
