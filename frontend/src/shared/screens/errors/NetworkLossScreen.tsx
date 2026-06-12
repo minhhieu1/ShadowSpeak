@@ -1,5 +1,6 @@
 import { View } from "react-native";
 
+import { icons } from "@/shared/constants/icons";
 import { shadowspeakTheme } from "@/theme";
 import { assets } from "@/assets";
 import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
@@ -19,7 +20,7 @@ export default function NetworkLossScreen({
 
   const cards = [
     {
-      icon: "check-circle" as const,
+      icon: icons.CHECK_CIRCLE,
       iconColor: colors.success,
       title: `${downloadCount} downloaded lesson${downloadCount === 1 ? "" : "s"} available`,
       subtitle: "Practice can continue offline.",
@@ -30,13 +31,13 @@ export default function NetworkLossScreen({
     {
       label: "Open downloads",
       onPress: () => console.log("[NetworkLoss] Open downloads pressed"),
-      icon: "download" as const,
+      icon: icons.DOWNLOAD,
       className: "bg-primary rounded-card",
     },
     {
       label: "Retry connection",
       onPress: () => console.log("[NetworkLoss] Retry connection pressed"),
-      icon: "refresh" as const,
+      icon: icons.REFRESH,
       className: "border border-primary rounded-card bg-transparent",
       labelStyle: {
         color: colors.primary,

@@ -1,5 +1,6 @@
 import { View } from "react-native";
 
+import { icons } from "@/shared/constants/icons";
 import { shadowspeakTheme } from "@/theme";
 import { assets } from "@/assets";
 import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
@@ -20,7 +21,7 @@ export default function GenericFallbackErrorScreen({
 
   const cards = [
     {
-      icon: "bug-outline" as const,
+      icon: icons.BUG_OUTLINE,
       iconColor: colors.secondary,
       title: `Error ${errorCode}`,
     },
@@ -30,13 +31,13 @@ export default function GenericFallbackErrorScreen({
     {
       label: "Try again",
       onPress: () => console.log("[GenericFallback] Try again pressed"),
-      icon: "refresh" as const,
+      icon: icons.REFRESH,
       className: "bg-primary rounded-card",
     },
     {
       label: "Return home",
       onPress: () => console.log("[GenericFallback] Return home pressed"),
-      icon: "home-outline" as const,
+      icon: icons.HOME_OUTLINE,
       className: "border border-primary rounded-card bg-transparent",
       labelStyle: {
         color: colors.primary,

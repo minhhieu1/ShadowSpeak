@@ -29,6 +29,7 @@ export const assets = {
     genericFallback: require('../assets/illustrations/hero_generic_fallback_error.webp'),
     permissionRecovery: require('../assets/illustrations/hero_permission_recovery_cards.webp'),
     recordingUnavailable: require('../assets/illustrations/hero_recording_unavailable_mic_off.webp'),
+    storageFull: require('../assets/illustrations/hero_storage_full_box.webp'),
   },
   ui: {
     sparkleLeaf: require('../assets/ui/decor_sparkle_leaf_soft_01.webp'),

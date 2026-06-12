@@ -63,6 +63,9 @@ export default function LaunchScreen() {
         >
           recording-unavailable
         </Button>
+        <Button mode="contained" onPress={() => router.push("/storage-full")}>
+          storage-full
+        </Button>
       </View>
     </SafeScreen>
   );

@@ -1,3 +1,4 @@
+import { icons } from "@/shared/constants/icons";
 import { shadowspeakTheme } from "@/theme";
 import { assets } from "@/assets";
 import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
@@ -14,7 +15,7 @@ export default function SessionExpiredScreen() {
 
   const cards = [
     {
-      icon: "cloud-outline" as const,
+      icon: icons.CLOUD_OUTLINE,
       iconColor: colors.onSurfaceVariant,
       title: "Offline lessons stay on this device.",
     },
@@ -24,13 +25,13 @@ export default function SessionExpiredScreen() {
     {
       label: "Sign in again",
       onPress: () => console.log("[SessionExpired] Sign in again pressed"),
-      icon: "login" as const,
+      icon: icons.LOGIN,
       className: "bg-primary",
     },
     {
       label: "Continue offline",
       onPress: () => console.log("[SessionExpired] Continue offline pressed"),
-      icon: "cloud-off-outline" as const,
+      icon: icons.CLOUD_OFF_OUTLINE,
       className: "border border-primary bg-transparent",
     },
   ];

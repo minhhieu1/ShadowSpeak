@@ -7,40 +7,41 @@ import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
 import ErrorActions from "@/shared/components/errors/ErrorActions";
 import StatusCards from "@/shared/components/errors/StatusCards";
 
-export type PermissionRecoveryScreenProps = {
-  onOpenSettings?: () => void;
-  onNotNow?: () => void;
+export type StorageFullScreenProps = {
+  onManageStorage?: () => void;
+  onReturnHome?: () => void;
 };
 
-export default function PermissionRecoveryScreen({}: PermissionRecoveryScreenProps) {
+export default function StorageFullScreen({
+  onManageStorage,
+  onReturnHome,
+}: StorageFullScreenProps) {
   const { colors } = shadowspeakTheme;
 
   const cards = [
     {
-      icon: icons.MICROPHONE,
-      iconColor: colors.onBackground,
-      title: "Microphone: needed for recording",
-      subtitle: "Denied",
+      icon: icons.TRASH_CAN_OUTLINE,
+      iconColor: colors.onSurfaceVariant,
+      title: "Remove old recordings",
     },
     {
-      icon: icons.BELL_OUTLINE,
-      iconColor: colors.onBackground,
-      title: "Notifications: needed for reminders",
-      subtitle: "Denied",
+      icon: icons.DOWNLOAD,
+      iconColor: colors.onSurfaceVariant,
+      title: "Delete unused downloads",
     },
   ];
 
   const actions = [
     {
-      label: "Open Settings",
-      onPress: () => console.log("[PermissionRecovery] Open Settings pressed"),
-      icon: icons.COG,
+      label: "Try again",
+      onPress: onManageStorage,
+      icon: icons.REFRESH,
       className: "bg-primary rounded-card",
     },
     {
-      label: "Not now",
-      onPress: () => console.log("[PermissionRecovery] Not now pressed"),
-      icon: icons.CLOSE,
+      label: "Manage Download",
+      onPress: onReturnHome,
+      icon: icons.TUNE,
       className: "border border-primary rounded-card bg-transparent",
       labelStyle: {
         color: colors.primary,
@@ -50,13 +51,12 @@ export default function PermissionRecoveryScreen({}: PermissionRecoveryScreenPro
 
   return (
     <ErrorScreenLayout
-      title="Permission is turned off"
-      description="Turn it back on in Settings so ShadowSpeak can support your practice routine."
-      illustration={assets.illustrations.permissionRecovery}
+      illustration={assets.illustrations.storageFull}
+      title="Not enough space"
+      description={`Free up a little storage, then try again \n We saved your current progress.`}
     >
       <View className="flex-1 justify-between">
         <StatusCards wrapperClassName="mt-6 gap-3" cards={cards} />
-
         <ErrorActions actions={actions} />
       </View>
     </ErrorScreenLayout>

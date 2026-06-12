@@ -1,6 +1,7 @@
 import { View, Text } from "react-native";
 
 import { assets } from "@/assets";
+import { icons } from "@/shared/constants/icons";
 import { shadowspeakTheme } from "@/theme";
 import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
 import StatusCards from "@/shared/components/errors/StatusCards";
@@ -11,12 +12,12 @@ const { colors } = shadowspeakTheme;
 export default function RecordingUnavailableScreen() {
   const cards = [
     {
-      icon: "microphone-off" as const,
+      icon: icons.MICROPHONE_OFF,
       iconColor: colors.error,
       title: "Microphone access may be off",
     },
     {
-      icon: "check-circle" as const,
+      icon: icons.CHECK_CIRCLE,
       iconColor: colors.success,
       title: "Your lesson position is saved",
     },
@@ -27,7 +28,7 @@ export default function RecordingUnavailableScreen() {
       label: "Open Settings",
       onPress: () =>
         console.log("[RecordingUnavailable] Open Settings pressed"),
-      icon: "cog" as const,
+      icon: icons.COG,
       mode: "contained" as const,
       className: "bg-primary",
     },
@@ -35,7 +36,15 @@ export default function RecordingUnavailableScreen() {
       label: "Continue listening",
       onPress: () =>
         console.log("[RecordingUnavailable] Continue listening pressed"),
-      icon: "headphones" as const,
+      icon: icons.HEADPHONES,
+      mode: "outlined" as const,
+      className: "border border-primary bg-transparent",
+      labelStyle: { color: colors.primary },
+    },
+    {
+      label: "Try again",
+      onPress: () => console.log("[RecordingUnavailable] Try again pressed"),
+      icon: icons.REFRESH,
       mode: "outlined" as const,
       className: "border border-primary bg-transparent",
       labelStyle: { color: colors.primary },
@@ -46,22 +55,11 @@ export default function RecordingUnavailableScreen() {
     <ErrorScreenLayout
       illustration={assets.illustrations.recordingUnavailable}
       title="Recording isn't available"
-      description="Check your microphone access or continue listening for now."
+      description={`Check your microphone access\nor continue listening for now.`}
     >
       <StatusCards wrapperClassName="mt-5 gap-3" cards={cards} />
 
       <ErrorActions actions={actions} />
-
-      <View className="items-center mt-2 mb-4">
-        <Text
-          className="text-primary text-base font-semibold"
-          onPress={() =>
-            console.log("[RecordingUnavailable] Try again pressed")
-          }
-        >
-          Try again
-        </Text>
-      </View>
     </ErrorScreenLayout>
   );
 }

@@ -1,6 +1,7 @@
 import { Image, Text, useWindowDimensions, View } from "react-native";
 import { Icon } from "react-native-paper";
 
+import { icons } from "@/shared/constants/icons";
 import { assets } from "@/assets";
 import { shadowspeakTheme } from "@/theme";
 import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
@@ -27,13 +28,13 @@ export default function AudioLoadFailureScreen({
     {
       label: "Retry audio",
       onPress: () => console.log("[AudioLoadFailure] Retry audio pressed"),
-      icon: "refresh",
+      icon: icons.REFRESH,
       className: "bg-primary",
     },
     {
       label: "Return to lesson",
       onPress: () => console.log("[AudioLoadFailure] Return to lesson pressed"),
-      icon: "arrow-left",
+      icon: icons.ARROW_LEFT,
       className: "border border-primary bg-transparent",
       labelStyle: {
         color: colors.primary,
@@ -66,7 +67,11 @@ export default function AudioLoadFailureScreen({
               </Text>
             </View>
             <View className="flex-row items-center gap-1">
-              <Icon source="check-circle" size={14} color={colors.success} />
+              <Icon
+                source={icons.CHECK_CIRCLE}
+                size={14}
+                color={colors.success}
+              />
               <Text className="text-success text-xs font-medium">
                 Position saved
               </Text>

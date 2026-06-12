@@ -9,6 +9,7 @@ export default function ErrorLayout() {
       <Stack.Screen name="network-loss" />
       <Stack.Screen name="permission-recovery" />
       <Stack.Screen name="recording-unavailable" />
+      <Stack.Screen name="storage-full" />
     </Stack>
   );
 }
