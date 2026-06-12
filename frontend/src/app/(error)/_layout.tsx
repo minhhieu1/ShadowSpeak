@@ -4,6 +4,9 @@ export default function ErrorLayout() {
   return (
     <Stack screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
       <Stack.Screen name="audio-load-failure" />
+      <Stack.Screen name="session-expired" />
+      <Stack.Screen name="generic-fallback-error" />
+      <Stack.Screen name="network-loss" />
     </Stack>
   );
 }

@@ -8,6 +8,7 @@ export const shadowspeakTheme = {
     primaryContainer: "#0A4652",
     secondary: "#D97706",
     tertiary: "#0E5A6A",
+    success: "#1F8A70",
     background: "#F7F5F0",
     surface: "#FFFFFF",
     surfaceVariant: "#EEF2F5",

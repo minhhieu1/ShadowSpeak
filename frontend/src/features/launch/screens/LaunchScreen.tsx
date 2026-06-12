@@ -1,42 +1,60 @@
-import { useEffect } from "react";
 import {
   View,
   Text,
-  Image,
-  StatusBar,
-  Dimensions,
+  useWindowDimensions,
   ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
+import { Button } from "react-native-paper";
 
 import { assets } from "@/assets";
-
-const { width } = Dimensions.get("window");
-const logoWidth = width * 0.7;
-const logoHeight = logoWidth * 0.5;
+import SafeScreen from "@/shared/layouts/SafeLayout";
+import IllustrationBlock from "@/shared/components/commons/IllustrationBlock";
 
 export default function LaunchScreen() {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      router.replace("/(error)/audio-load-failure");
-    }, 1000);
-    return () => clearTimeout(timer);
-  },[]);
+  const { width } = useWindowDimensions();
+  const logoWidth = width * 0.7;
+  const logoHeight = logoWidth * 0.5;
 
   return (
-    <View className="flex-1 bg-bg">
-      <StatusBar barStyle="dark-content" />
+    <SafeScreen>
       <View className="flex-1 items-center justify-center">
-        <Image
+        <IllustrationBlock
           source={assets.logos.splashLockup}
-          style={{ width: logoWidth, height: logoHeight }}
-          resizeMode="contain"
+          width={logoWidth}
+          height={logoHeight}
         />
-        <ActivityIndicator size="large" color="#0E5A6A" className="mt-10" />
+        <ActivityIndicator size="large" className="mt-10 color-primary" />
         <Text className="text-base text-text-muted text-center mt-4">
           Checking your setup...
         </Text>
       </View>
-    </View>
+      <View>
+        <Button
+          mode="contained"
+          onPress={() => router.push("/audio-load-failure")}
+        >
+          audio-load-failure
+        </Button>
+        <Button
+          mode="contained"
+          onPress={() => router.push("/session-expired")}
+        >
+          session-expired
+        </Button>
+        <Button
+          mode="contained"
+          onPress={() => router.push("/generic-fallback-error")}
+        >
+          generic-fallback-error
+        </Button>
+        <Button
+          mode="contained"
+          onPress={() => router.push("/network-loss")}
+        >
+          network-loss
+        </Button>
+      </View>
+    </SafeScreen>
   );
 }

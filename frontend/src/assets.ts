@@ -25,6 +25,8 @@ export const assets = {
     audioLoadFailure: require('../assets/illustrations/hero_audio_load_failure.webp'),
     networkLoss: require('../assets/illustrations/hero_network_loss_offline_cloud.webp'),
     adTravelSuitcase: require('../assets/illustrations/ad_travel_suitcase_creative.webp'),
+    sessionExpired: require('../assets/illustrations/hero_auth_expired_shield.webp'),
+    genericFallback: require('../assets/illustrations/hero_generic_fallback_error.webp'),
   },
   ui: {
     sparkleLeaf: require('../assets/ui/decor_sparkle_leaf_soft_01.webp'),

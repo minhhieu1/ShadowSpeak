@@ -6,3 +6,4 @@ backend/.env
 /helper/docker/.env
 /helper/docker/keycloak/data/
 /helper/docker/dynamodb/
+/workwithAI/
