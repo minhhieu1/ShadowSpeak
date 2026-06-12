@@ -29,56 +29,6 @@ export default function LaunchScreen() {
           Checking your setup...
         </Text>
       </View>
-      <View>
-        <Button
-          mode="contained"
-          onPress={() => router.push("/audio-load-failure")}
-        >
-          audio-load-failure
-        </Button>
-        <Button
-          mode="contained"
-          onPress={() => router.push("/session-expired")}
-        >
-          session-expired
-        </Button>
-        <Button
-          mode="contained"
-          onPress={() => router.push("/generic-fallback-error")}
-        >
-          generic-fallback-error
-        </Button>
-        <Button mode="contained" onPress={() => router.push("/network-loss")}>
-          network-loss
-        </Button>
-        <Button
-          mode="contained"
-          onPress={() => router.push("/permission-recovery")}
-        >
-          permission-recovery
-        </Button>
-        <Button
-          mode="contained"
-          onPress={() => router.push("/recording-unavailable")}
-        >
-          recording-unavailable
-        </Button>
-        <Button mode="contained" onPress={() => router.push("/storage-full")}>
-          storage-full
-        </Button>
-        <Button
-          mode="contained"
-          onPress={() => router.push("/retryable-error")}
-        >
-          retryable-error
-        </Button>
-        <Button mode="contained" onPress={() => router.push("/launch-error")}>
-          launch-error
-        </Button>
-        <Button mode="contained" onPress={() => router.push("/safe-exit")}>
-          safe-exit
-        </Button>
-      </View>
     </SafeScreen>
   );
 }
