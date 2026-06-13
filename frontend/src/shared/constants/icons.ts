@@ -1,3 +1,5 @@
+// icon from Matetial Community Icons: https://materialdesignicons.com/
+
 export const icons = {
   REFRESH: "refresh",
   ARROW_LEFT: "arrow-left",
