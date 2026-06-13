@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
 
 import { assets } from "@/assets";
-import OnboardingLayout from "../components/OnboardingLayout";
+import OnboardingLayout from "../layouts/OnboardingLayout";
 import ToggleCard from "../components/ToggleCard";
 
 export default function ConsentScreen() {
@@ -27,11 +27,17 @@ export default function ConsentScreen() {
       variant="cards"
       source={assets.onboarding.privacyShield}
       title="Privacy and Ad Consent"
-      subtitle="Your privacy matters. We use your data to keep ShadowSpeak safe and improve your experience. You're in control."
-      heroSize="lg"
+      subtitle=""
       bodyCentered={false}
       actions={actions}
     >
+      <View>
+        <Text className="text-base text-text-muted  text-center">
+          <Text style={{ fontWeight: "bold" }}>Your privacy matters.</Text>
+          We use your data{"\n"} to keep ShadowSpeak safe and improve{"\n"}
+          your experience. You're in control.
+        </Text>
+      </View>
       <View className="gap-3 mt-6">
         <ToggleCard
           icon="shield-check"

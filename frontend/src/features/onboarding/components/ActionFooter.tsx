@@ -19,7 +19,7 @@ export default function ActionFooter({
   topSpacing = true,
 }: ActionFooterProps) {
   return (
-    <View className={`${topSpacing ? "mt-8" : ""} gap-3`}>
+    <View className={`${topSpacing ? "mt-8" : "mt"} gap-3`}>
       {actions.map((action, index) => (
         <Button
           key={index}

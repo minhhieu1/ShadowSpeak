@@ -1,5 +1,3 @@
-import { View } from "react-native";
-
 import { icons } from "@/shared/constants/icons";
 import { shadowspeakTheme } from "@/theme";
 import { assets } from "@/assets";

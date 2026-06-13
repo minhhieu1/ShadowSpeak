@@ -28,14 +28,12 @@ export default function OnboardingShell({
   contentContainerStyle,
 }: OnboardingShellProps) {
   const insets = useSafeAreaInsets();
-  const bottomPadding = insets.bottom + 24;
 
   const scrollContent = (
     <ScrollView
       className="flex-1"
       contentContainerStyle={[
         {
-          paddingBottom: bottomPadding,
           flexGrow: variant === "hero" ? 1 : undefined,
         },
         contentContainerStyle,

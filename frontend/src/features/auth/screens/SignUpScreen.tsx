@@ -3,7 +3,7 @@ import { View, Text, Pressable } from "react-native";
 import { Icon } from "react-native-paper";
 
 import { assets } from "@/assets";
-import OnboardingLayout from "@/features/onboarding/components/OnboardingLayout";
+import OnboardingLayout from "@/features/onboarding/layouts/OnboardingLayout";
 import LabeledInput from "../components/LabeledInput";
 import PasswordInput from "../components/PasswordInput";
 import PasswordStrengthBar from "../components/PasswordStrengthBar";

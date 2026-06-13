@@ -22,6 +22,7 @@ export const icons = {
   CLOCK: "clock",
   SHIELD_CHECK: "shield-check",
   INFO_OUTLINE: "information-outline",
+  EXIT_TO_APP: "exit-to-app",
 } as const;
 
 export type ErrorIcon = (typeof icons)[keyof typeof icons];

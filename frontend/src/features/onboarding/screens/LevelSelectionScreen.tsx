@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View } from "react-native";
 
 import { assets } from "@/assets";
-import OnboardingLayout from "../components/OnboardingLayout";
+import OnboardingLayout from "../layouts/OnboardingLayout";
 import SelectableCard from "../components/SelectableCard";
 
 const levels = [

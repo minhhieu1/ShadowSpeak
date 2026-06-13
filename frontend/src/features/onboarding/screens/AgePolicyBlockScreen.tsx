@@ -1,31 +1,31 @@
-import { View } from "react-native";
+import { View, Text } from "react-native";
 
+import { icons } from "@/shared/constants/icons";
 import { assets } from "@/assets";
 import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
-import ActionFooter from "../components/ActionFooter";
 
 export default function AgePolicyBlockScreen() {
+  const actions = [
+    {
+      label: "Exit",
+      onPress: () => console.log("AgePolicyBlock: Exit pressed"),
+      icon: icons.EXIT_TO_APP,
+    },
+  ];
   return (
     <ErrorScreenLayout
       illustration={assets.onboarding.agePolicy}
       title="Age Policy Block"
-      description="ShadowSpeak is for learners 13 years old and above. We're sorry, but you can't use this app at this time."
+      description=""
+      actions={actions}
     >
-      <View className="justify-end flex-1">
-        <ActionFooter
-          topSpacing={false}
-          actions={[
-            {
-              label: "Exit",
-              onPress: () => console.log("AgePolicyBlock: Exit pressed"),
-            },
-            {
-              label: "Support",
-              mode: "outlined",
-              onPress: () => console.log("AgePolicyBlock: Support pressed"),
-            },
-          ]}
-        />
+      <View className="flex-1">
+        <Text className="text-h3 text-text text-center">
+          {`ShadowSpeak is intended for learners \n aged 13 years old and above.`}
+        </Text>
+        <Text className="text-center mt-3 text-text-muted text-base">
+          {`We're sorry, but you can't use \n this app at this time.`}
+        </Text>
       </View>
     </ErrorScreenLayout>
   );

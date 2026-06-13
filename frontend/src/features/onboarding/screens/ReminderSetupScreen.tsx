@@ -3,7 +3,7 @@ import { View, Text } from "react-native";
 import { Icon } from "react-native-paper";
 
 import { assets } from "@/assets";
-import OnboardingLayout from "../components/OnboardingLayout";
+import OnboardingLayout from "../layouts/OnboardingLayout";
 import ToggleCard from "../components/ToggleCard";
 
 import { shadowspeakTheme } from "@/theme";
@@ -31,7 +31,6 @@ export default function ReminderSetupScreen() {
 
   return (
     <OnboardingLayout
-      variant="cards"
       source={assets.badges.brandWaveformNeutral}
       title="Reminder Setup"
       subtitle="Set a daily reminder to keep your shadowing streak strong."

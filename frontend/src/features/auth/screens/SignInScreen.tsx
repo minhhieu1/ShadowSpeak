@@ -2,7 +2,7 @@ import { useState } from "react";
 import { View, Text, Pressable } from "react-native";
 
 import { assets } from "@/assets";
-import OnboardingLayout from "@/features/onboarding/components/OnboardingLayout";
+import OnboardingLayout from "@/features/onboarding/layouts/OnboardingLayout";
 import LabeledInput from "../components/LabeledInput";
 import PasswordInput from "../components/PasswordInput";
 import SocialSignInButton from "../components/SocialSignInButton";

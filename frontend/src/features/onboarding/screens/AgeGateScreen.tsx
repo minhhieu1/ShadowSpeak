@@ -3,7 +3,7 @@ import { Pressable, View, Text } from "react-native";
 import { Icon } from "react-native-paper";
 
 import { assets } from "@/assets";
-import OnboardingLayout from "../components/OnboardingLayout";
+import OnboardingLayout from "../layouts/OnboardingLayout";
 import SupportNote from "../components/SupportNote";
 
 import { shadowspeakTheme } from "@/theme";
