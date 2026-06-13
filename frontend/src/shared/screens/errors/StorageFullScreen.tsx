@@ -1,11 +1,7 @@
-import { View } from "react-native";
-
 import { icons } from "@/shared/constants/icons";
 import { shadowspeakTheme } from "@/theme";
 import { assets } from "@/assets";
 import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
-import ErrorActions from "@/shared/components/errors/ErrorActions";
-import StatusCards from "@/shared/components/errors/StatusCards";
 
 export type StorageFullScreenProps = {
   onManageStorage?: () => void;
@@ -54,11 +50,8 @@ export default function StorageFullScreen({
       illustration={assets.illustrations.storageFull}
       title="Not enough space"
       description={`Free up a little storage, then try again \n We saved your current progress.`}
-    >
-      <View className="flex-1 justify-between">
-        <StatusCards wrapperClassName="mt-6 gap-3" cards={cards} />
-        <ErrorActions actions={actions} />
-      </View>
-    </ErrorScreenLayout>
+      cards={cards}
+      actions={actions}
+    />
   );
 }

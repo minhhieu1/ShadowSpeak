@@ -2,7 +2,7 @@ import { View } from "react-native";
 
 import StatusCard from "./StatusCard";
 
-type StatusCardItem = {
+export type StatusCardItem = {
   /** Leading icon name (MaterialCommunityIcons). */
   icon: string;
   /** Color of the leading icon itself. */

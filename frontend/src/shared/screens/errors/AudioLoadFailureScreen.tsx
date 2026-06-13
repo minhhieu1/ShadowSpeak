@@ -5,7 +5,6 @@ import { icons } from "@/shared/constants/icons";
 import { assets } from "@/assets";
 import { shadowspeakTheme } from "@/theme";
 import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
-import ErrorActions from "@/shared/components/errors/ErrorActions";
 
 export type AudioLoadFailureScreenProps = {
   lessonTitle: string;
@@ -47,6 +46,7 @@ export default function AudioLoadFailureScreen({
       illustration={assets.illustrations.audioLoadFailure}
       title="Audio couldn't load"
       description={`We kept your place in the lesson.\nTry loading the track again.`}
+      actions={actions}
     >
       {/* Lesson context card */}
       <View className="bg-white border border-gray-200 rounded-2xl p-4 flex-row items-center gap-3">
@@ -79,8 +79,6 @@ export default function AudioLoadFailureScreen({
           </View>
         </View>
       </View>
-
-      <ErrorActions actions={actions} />
     </ErrorScreenLayout>
   );
 }

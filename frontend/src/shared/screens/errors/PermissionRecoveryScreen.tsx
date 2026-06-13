@@ -4,8 +4,6 @@ import { icons } from "@/shared/constants/icons";
 import { shadowspeakTheme } from "@/theme";
 import { assets } from "@/assets";
 import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
-import ErrorActions from "@/shared/components/errors/ErrorActions";
-import StatusCards from "@/shared/components/errors/StatusCards";
 
 export type PermissionRecoveryScreenProps = {
   onOpenSettings?: () => void;
@@ -53,12 +51,8 @@ export default function PermissionRecoveryScreen({}: PermissionRecoveryScreenPro
       title="Permission is turned off"
       description="Turn it back on in Settings so ShadowSpeak can support your practice routine."
       illustration={assets.illustrations.permissionRecovery}
-    >
-      <View className="flex-1 justify-between">
-        <StatusCards wrapperClassName="mt-6 gap-3" cards={cards} />
-
-        <ErrorActions actions={actions} />
-      </View>
-    </ErrorScreenLayout>
+      cards={cards}
+      actions={actions}
+    />
   );
 }

@@ -2,8 +2,6 @@ import { icons } from "@/shared/constants/icons";
 import { shadowspeakTheme } from "@/theme";
 import { assets } from "@/assets";
 import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
-import ErrorActions from "@/shared/components/errors/ErrorActions";
-import StatusCards from "@/shared/components/errors/StatusCards";
 
 type SessionExpiredScreenProps = {
   onSignInAgain?: () => void;
@@ -41,9 +39,8 @@ export default function SessionExpiredScreen() {
       title="Session expired"
       description="Please sign in again so we can sync your progress safely."
       illustration={assets.illustrations.sessionExpired}
-    >
-      <StatusCards wrapperClassName="mt-6 gap-3" cards={cards} />
-      <ErrorActions actions={actions} />
-    </ErrorScreenLayout>
+      cards={cards}
+      actions={actions}
+    />
   );
 }

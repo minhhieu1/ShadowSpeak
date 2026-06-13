@@ -1,11 +1,7 @@
-import { View, Text } from "react-native";
-
 import { assets } from "@/assets";
 import { icons } from "@/shared/constants/icons";
 import { shadowspeakTheme } from "@/theme";
 import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
-import StatusCards from "@/shared/components/errors/StatusCards";
-import ErrorActions from "@/shared/components/errors/ErrorActions";
 
 const { colors } = shadowspeakTheme;
 
@@ -56,10 +52,8 @@ export default function RecordingUnavailableScreen() {
       illustration={assets.illustrations.recordingUnavailable}
       title="Recording isn't available"
       description={`Check your microphone access\nor continue listening for now.`}
-    >
-      <StatusCards wrapperClassName="mt-5 gap-3" cards={cards} />
-
-      <ErrorActions actions={actions} />
-    </ErrorScreenLayout>
+      cards={cards}
+      actions={actions}
+    />
   );
 }

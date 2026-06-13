@@ -8,7 +8,7 @@ import { Button } from "react-native-paper";
 
 import { shadowspeakTheme } from "@/theme";
 
-type ErrorAction = {
+export type ErrorAction = {
   label: string;
   onPress?: () => void;
   icon?: string;
