@@ -12,14 +12,15 @@
 
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AUTH_KEYS } from '@/shared/constants/storageKeys';
 
 declare const __DEV__: boolean;
 
 const SECURE_STORE_KEY = 'auth_token';
-const ASYNC_STORAGE_KEY = '@shadowspeak/auth_token';
+const ASYNC_STORAGE_KEY = AUTH_KEYS.ACCESS_TOKEN;
 
 const SECURE_REFRESH_KEY = 'refresh_token';
-const ASYNC_REFRESH_KEY = '@shadowspeak/refresh_token';
+const ASYNC_REFRESH_KEY = AUTH_KEYS.REFRESH_TOKEN;
 
 // -- Helpers ------------------------------------------------------------------
 

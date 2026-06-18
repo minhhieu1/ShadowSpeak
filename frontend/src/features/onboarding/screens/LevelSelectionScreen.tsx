@@ -1,28 +1,80 @@
 import { useState } from "react";
-import { View } from "react-native";
+import { View, Text } from "react-native";
+import { router } from "expo-router";
 
 import { assets } from "@/assets";
 import OnboardingLayout from "../layouts/OnboardingLayout";
 import SelectableCard from "../components/SelectableCard";
+import { saveLevel, saveOnboardingStep } from "../services/onboardingApi";
+import { useOnboardingStore } from "../stores/onboardingStore";
+import {
+  handleOnboardingError,
+  getErrorCategory,
+} from "../services/errorHandler";
 
 const levels = [
-  { id: "beginner", title: "Beginner", image: assets.onboarding.levelBeginner },
   {
-    id: "intermediate",
+    id: "beginner" as const,
+    title: "Beginner",
+    image: assets.onboarding.levelBeginner,
+  },
+  {
+    id: "intermediate" as const,
     title: "Intermediate",
     image: assets.onboarding.levelIntermediate,
   },
-  { id: "advanced", title: "Advanced", image: assets.onboarding.levelAdvanced },
-] as const;
+  {
+    id: "advanced" as const,
+    title: "Advanced",
+    image: assets.onboarding.levelAdvanced,
+  },
+];
+
+type Level = (typeof levels)[number]["id"];
 
 export default function LevelSelectionScreen() {
-  const [selected, setSelected] = useState<string>("beginner");
+  const [selected, setSelected] = useState<Level | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const setStep = useOnboardingStore((state) => state.setStep);
+
+  const handleContinue = async () => {
+    if (!selected || isLoading) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Save level to user profile
+      await saveLevel(selected);
+
+      // Update onboarding step
+      await saveOnboardingStep("level_selected");
+      setStep("level_selected");
+
+      // Navigate to reminder setup
+      router.replace("/(onboarding)/reminder-setup" as any);
+    } catch (err) {
+      console.error("[LevelSelectionScreen] Failed to save level", err);
+      const category = getErrorCategory(err);
+
+      if (category === "network" || category === "server") {
+        setError("Connection issue. Please try again.");
+      } else {
+        handleOnboardingError(err, { errorCode: "SAVE_LEVEL" });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const actions = [
     {
-      label: "Continue",
-      onPress: () =>
-        console.log(`LevelSelection: Continue pressed with ${selected}`),
+      label: isLoading ? "Saving..." : "Continue",
+      onPress: handleContinue,
+      disabled: !selected || isLoading,
+      loading: isLoading,
     },
   ];
 
@@ -43,13 +95,16 @@ export default function LevelSelectionScreen() {
             image={level.image}
             title={level.title}
             selected={selected === level.id}
-            onPress={() => {
-              setSelected(level.id);
-              console.log(`LevelSelection: selected ${level.id}`);
-            }}
+            onPress={() => setSelected(level.id)}
           />
         ))}
       </View>
+
+      {error && (
+        <View className="bg-error/10 rounded-card p-4 mt-4">
+          <Text className="text-error text-sm">{error}</Text>
+        </View>
+      )}
     </OnboardingLayout>
   );
 }

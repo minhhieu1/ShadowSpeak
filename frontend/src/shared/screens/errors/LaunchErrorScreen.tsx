@@ -5,19 +5,29 @@ import { shadowspeakTheme } from "@/theme";
 import { assets } from "@/assets";
 import ErrorScreenLayout from "@/shared/layouts/ErrorScreenLayout";
 
-export default function LaunchErrorScreen() {
+export type LaunchErrorScreenProps = {
+  onRetry?: () => void;
+  onContactSupport?: () => void;
+};
+
+export default function LaunchErrorScreen({
+  onRetry,
+  onContactSupport,
+}: LaunchErrorScreenProps = {}) {
   const { colors } = shadowspeakTheme;
 
   const actions = [
     {
       label: "Retry",
-      onPress: () => console.log(`[LaunchError] Retry pressed`),
+      onPress: onRetry || (() => console.log(`[LaunchError] Retry pressed`)),
       icon: icons.REFRESH,
       className: "bg-primary rounded-card",
     },
     {
       label: "Contact support",
-      onPress: () => console.log(`[LaunchError] Contact support pressed`),
+      onPress:
+        onContactSupport ||
+        (() => console.log(`[LaunchError] Contact support pressed`)),
       className: "bg-transparent rounded-card",
     },
   ];

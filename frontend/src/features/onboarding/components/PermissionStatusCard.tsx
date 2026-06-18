@@ -1,4 +1,4 @@
-import { View, Text } from "react-native";
+import { Pressable, View, Text } from "react-native";
 import { Icon } from "react-native-paper";
 
 import { shadowspeakTheme } from "@/theme";
@@ -11,6 +11,8 @@ type PermissionStatusCardProps = {
   description: string;
   status: PermissionStatus;
   helperText: string;
+  onRequest?: () => void;
+  onOpenSettings?: () => void;
 };
 
 const statusConfig: Record<
@@ -52,6 +54,8 @@ export default function PermissionStatusCard({
   description,
   status,
   helperText,
+  onRequest,
+  onOpenSettings,
 }: PermissionStatusCardProps) {
   const { colors } = shadowspeakTheme;
   const config = statusConfig[status];
@@ -68,18 +72,43 @@ export default function PermissionStatusCard({
             {description}
           </Text>
         </View>
-        <View className={`px-3 py-1.5 rounded-full ${config.bg}`}>
+        <View className={`px-3 py-1.5 rounded-full ${config.bg}`} accessibilityRole="none">
           <Text className={`text-xs font-semibold ${config.text}`}>
             {config.label}
           </Text>
         </View>
       </View>
+
       <View className="flex-row items-center mt-3 pt-3 border-t border-border">
         <Icon source={config.helperIcon} size={16} color={config.iconColor} />
         <Text className="text-sm text-text-muted ml-2 flex-1">
           {helperText}
         </Text>
       </View>
+
+      {onRequest && status === "optional" && (
+        <Pressable
+          onPress={onRequest}
+          className="mt-3 bg-primary/10 rounded-control py-2 items-center"
+          accessibilityRole="button"
+          accessibilityLabel={`Allow ${title} permission`}
+          accessibilityHint={helperText}
+        >
+          <Text className="text-primary font-semibold">Allow</Text>
+        </Pressable>
+      )}
+
+      {onOpenSettings && status === "denied" && (
+        <Pressable
+          onPress={onOpenSettings}
+          className="mt-3 bg-error/10 rounded-control py-2 items-center"
+          accessibilityRole="button"
+          accessibilityLabel={`Open settings to enable ${title}`}
+          accessibilityHint="Opens app settings to change permission"
+        >
+          <Text className="text-error font-semibold">Open Settings</Text>
+        </Pressable>
+      )}
     </View>
   );
 }

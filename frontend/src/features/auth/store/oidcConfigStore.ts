@@ -1,9 +1,10 @@
 import * as SecureStore from 'expo-secure-store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { OidcConfig } from '../types/oidcConfig';
+import { AUTH_KEYS } from '@/shared/constants/storageKeys';
 
 const SECURE_STORE_KEY = 'oidc_config';
-const ASYNC_STORAGE_KEY = '@shadowspeak/oidc_config';
+const ASYNC_STORAGE_KEY = AUTH_KEYS.OIDC_CONFIG;
 
 async function withSecureStoreFallback<T>(
   secureAction: () => Promise<T>,
